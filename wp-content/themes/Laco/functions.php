@@ -37,24 +37,3 @@ function caia_add_meta_responsive(){
 	echo "<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />";
 	// echo '<meta name="viewport" content="width=device-width, initial-scale=1.0>';
 }
-
-// function add_aos_library() {
-//     // CSS AOS
-//     wp_enqueue_style('aos-css', 'https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css');
-
-//     // JS AOS
-//     wp_enqueue_script('aos-js', 'https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js', array(), null, true);
-
-//     // Khởi tạo AOS
-//     // wp_add_inline_script('aos-js', 'AOS.init();');
-
-// 	wp_add_inline_script('aos-js', '
-//     AOS.init({
-//         duration: 800,
-//         once: true
-//     });
-// ');
-// }
-// add_action('wp_enqueue_scripts', 'add_aos_library');
-
-

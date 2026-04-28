@@ -6,6 +6,9 @@ add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list'
 // Thêm metabox
 include('metabox.php');
 
+// Thêm ACF Landing Page Configuration
+include('acf-landing.php');
+
 // Thêm caiajs
 include('js/caiajs.php');
 
@@ -111,10 +114,8 @@ function caia_add_font_website(){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet"> -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 	<?php
 }
@@ -126,91 +127,6 @@ add_action( 'genesis_header', function() {
         echo '</div></div>';
     }
 }, 1 ); 
-
-
-genesis_register_sidebar(
-	array(
-		'id'			=> 'nhantuvan',
-		'name'			=> 'Toàn bộ - Nhận tư vấn',
-	)
-);
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-banner',
-		'name'			=> 'Trang chủ - Banner',
-	)
-);
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-tieuchi',
-		'name'			=> 'Trang chủ - Tiêu chí',
-	)
-);
-
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-vechungtoi',
-		'name'			=> 'Trang chủ - Về chúng tôi',
-	)
-);
-
-
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-tiepnhan',
-		'name'			=> 'Trang chủ - Tiếp nhận',
-	)
-);
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-camket',
-		'name'			=> 'Trang chủ - Cam kết chất lượng',
-	)
-);
-
-
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-news',
-		'name'			=> 'Trang chủ - Tin tức',
-	)
-);
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-tieudefeedback',
-		'name'			=> 'Trang chủ - Tiêu đề Feedback',
-	)
-);
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-feedback',
-		'name'			=> 'Trang chủ - Feedback của khách hàng',
-	)
-);
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-tuvan',
-		'name'			=> 'Sản phẩm - Hỗ trợ tư vấn',
-	)
-);
-
-genesis_register_sidebar( 
-	array(
-		'id'			=> 'content-muahang',
-		'name'			=> 'Sản phẩm - Hỗ trợ mua hàng',
-	)
-);
-
-
 
 genesis_register_sidebar( 
 	array(
@@ -524,145 +440,5 @@ function add_fontawesome_to_theme() {
     );
 }
 add_action('wp_enqueue_scripts', 'add_fontawesome_to_theme');
-
-
-
-
-// Shortcode [cart_icon] để chèn vào header
-function adsdigi_header_cart_icon() {
-    if ( ! function_exists( 'WC' ) ) return '';
-
-    ob_start(); ?>
-    <div class="header-cart">
-        <a class="header-cart-link" href="<?php echo esc_url( wc_get_cart_url() ); ?>"
-           aria-label="<?php esc_attr_e('Xem giỏ hàng','woocommerce'); ?>">
-            <i class="fas fa-shopping-cart cart-icon" aria-hidden="true"></i>
-            <span class="cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></span>
-        </a>
-
-        <div class="mini-cart-dropdown" aria-hidden="true">
-            <?php woocommerce_mini_cart(); ?>
-        </div>
-    </div>
-    <?php
-    return ob_get_clean();
-}
-add_shortcode( 'cart_icon', 'adsdigi_header_cart_icon' );
-
-// Cập nhật số lượng & mini cart bằng AJAX sau khi thêm vào giỏ
-add_filter( 'woocommerce_add_to_cart_fragments', function( $fragments ) {
-    if ( ! function_exists( 'WC' ) ) return $fragments;
-
-    // Cập nhật số lượng
-    $fragments['.cart-count'] =
-        '<span class="cart-count">' . WC()->cart->get_cart_contents_count() . '</span>';
-
-    // Cập nhật nội dung mini cart
-    ob_start();
-    woocommerce_mini_cart();
-    $mini = ob_get_clean();
-    $fragments['.mini-cart-dropdown'] = '<div class="mini-cart-dropdown">'.$mini.'</div>';
-
-    return $fragments;
-});
-
-
-
-
-// Shortcode: [woo_login_button]
-add_shortcode('woo_login_button', function($atts){
-    if ( ! function_exists('wc_get_page_permalink') ) return '';
-
-    $a = shortcode_atts([
-        // 'text_login'   => 'Đăng nhập',
-        // 'text_account' => 'Tài khoản',
-        'icon' => '<i class="fa-solid fa-user"></i>', 
-    ], $atts);
-
-    $url = wc_get_page_permalink('myaccount');
-
-    if ( is_user_logged_in() ) {
-        // Nếu đã login → hiện nút "Tài khoản"
-        return sprintf(
-            '<a class="woo-login-btn" href="%1$s">%3$s %2$s</a>',
-            esc_url($url),
-            esc_html($a['text_account']),
-            $a['icon'] 
-        );
-    } else {
-        // Nếu chưa login → hiện nút "Đăng nhập"
-        return sprintf(
-            '<a class="woo-login-btn" href="%1$s">%3$s %2$s</a>',
-            esc_url($url),
-            esc_html($a['text_login']),
-            $a['icon']
-        );
-    }
-});
-
-
-
-// Tắt breadcrumb của WooCommerce
-remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20, 0 );
-
-
-// 2. (Tùy chọn) Tắt sidebar mặc định của Woo (vì ta sẽ tự có sidebar riêng)
-remove_action('woocommerce_sidebar', 'woocommerce_get_sidebar', 10);
-
-// Bật hỗ trợ WooCommerce
-add_action('after_setup_theme', function () {
-  add_theme_support('woocommerce');
-});
-// Đăng ký sidebar cho bộ lọc (chuẩn WordPress, chạy trên widgets_init)
-add_action('widgets_init', function () {
-    register_sidebar([
-        'id'            => 'content-filter',
-        'name'          => 'Shop Filter',
-        'description'   => 'Widget lọc theo giá/thuộc tính cho trang shop & category.',
-        'before_widget' => '<section id="%1$s" class="widget %2$s">',
-        'after_widget'  => '</section>',
-        'before_title'  => '<h3 class="widget-title">',
-        'after_title'   => '</h3>',
-    ]);
-});
-
-
-
-// --- Xóa các hook mặc định ---
-remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
-remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
-remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
-remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
-remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
-add_filter('loop_shop_columns', function(){ return 4; });          
-add_filter('loop_shop_per_page', function($n){ return 16; }, 20);   
-
-// --- Thêm hình ảnh có link riêng ---
-add_action( 'woocommerce_before_shop_loop_item_title', 'custom_product_image_link', 9 );
-function custom_product_image_link() {
-    global $product;
-    echo '<a href="' . get_permalink( $product->get_id() ) . '" class="custom-product-image-link">';
-    echo woocommerce_get_product_thumbnail();
-    echo '</a>';
-}
-
-
-
-// Đăng ký sidebar riêng cho trang cửa hàng WooCommerce
-function register_shop_sidebar() {
-    register_sidebar( array(
-        'name'          => __( 'Banner Trang Cửa Hàng', 'your-theme' ),
-        'id'            => 'shop-sidebar',
-        'description'   => __( 'Kéo thả widget vào đây để hiển thị ở trang cửa hàng WooCommerce.', 'your-theme' ),
-        'before_widget' => '<div id="%1$s" class="widget %2$s">',
-        'after_widget'  => '</div>',
-        'before_title'  => '<h3 class="widget-title">',
-        'after_title'   => '</h3>',
-    ) );
-}
-add_action( 'widgets_init', 'register_shop_sidebar' );
-
-// Ẩn tiêu đề trang cửa hàng
-add_filter( 'woocommerce_show_page_title', '__return_false' );
 
 
