@@ -3,8 +3,8 @@
  * Testimonials Section Template
  */
 
-$testimonials_title = get_field('testimonials_title', 'option');
-$testimonials_description = get_field('testimonials_description', 'option');
+$testimonials_title = get_field('testimonials_title');
+$testimonials_description = get_field('testimonials_description');
 ?>
 
 <section class="testimonials-section">
@@ -12,7 +12,7 @@ $testimonials_description = get_field('testimonials_description', 'option');
         <?php if ($testimonials_title || $testimonials_description): ?>
             <div class="section-header">
                 <?php if ($testimonials_title): ?>
-                    <h2 class="section-title"><?php echo esc_html($testimonials_title); ?></h2>
+                    <h2 class="section-title"><?php echo wp_kses_post($testimonials_title); ?></h2>
                 <?php endif; ?>
                 
                 <?php if ($testimonials_description): ?>

@@ -46,49 +46,7 @@ add_action('acf/init', function() {
                 'type' => 'image',
                 'return_format' => 'array',
             ),
-            array(
-                'key' => 'field_hero_primary_button',
-                'label' => 'Nút CTA chính',
-                'name' => 'hero_primary_button',
-                'type' => 'link',
-            ),
-            array(
-                'key' => 'field_hero_secondary_button',
-                'label' => 'Nút CTA phụ',
-                'name' => 'hero_secondary_button',
-                'type' => 'link',
-            ),
-        ),
-        'location' => array(
-            array(
-                array(
-                    'param' => 'page_template',
-            'operator' => '==',
-            'value' => 'page-landing.php',
-                ),
-            ),
-        ),
-    ));
-
-    // Why Choose Us Section Fields
-    acf_add_local_field_group(array(
-        'key' => 'group_why_choose_us',
-        'title' => 'Why Choose Us Section',
-        'fields' => array(
-            array(
-                'key' => 'field_why_choose_title',
-                'label' => 'Tiêu đề',
-                'name' => 'why_choose_title',
-                'type' => 'text',
-                'placeholder' => 'VD: Tại sao nên chọn',
-            ),
-            array(
-                'key' => 'field_why_choose_description',
-                'label' => 'Mô tả',
-                'name' => 'why_choose_description',
-                'type' => 'textarea',
-            ),
-            array(
+             array(
                 'key' => 'field_why_choose_benefits',
                 'label' => 'Danh sách lợi ích',
                 'name' => 'why_choose_benefits',
@@ -115,17 +73,87 @@ add_action('acf/init', function() {
                     ),
                 ),
             ),
+            array(
+                'key' => 'field_hero_primary_button',
+                'label' => 'Nút CTA chính',
+                'name' => 'hero_primary_button',
+                'type' => 'link',
+            ),
+            array(
+                'key' => 'field_hero_secondary_button',
+                'label' => 'Nút CTA phụ',
+                'name' => 'hero_secondary_button',
+                'type' => 'link',
+            ),
         ),
         'location' => array(
             array(
                 array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'landing-page-settings',
+                    'param' => 'page_template',
+            'operator' => '==',
+            'value' => 'page-landing.php',
                 ),
             ),
         ),
     ));
+
+    // Why Choose Us Section Fields
+acf_add_local_field_group(array(
+    'key' => 'group_wcu_section',
+    'title' => 'Why Choose Us Section',
+    'fields' => array(
+       array(
+    'key' => 'field_wcu_title',
+    'label' => 'Tiêu đề',
+    'name' => 'why_choose_title',
+    'type' => 'wysiwyg',
+    'toolbar' => 'basic',
+    'media_upload' => 0,
+),
+        array(
+            'key' => 'field_wcu_description',
+            'label' => 'Mô tả',
+            'name' => 'why_choose_description',
+            'type' => 'textarea',
+        ),
+        array(
+            'key' => 'field_wcu_benefits',
+            'label' => 'Danh sách lí do',
+            'name' => 'why_choose',
+            'type' => 'repeater',
+            'sub_fields' => array(
+                array(
+                    'key' => 'field_wcu_benefit_icon',
+                    'label' => 'Icon',
+                    'name' => 'why_icon',
+                    'type' => 'image',
+                    'return_format' => 'array',
+                ),
+                array(
+                    'key' => 'field_wcu_benefit_title',
+                    'label' => 'Tiêu đề',
+                    'name' => 'why_title',
+                    'type' => 'text',
+                ),
+                array(
+                    'key' => 'field_wcu_benefit_description',
+                    'label' => 'Mô tả',
+                    'name' => 'why_description',
+                    'type' => 'textarea',
+                ),
+            ),
+        ),
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
+            ),
+        ),
+    ),
+));
 
     // Featured Courses Section Fields
     acf_add_local_field_group(array(
@@ -136,7 +164,9 @@ add_action('acf/init', function() {
                 'key' => 'field_courses_title',
                 'label' => 'Tiêu đề',
                 'name' => 'courses_title',
-                'type' => 'text',
+                'type' => 'wysiwyg',
+    'toolbar' => 'basic',
+    'media_upload' => 0,
             ),
             array(
                 'key' => 'field_courses_description',
@@ -184,15 +214,15 @@ add_action('acf/init', function() {
                 ),
             ),
         ),
-        'location' => array(
+         'location' => array(
+        array(
             array(
-                array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'landing-page-settings',
-                ),
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
             ),
         ),
+    ),
     ));
 
     // Testimonials Section Fields
@@ -204,7 +234,9 @@ add_action('acf/init', function() {
                 'key' => 'field_testimonials_title',
                 'label' => 'Tiêu đề',
                 'name' => 'testimonials_title',
-                'type' => 'text',
+                 'type' => 'wysiwyg',
+    'toolbar' => 'basic',
+    'media_upload' => 0,
             ),
             array(
                 'key' => 'field_testimonials_description',
@@ -255,14 +287,14 @@ add_action('acf/init', function() {
             ),
         ),
         'location' => array(
+        array(
             array(
-                array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'landing-page-settings',
-                ),
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
             ),
         ),
+    ),
     ));
 
     // CTA Section Fields

@@ -3,8 +3,8 @@
  * Featured Courses Section Template
  */
 
-$courses_title = get_field('courses_title', 'option');
-$courses_description = get_field('courses_description', 'option');
+$courses_title = get_field('courses_title');
+$courses_description = get_field('courses_description');
 $courses = get_field('featured_courses', 'option');
 ?>
 
@@ -13,7 +13,7 @@ $courses = get_field('featured_courses', 'option');
         <?php if ($courses_title || $courses_description): ?>
             <div class="section-header">
                 <?php if ($courses_title): ?>
-                    <h2 class="section-title"><?php echo esc_html($courses_title); ?></h2>
+                    <h2 class="section-title"><?php echo wp_kses_post($courses_title); ?></h2>
                 <?php endif; ?>
                 
                 <?php if ($courses_description): ?>
@@ -62,8 +62,6 @@ $courses = get_field('featured_courses', 'option');
             </div>
         <?php endif; ?>
         
-        <div class="courses-footer">
-            <a href="#" class="btn-view-all">XEM TẤT CẢ CÁC KHÓA HỌC</a>
-        </div>
+
     </div>
 </section>

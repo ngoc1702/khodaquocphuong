@@ -1,50 +1,40 @@
 <?php
-/**
- * Why Choose Us Section Template
- */
-
-$why_title = get_field('why_choose_title', 'option');
-$why_description = get_field('why_choose_description', 'option');
-$benefits = get_field('why_choose_benefits', 'option');
+$why_title = get_field('why_choose_title');
+$why_description = get_field('why_choose_description');
 ?>
 
 <section class="why-choose-us-section">
-    <div class="container">
-        <?php if ($why_title || $why_description): ?>
-            <div class="section-header">
-                <?php if ($why_title): ?>
-                    <h2 class="section-title">
-                        <?php echo esc_html($why_title); ?>
-                        <span class="highlight">?</span>
-                    </h2>
-                <?php endif; ?>
-                
-                <?php if ($why_description): ?>
-                    <p class="section-description"><?php echo esc_html($why_description); ?></p>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if ($benefits && have_rows('why_choose_benefits')): ?>
-            <div class="benefits-grid">
-                <?php while (have_rows('why_choose_benefits')): the_row();
-                    $icon = get_sub_field('benefit_icon');
-                    $title = get_sub_field('benefit_title');
-                    $description = get_sub_field('benefit_description');
-                    ?>
-                    <div class="benefit-card">
+    <div class="container wrap">
+        <div class="why-header">
+            <?php if ($why_title): ?>
+                <h2><?php echo wp_kses_post($why_title); ?></h2>
+            <?php endif; ?>
+
+            <?php if ($why_description): ?>
+                <p><?php echo esc_html($why_description); ?></p>
+            <?php endif; ?>
+        </div>
+
+        <?php if (have_rows('why_choose')): ?>
+            <div class="why-benefits-grid">
+                <?php while (have_rows('why_choose')): the_row();
+                    $icon = get_sub_field('why_icon');
+                    $title = get_sub_field('why_title');
+                    $description = get_sub_field('why_description');
+                ?>
+                    <div class="why-benefit-item">
                         <?php if ($icon): ?>
-                            <div class="benefit-icon">
-                                <img src="<?php echo esc_url($icon['url']); ?>" alt="<?php echo esc_attr($title); ?>" />
+                            <div class="why-benefit-icon">
+                                <img src="<?php echo esc_url($icon['url']); ?>" alt="<?php echo esc_attr($title); ?>">
                             </div>
                         <?php endif; ?>
-                        
+
                         <?php if ($title): ?>
-                            <h3 class="benefit-title"><?php echo esc_html($title); ?></h3>
+                            <h3><?php echo esc_html($title); ?></h3>
                         <?php endif; ?>
-                        
+
                         <?php if ($description): ?>
-                            <p class="benefit-description"><?php echo esc_html($description); ?></p>
+                            <p><?php echo esc_html($description); ?></p>
                         <?php endif; ?>
                     </div>
                 <?php endwhile; ?>

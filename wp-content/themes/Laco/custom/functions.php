@@ -120,13 +120,13 @@ function caia_add_font_website(){
 	<?php
 }
 
-add_action( 'genesis_header', function() {
-    if ( is_active_sidebar( 'header-menusub' ) ) {
-        echo '<div class="header-menusub-widget-area"><div class="wrap">';
-        dynamic_sidebar( 'header-menusub' );
-        echo '</div></div>';
-    }
-}, 1 ); 
+// add_action( 'genesis_header', function() {
+//     if ( is_active_sidebar( 'header-menusub' ) ) {
+//         echo '<div class="header-menusub-widget-area"><div class="wrap">';
+//         dynamic_sidebar( 'header-menusub' );
+//         echo '</div></div>';
+//     }
+// }, 1 ); 
 
 genesis_register_sidebar( 
 	array(
@@ -406,18 +406,7 @@ function my_column_width() {
     echo '</style>';
 }
 
-function wp_youtube_video($atts) {
-         extract(shortcode_atts(array(
 
-              'id'    => '',
-              'width'   => '',
-              'height'  => ''
-
-         ), $atts));
-
-        return '<div class="embed-video"><iframe id="videoIframe" width="'.$atts['width'].'" height="'.$atts['height'].'" src="https://www.youtube.com/embed/'.$atts['id'].'" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
-    }
-add_shortcode('youtube', 'wp_youtube_video');
 
 
 

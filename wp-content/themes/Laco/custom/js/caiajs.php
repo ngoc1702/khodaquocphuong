@@ -121,8 +121,8 @@ jQuery(document).ready(function($) {
 
 
 jQuery(document).ready(function($) {
-  $(".content-feedback .wrap").slick({
-    arrows: true,
+  $(".testimonials-slider").slick({
+    arrows: false,
     dots: false,
     speed: 600,
     autoplay: true,
