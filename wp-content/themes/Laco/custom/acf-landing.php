@@ -328,14 +328,14 @@ acf_add_local_field_group(array(
                 'return_format' => 'array',
             ),
         ),
-        'location' => array(
+          'location' => array(
+        array(
             array(
-                array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'landing-page-settings',
-                ),
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
             ),
+        ),
         ),
     ));
 
@@ -372,14 +372,14 @@ acf_add_local_field_group(array(
                 ),
             ),
         ),
-        'location' => array(
+         'location' => array(
+        array(
             array(
-                array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'landing-page-settings',
-                ),
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
             ),
+        ),
         ),
     ));
 });

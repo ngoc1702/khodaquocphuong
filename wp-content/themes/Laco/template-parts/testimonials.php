@@ -54,7 +54,7 @@ $testimonials_description = get_field('testimonials_description');
                 <p class="testimonial-comment"><?php echo esc_html($comment); ?></p>
             <?php endif; ?>
 
-            <div class="testimonial-quote">❝ ❞</div>
+            <!-- <div class="testimonial-quote">❝ ❞</div> -->
 
             <?php if ($rating): ?>
                 <div class="testimonial-rating">
