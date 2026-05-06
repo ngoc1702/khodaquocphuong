@@ -14,57 +14,6 @@ document.querySelectorAll('.circle p').forEach(p => {
 });
 
 
-jQuery(document).ready(function($) {
-
-	$('.site-header section:nth-child(3) .widget_text p').click(function() {
-			$('.nhantuvan').fadeIn();
-	});
-
-	$('.nhantuvan .widget_caldera_forms_widget .widgettitle').click(function() {
-			$('.nhantuvan').fadeOut();
-    	
-	});
-}
-)
-
-
-// jQuery(document).ready(function($) {
-//   $('.nhanbaogia span').click(function() {
-//     $('.nhantuvan').fadeIn();
-//     $('.nhantuvan .widget_caldera_forms_widget').fadeIn();
-//   });
-
-//   $('.nhantuvan .close-popup').click(function() {
-//     $('.nhantuvan').fadeOut();
-//   });
-// });
-
-
-jQuery(document).ready(function($) {
-  $('.btn_baogia').click(function() {
-    $('.nhantuvan').fadeIn();
-    $('.nhantuvan .widget_caldera_forms_widget').fadeIn();
-  });
-
-  $('.nhantuvan .close-popup').click(function() {
-    $('.nhantuvan').fadeOut();
-  });
-});
-
-jQuery(document).ready(function($) {
-
-	$('.content-info .textwidget p:nth-child(5) ').click(function() {
-			$('.nhantuvan').fadeIn();
-    $('.nhantuvan .widget_caldera_forms_widget').fadeIn();
-	});
-
-	$('.nhantuvan .widget_caldera_forms_widget .widgettitle').click(function() {
-			$('.nhantuvan').fadeOut();
-    	
-	});
-}
-)
-
 </script>
 
 
@@ -228,13 +177,30 @@ jQuery(document).ready(function($) {
 
 jQuery(document).ready(function($) {
 
-	$('.site-header p').click(function() {
-			$('.nhantuvan .widget_caldera_forms_widget').show();
-	});
+  // mở popup từ header
+    $('.site-header p').click(function () {
+        $('.nhantuvan').show();
+        $('.nhantuvan .widget_caldera_forms_widget').show();
+    });
 
-	$('.nhantuvan .widget_caldera_forms_widget .widgettitle').click(function() {
-			$('.nhantuvan .widget_caldera_forms_widget').hide();
-	});
+    // mở popup từ CTA
+    $(document).on('click', '.btn-cta', function () {
+        $('.nhantuvan').show();
+        $('.nhantuvan .widget_caldera_forms_widget').show();
+    });
+
+    // mở popup từ course button
+    $(document).on('click', '.course-btn', function () {
+        $('.nhantuvan').show();
+        $('.nhantuvan .widget_caldera_forms_widget').show();
+    });
+
+    // đóng popup
+    $('.nhantuvan .widget_caldera_forms_widget .widgettitle').click(function () {
+        $('.nhantuvan').hide();
+        $('.nhantuvan .widget_caldera_forms_widget').hide();
+    });
+
 
 
   var youtube = document.querySelectorAll( ".youtube" );
@@ -508,6 +474,32 @@ jQuery(document).ready( function($){
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    // đóng tất cả khi reload
+    faqItems.forEach(function(item) {
+        item.classList.remove('active');
+    });
+
+    faqItems.forEach(function(item) {
+        const button = item.querySelector('.faq-question');
+
+        button.addEventListener('click', function() {
+            const isActive = item.classList.contains('active');
+
+            faqItems.forEach(function(otherItem) {
+                otherItem.classList.remove('active');
+            });
+
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        });
+    });
+});
+</script>
 
 <?php
 }

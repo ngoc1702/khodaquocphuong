@@ -22,7 +22,7 @@ for ($i = 1; $i <= 3; $i++) {
 }
 ?>
 
-<section class="landing-hero"
+<section class="landing-hero" id="gioithieu"
     style="background-image: url('<?php echo esc_url($hero_image['url']); ?>');">
     <div class="landing-hero__inner">
     <div class=" landing-hero__content">

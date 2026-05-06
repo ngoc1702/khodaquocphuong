@@ -7,7 +7,7 @@ $testimonials_title = get_field('testimonials_title');
 $testimonials_description = get_field('testimonials_description');
 ?>
 
-<section class="testimonials-section">
+<section class="testimonials-section" id="khachhang">
     <div class="container">
         <?php if ($testimonials_title || $testimonials_description): ?>
             <div class="section-header">
@@ -54,7 +54,7 @@ $testimonials_description = get_field('testimonials_description');
                 <p class="testimonial-comment"><?php echo esc_html($comment); ?></p>
             <?php endif; ?>
 
-            <div class="testimonial-quote">❝ ❞</div>
+            <!-- <div class="testimonial-quote">❝ ❞</div> -->
 
             <?php if ($rating): ?>
                 <div class="testimonial-rating">

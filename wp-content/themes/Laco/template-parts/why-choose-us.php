@@ -3,7 +3,7 @@ $why_title = get_field('why_choose_title');
 $why_description = get_field('why_choose_description');
 ?>
 
-<section class="why-choose-us-section">
+<section class="why-choose-us-section" id="lydo">
     <div class="container wrap">
         <div class="why-header">
             <?php if ($why_title): ?>

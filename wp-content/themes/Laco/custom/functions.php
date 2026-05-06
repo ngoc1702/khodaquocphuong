@@ -130,6 +130,13 @@ function caia_add_font_website(){
 
 genesis_register_sidebar( 
 	array(
+		'id'			=> 'nhantuvan',
+		'name'			=> 'Toàn bộ - Nhận tư vấn',
+	)
+);
+
+genesis_register_sidebar( 
+	array(
 		'id'			=> 'content-bfooter',
 		'name'			=> 'Toàn bộ - Nội dung trước chân trang',
 	)

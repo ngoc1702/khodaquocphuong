@@ -28,14 +28,18 @@ function caia_add_page_landing() {
 
         <?php get_template_part( 'template-parts/why-choose-us' ); ?>
 
-        <?php get_template_part( 'template-parts/featured-courses' ); ?>
+        <?php get_template_part( 'template-parts/featured-courses'); ?>
+
+        <?php get_template_part( 'template-parts/statistics'); ?>
 
         <?php get_template_part( 'template-parts/testimonials' ); ?>
 
         <?php get_template_part( 'template-parts/cta-section' ); ?>
 
-        <?php get_template_part( 'template-parts/statistics' ); ?>
+        <?php get_template_part( 'template-parts/fqa-section' ); ?>
 
+        <?php get_template_part( 'template-parts/hinhanh-section' ); ?>
+       
     </main>
     <?php
 }

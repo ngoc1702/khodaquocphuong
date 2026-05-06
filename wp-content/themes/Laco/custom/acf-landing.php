@@ -206,11 +206,18 @@ acf_add_local_field_group(array(
                         'type' => 'textarea',
                     ),
                     array(
-                        'key' => 'field_course_link',
-                        'label' => 'Link chi tiết',
-                        'name' => 'course_link',
-                        'type' => 'url',
-                    ),
+    'key' => 'field_course_button',
+    'label' => 'Text nút',
+    'name' => 'course_button',
+    'type' => 'text',
+    'default_value' => 'Đăng ký ngay',
+),
+                    // array(
+                    //     'key' => 'field_course_link',
+                    //     'label' => 'Link chi tiết',
+                    //     'name' => 'course_link',
+                    //     'type' => 'url',
+                    // ),
                 ),
             ),
         ),
@@ -223,6 +230,50 @@ acf_add_local_field_group(array(
             ),
         ),
     ),
+    ));
+
+     // Statistics Section Fields
+    acf_add_local_field_group(array(
+        'key' => 'group_statistics',
+        'title' => 'Statistics Section',
+        'fields' => array(
+            array(
+                'key' => 'field_statistics',
+                'label' => 'Thống kê',
+                'name' => 'statistics',
+                'type' => 'repeater',
+                'sub_fields' => array(
+                    array(
+                        'key' => 'field_stat_icon',
+                        'label' => 'Icon',
+                        'name' => 'stat_icon',
+                        'type' => 'image',
+                        'return_format' => 'array',
+                    ),
+                    array(
+                        'key' => 'field_stat_number',
+                        'label' => 'Số lượng',
+                        'name' => 'stat_number',
+                        'type' => 'text',
+                    ),
+                    array(
+                        'key' => 'field_stat_description',
+                        'label' => 'Mô tả',
+                        'name' => 'stat_description',
+                        'type' => 'text',
+                    ),
+                ),
+            ),
+        ),
+         'location' => array(
+        array(
+            array(
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
+            ),
+        ),
+        ),
     ));
 
     // Testimonials Section Fields
@@ -318,7 +369,8 @@ acf_add_local_field_group(array(
                 'key' => 'field_cta_button',
                 'label' => 'Nút CTA',
                 'name' => 'cta_button',
-                'type' => 'link',
+                'type' => 'text',
+                // 'type' => 'link',
             ),
             array(
                 'key' => 'field_cta_background_image',
@@ -328,60 +380,121 @@ acf_add_local_field_group(array(
                 'return_format' => 'array',
             ),
         ),
-        'location' => array(
+          'location' => array(
+        array(
             array(
-                array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'landing-page-settings',
-                ),
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
             ),
+        ),
         ),
     ));
 
-    // Statistics Section Fields
+    //Q&A Section Fields
     acf_add_local_field_group(array(
-        'key' => 'group_statistics',
-        'title' => 'Statistics Section',
-        'fields' => array(
-            array(
-                'key' => 'field_statistics',
-                'label' => 'Thống kê',
-                'name' => 'statistics',
-                'type' => 'repeater',
-                'sub_fields' => array(
-                    array(
-                        'key' => 'field_stat_icon',
-                        'label' => 'Icon',
-                        'name' => 'stat_icon',
-                        'type' => 'image',
-                        'return_format' => 'array',
-                    ),
-                    array(
-                        'key' => 'field_stat_number',
-                        'label' => 'Số lượng',
-                        'name' => 'stat_number',
-                        'type' => 'text',
-                    ),
-                    array(
-                        'key' => 'field_stat_description',
-                        'label' => 'Mô tả',
-                        'name' => 'stat_description',
-                        'type' => 'text',
-                    ),
-                ),
-            ),
+    'key' => 'group_faq',
+    'title' => 'FAQ Section',
+    'fields' => array(
+        array(
+            'key' => 'field_faq_title',
+            'label' => 'Tiêu đề FAQ',
+            'name' => 'faq_title',
+           'type' => 'wysiwyg',
+    'toolbar' => 'basic',
+    'media_upload' => 0,
         ),
-        'location' => array(
-            array(
+         array(
+                'key' => 'field_faq_description',
+                'label' => 'Mô tả',
+                'name' => 'faq_description',
+                'type' => 'textarea',
+            ),
+        array(
+            'key' => 'field_faq_items',
+            'label' => 'Danh sách câu hỏi',
+            'name' => 'faq_items',
+            'type' => 'repeater',
+            'button_label' => 'Thêm câu hỏi',
+            'sub_fields' => array(
                 array(
-                    'param' => 'options_page',
-                    'operator' => '==',
-                    'value' => 'landing-page-settings',
+                    'key' => 'field_faq_question',
+                    'label' => 'Câu hỏi',
+                    'name' => 'question',
+                    'type' => 'text',
+                ),
+                array(
+                    'key' => 'field_faq_answer',
+                    'label' => 'Câu trả lời',
+                    'name' => 'answer',
+                    'type' => 'textarea',
+                    'rows' => 4,
                 ),
             ),
         ),
-    ));
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
+            ),
+        ),
+        ),
+));
+
+//Hình ảnh section
+acf_add_local_field_group(array(
+    'key' => 'group_activity_gallery',
+    'title' => 'Activity Gallery Section',
+    'fields' => array(
+        array(
+            'key' => 'field_activity_title',
+            'label' => 'Tiêu đề',
+            'name' => 'activity_title',
+             'type' => 'wysiwyg',
+    'toolbar' => 'basic',
+    'media_upload' => 0,
+        ),
+        array(
+            'key' => 'field_activity_description',
+            'label' => 'Mô tả',
+            'name' => 'activity_description',
+            'type' => 'textarea',
+        ),
+       // Hàng 1
+        array(
+            'key' => 'field_gallery_row_1',
+            'label' => 'Gallery hàng 1',
+            'name' => 'gallery_row_1',
+            'type' => 'gallery',
+            'return_format' => 'array',
+            'preview_size' => 'medium',
+        ),
+
+        // Hàng 2
+        array(
+            'key' => 'field_gallery_row_2',
+            'label' => 'Gallery hàng 2',
+            'name' => 'gallery_row_2',
+            'type' => 'gallery',
+            'return_format' => 'array',
+            'preview_size' => 'medium',
+        ),
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'page_template',
+                'operator' => '==',
+                'value' => 'page-landing.php',
+            ),
+        ),
+    ),
+));
+
+   
 });
 
 // Register Shortcode
