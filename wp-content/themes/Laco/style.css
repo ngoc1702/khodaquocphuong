@@ -2149,6 +2149,8 @@ ease;
 .testimonial-card {
     height: 100%;
 }
+
+
 @media (min-width: 1181px) and (max-width: 1640px) {
     .site-header .widget-area {
     width: 1280px;
