@@ -80,7 +80,13 @@ jQuery(document).ready(function($) {
     pauseOnFocus: false,
     slidesToShow: 3,
     slidesToScroll: 1,
-    responsive: [
+   responsive: [
+      {
+        breakpoint: 1440, 
+        settings: {
+          slidesToShow: 2
+        }
+      },
       {
         breakpoint: 768,
         settings: {
@@ -229,65 +235,7 @@ jQuery(document).ready(function($) {
        
       }
 
-  // câu hỏi
-
-   var widgets = $('.list_ques .question');
-
-			// Ẩn tất cả .textwidget và bỏ class active
-			widgets.find('.answer').hide();
-			widgets.find('.title').removeClass('active');
-
-			// Mặc định hiện widget đầu tiên
-			// widgets.first().find('.title').addClass('active');
-			// widgets.first().find('.answer').show();
-
-			// Bắt sự kiện click
-			widgets.find('.title').click(function () {
-			  var $title = $(this);
-			  var $widget = $title.closest('.question');
-			  var $textwidget = $widget.find('.answer');
-			  var isActive = $title.hasClass('active');
-
-			  // Ẩn tất cả và remove class
-			$('.list_ques .question .answer').slideUp();
-  	   $('.list_ques .question .title').removeClass('active');
-
-			  // Nếu chưa active thì mở, còn đang mở thì đóng
-			  if (!isActive) {
-			    $textwidget.slideDown();
-			    $title.addClass('active');
-			  }
-			});
-
-
-  // quy trình
-
-   var widgets = $('.list_buoc .buoc');
-
-  // Ẩn tất cả .textwidget và bỏ class active
-  widgets.find('.noidung').hide();
-  widgets.find('.ten').removeClass('active');
-
-  // Mặc định hiện widget đầu tiên
-  // widgets.first().find('.ten').addClass('active');
-  // widgets.first().find('.noidung').show();
-
-  // Bắt sự kiện click
-  widgets.find('.ten').click(function() {
-    var $title = $(this);
-    var $widget = $title.closest('.buoc');
-
-    // Ẩn tất cả và remove class
-    widgets.find('.noidung').slideUp();
-    widgets.find('.ten').removeClass('active');
-
-    // Hiện cái được click
-    $widget.find('.noidung').slideDown();
-    $title.addClass('active');
-  });
-
-
-  //
+  
 
 
 	$('').slick({

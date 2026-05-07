@@ -1761,7 +1761,6 @@ input#submit {
 .why-choose-us-section .container {
   max-width: 85%;
   margin: 0 auto;
-  padding: 0 20px;
 }
 
 .why-header {
@@ -2432,20 +2431,70 @@ input#submit {
 
 
 
-@media (min-width: 1181px) and (max-width: 1640px) {
+@media (min-width: 1024px) and (max-width: 1640px) {
+  .wrap {
+    margin: 0 auto;
+    max-width: 95%;
+    padding: 0;
+}
   .site-header .widget-area {
     width: 1280px;
     position: absolute;
     top: 50%;
-    left: 74.4%;
+    left: 72%;
   }
 
-  .content-banner .slick-list img {
-    width: 100%;
-    height: 70vh !important;
-    display: block;
+  .menu-secondary a, .site-header .menu a {
+    padding: 8px 18px;
   }
+  .site-header .widget_text p {
+    position: absolute;
+    top: 2px;
+    right: 280px;
+  }
+
+  .landing-hero__inner {
+    max-width: 95%;
+  }
+
+  .landing-hero {
+    min-height: 600px;
+  }
+
+  .why-choose-us-section .container, .featured-courses-section .container, .testimonials-section .container, .statistics-section .container, .cta-section .container,
+  .activity-gallery-section .container, .faq-section .container, .before_footer .wrap {
+  max-width: 95%;
 }
+.courses-slider {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+.stat-icon img {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+}
+.stat-number {
+    color: #fff;
+    font-size: 32px;
+}
+
+.stat-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+}
+
+.cta-section {
+    max-width: 95%;
+        padding: 30px;
+}
+.cta-content {
+    max-width: 800px;
+    padding-left: 250px;
+}
+}
+
+
 
 @media (max-width: 768px) {
   .header-menusub-widget-area {
@@ -2463,6 +2512,10 @@ input#submit {
     padding: 0px 15px;
   }
 
+  .title-area {
+    margin-left: -50px;
+  }
+
   .click-menu {
     text-align: center;
     position: fixed !important;
@@ -2474,7 +2527,7 @@ input#submit {
   .click-menu .line {
     height: 3px;
     margin-bottom: 6px;
-    background: #0066ff !important;
+    background: #FFF !important;
     width: 30px;
     transition: 0.4s;
   }
@@ -2501,7 +2554,7 @@ input#submit {
     position: fixed;
     height: 100%;
     width: 100% !important;
-    top: 71px !important;
+    top: 70px !important;
     left: auto;
     right: 0;
     background: #fff !important;
@@ -2523,11 +2576,220 @@ input#submit {
     font-weight: 500 !important;
   }
 
-  .content-sanpham {
+    .why-choose-us-section .container, .featured-courses-section .container, .testimonials-section .container, .statistics-section .container, .cta-section .container,
+  .activity-gallery-section .container, .faq-section .container, .before_footer .wrap {
+  max-width: 95%;
+}
+.landing-hero__inner {
+    max-width: 95%;
+}
+
+.landing-hero .title, 
+.landing-hero .title span  {
+    font-size: 32px;
+    line-height: 44px;
+}
+ .landing-hero {
+        min-height: 400px;
+        background-size: cover;
+        background-position: center bottom;
+        padding: 20px 6px 30px;
+    }
+.hero-benefits {
+  display: none;
+}
+.landing-hero .desc {
+  max-width: 210px;
+  font-size: 14px;
+}
+.btn {
+    padding: 8px 26px;
+    font-weight: 500;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+}
+.why-choose-us-section {
+    padding: 50px 0 50px;
+}
+
+.why-header h2 p {
+    margin: 0 auto 8px;
+    font-size: 26px;
+}
+.why-header p {
+    margin: 0 auto;
+    max-width: 760px;
+    font-size: 15px;
+}
+.why-header {
+    margin-bottom: 28px;
+}
+.why-benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    align-items: start;
+}
+.why-benefit-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 16px;
+    border: 1px solid #0066ff;
+}
+.why-benefit-icon img {
+    width: 40px;
+    height: 40px;
+}
+.why-benefit-item h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+
+.why-benefit-item p {
+    margin: 0;
+    font-size: 14px;
+}
+.featured-courses-section {
+    padding: 50px 0 50px;
+}
+.featured-courses-section .section-title p {
+    margin: 0 auto 8px;
+    font-size: 26px;
+}
+.featured-courses-section .section-description {
+    font-size: 15px;
+}
+.courses-slider {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    align-items: center;
+}
+.stat-item {
+    display: flex;
+    align-items: start;
+    justify-content: start;
+}
+.stat-icon img {
+    width: 60px;
+    height: 60px;
+}
+.stat-number {
+    font-size: 30px;
+}
+.stat-description {
+    font-size: 15px;
+}
+.stat-item:not(:last-child)::after {
+  display: none;
+}
+.testimonials-section {
+    padding: 50px 0 50px;
+}
+.testimonials-section .testimonial-card-inner {
+   display: flex;
+   flex-direction: column;
+   gap:12px;
+   text-align: center;
+   padding: 16px;
+   min-height: 120px;
+}
+.testimonial-rating {
+  justify-content: center;
+}
+.testimonials-section .section-title p {
+    font-size: 26px;
+}
+.testimonials-section .section-description {
+    font-size: 15px;
+}
+.testimonials-section .section-header {
+    margin-bottom: 28px;
+}
+.cta-section {
+    position: relative;
+    padding: 50px 20px;
+    margin: 10px auto 40px;
+    max-width: 95%;
+}
+.cta-content {
+    max-width: 1000px;
+    padding-left: 0px;
+}
+.cta-wrapper {
+    display: flex;
     flex-direction: column;
-    gap: 16px;
-    width: 100%;
-    margin-bottom: 30px;
-    padding-top: 75px;
-  }
+}
+.cta-title {
+    color: #fff;
+    font-size: 20px;
+}
+.btn-cta {
+  margin-top: 22px;
+}
+.faq-section {
+    padding: 50px 0 50px;
+}
+.faq-heading p {
+    font-size: 26px;
+}
+.faq-grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 18px;
+}
+.faq-question {
+    font-size: 16px;
+}    
+.faq-answer p {
+    font-size: 15px;
+}
+.activity-gallery-section {
+    padding: 50px 0 50px;
+}
+.activity-header h2 p {
+    font-size: 26px;
+}
+.gallery-item {
+    width: 200px;
+    height: 120px;
+}
+.activity-header {
+    margin: 0 auto 28px;
+}
+.gallery-marquee {
+    margin-bottom: 16px;
+}
+.gallery-track {
+    display: flex;
+    gap: 12px;
+}
+.before_footer .wrap-section {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+.before_footer .wrap-section > section:nth-child(4) img{
+   margin-top:24px
+}
+
+.nhantuvan .widget_caldera_forms_widget .widget-wrap {
+    width: 90%;
+}
+.nhantuvan .label {
+    font-size: 20px;
+}
+.caldera-grid .form-control {
+    font-size: 15px !important;
+    border-radius: 8px !important;
+    padding: 24px 18px !important;
+}
+.caldera-grid .form-group {
+    margin-bottom: 10px;
+}
 }

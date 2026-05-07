@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ACF Landing Page Configuration
  * Advanced Custom Fields for Landing Page Management
@@ -6,7 +7,7 @@
  */
 
 // Register ACF Field Groups
-add_action('acf/init', function() {
+add_action('acf/init', function () {
     if (!function_exists('acf_add_local_field_group')) {
         return;
     }
@@ -46,7 +47,7 @@ add_action('acf/init', function() {
                 'type' => 'image',
                 'return_format' => 'array',
             ),
-             array(
+            array(
                 'key' => 'field_why_choose_benefits',
                 'label' => 'Danh sách lợi ích',
                 'name' => 'why_choose_benefits',
@@ -79,6 +80,7 @@ add_action('acf/init', function() {
                 'name' => 'hero_primary_button',
                 'type' => 'link',
             ),
+            
             array(
                 'key' => 'field_hero_secondary_button',
                 'label' => 'Nút CTA phụ',
@@ -90,70 +92,70 @@ add_action('acf/init', function() {
             array(
                 array(
                     'param' => 'page_template',
-            'operator' => '==',
-            'value' => 'page-landing.php',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
                 ),
             ),
         ),
     ));
 
     // Why Choose Us Section Fields
-acf_add_local_field_group(array(
-    'key' => 'group_wcu_section',
-    'title' => 'Why Choose Us Section',
-    'fields' => array(
-       array(
-    'key' => 'field_wcu_title',
-    'label' => 'Tiêu đề',
-    'name' => 'why_choose_title',
-    'type' => 'wysiwyg',
-    'toolbar' => 'basic',
-    'media_upload' => 0,
-),
-        array(
-            'key' => 'field_wcu_description',
-            'label' => 'Mô tả',
-            'name' => 'why_choose_description',
-            'type' => 'textarea',
-        ),
-        array(
-            'key' => 'field_wcu_benefits',
-            'label' => 'Danh sách lí do',
-            'name' => 'why_choose',
-            'type' => 'repeater',
-            'sub_fields' => array(
-                array(
-                    'key' => 'field_wcu_benefit_icon',
-                    'label' => 'Icon',
-                    'name' => 'why_icon',
-                    'type' => 'image',
-                    'return_format' => 'array',
-                ),
-                array(
-                    'key' => 'field_wcu_benefit_title',
-                    'label' => 'Tiêu đề',
-                    'name' => 'why_title',
-                    'type' => 'text',
-                ),
-                array(
-                    'key' => 'field_wcu_benefit_description',
-                    'label' => 'Mô tả',
-                    'name' => 'why_description',
-                    'type' => 'textarea',
-                ),
-            ),
-        ),
-    ),
-    'location' => array(
-        array(
+    acf_add_local_field_group(array(
+        'key' => 'group_wcu_section',
+        'title' => 'Why Choose Us Section',
+        'fields' => array(
             array(
-                'param' => 'page_template',
-                'operator' => '==',
-                'value' => 'page-landing.php',
+                'key' => 'field_wcu_title',
+                'label' => 'Tiêu đề',
+                'name' => 'why_choose_title',
+                'type' => 'wysiwyg',
+                'toolbar' => 'basic',
+                'media_upload' => 0,
+            ),
+            array(
+                'key' => 'field_wcu_description',
+                'label' => 'Mô tả',
+                'name' => 'why_choose_description',
+                'type' => 'textarea',
+            ),
+            array(
+                'key' => 'field_wcu_benefits',
+                'label' => 'Danh sách lí do',
+                'name' => 'why_choose',
+                'type' => 'repeater',
+                'sub_fields' => array(
+                    array(
+                        'key' => 'field_wcu_benefit_icon',
+                        'label' => 'Icon',
+                        'name' => 'why_icon',
+                        'type' => 'image',
+                        'return_format' => 'array',
+                    ),
+                    array(
+                        'key' => 'field_wcu_benefit_title',
+                        'label' => 'Tiêu đề',
+                        'name' => 'why_title',
+                        'type' => 'text',
+                    ),
+                    array(
+                        'key' => 'field_wcu_benefit_description',
+                        'label' => 'Mô tả',
+                        'name' => 'why_description',
+                        'type' => 'textarea',
+                    ),
+                ),
             ),
         ),
-    ),
-));
+        'location' => array(
+            array(
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
+                ),
+            ),
+        ),
+    ));
 
     // Featured Courses Section Fields
     acf_add_local_field_group(array(
@@ -165,8 +167,8 @@ acf_add_local_field_group(array(
                 'label' => 'Tiêu đề',
                 'name' => 'courses_title',
                 'type' => 'wysiwyg',
-    'toolbar' => 'basic',
-    'media_upload' => 0,
+                'toolbar' => 'basic',
+                'media_upload' => 0,
             ),
             array(
                 'key' => 'field_courses_description',
@@ -206,12 +208,12 @@ acf_add_local_field_group(array(
                         'type' => 'textarea',
                     ),
                     array(
-    'key' => 'field_course_button',
-    'label' => 'Text nút',
-    'name' => 'course_button',
-    'type' => 'text',
-    'default_value' => 'Đăng ký ngay',
-),
+                        'key' => 'field_course_button',
+                        'label' => 'Text nút',
+                        'name' => 'course_button',
+                        'type' => 'text',
+                        'default_value' => 'Đăng ký ngay',
+                    ),
                     // array(
                     //     'key' => 'field_course_link',
                     //     'label' => 'Link chi tiết',
@@ -221,18 +223,18 @@ acf_add_local_field_group(array(
                 ),
             ),
         ),
-         'location' => array(
-        array(
+        'location' => array(
             array(
-                'param' => 'page_template',
-                'operator' => '==',
-                'value' => 'page-landing.php',
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
+                ),
             ),
         ),
-    ),
     ));
 
-     // Statistics Section Fields
+    // Statistics Section Fields
     acf_add_local_field_group(array(
         'key' => 'group_statistics',
         'title' => 'Statistics Section',
@@ -265,14 +267,14 @@ acf_add_local_field_group(array(
                 ),
             ),
         ),
-         'location' => array(
-        array(
+        'location' => array(
             array(
-                'param' => 'page_template',
-                'operator' => '==',
-                'value' => 'page-landing.php',
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
+                ),
             ),
-        ),
         ),
     ));
 
@@ -285,9 +287,9 @@ acf_add_local_field_group(array(
                 'key' => 'field_testimonials_title',
                 'label' => 'Tiêu đề',
                 'name' => 'testimonials_title',
-                 'type' => 'wysiwyg',
-    'toolbar' => 'basic',
-    'media_upload' => 0,
+                'type' => 'wysiwyg',
+                'toolbar' => 'basic',
+                'media_upload' => 0,
             ),
             array(
                 'key' => 'field_testimonials_description',
@@ -338,14 +340,14 @@ acf_add_local_field_group(array(
             ),
         ),
         'location' => array(
-        array(
             array(
-                'param' => 'page_template',
-                'operator' => '==',
-                'value' => 'page-landing.php',
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
+                ),
             ),
         ),
-    ),
     ));
 
     // CTA Section Fields
@@ -380,148 +382,146 @@ acf_add_local_field_group(array(
                 'return_format' => 'array',
             ),
         ),
-          'location' => array(
-        array(
+        'location' => array(
             array(
-                'param' => 'page_template',
-                'operator' => '==',
-                'value' => 'page-landing.php',
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
+                ),
             ),
-        ),
         ),
     ));
 
     //Q&A Section Fields
     acf_add_local_field_group(array(
-    'key' => 'group_faq',
-    'title' => 'FAQ Section',
-    'fields' => array(
-        array(
-            'key' => 'field_faq_title',
-            'label' => 'Tiêu đề FAQ',
-            'name' => 'faq_title',
-           'type' => 'wysiwyg',
-    'toolbar' => 'basic',
-    'media_upload' => 0,
-        ),
-         array(
+        'key' => 'group_faq',
+        'title' => 'FAQ Section',
+        'fields' => array(
+            array(
+                'key' => 'field_faq_title',
+                'label' => 'Tiêu đề FAQ',
+                'name' => 'faq_title',
+                'type' => 'wysiwyg',
+                'toolbar' => 'basic',
+                'media_upload' => 0,
+            ),
+            array(
                 'key' => 'field_faq_description',
                 'label' => 'Mô tả',
                 'name' => 'faq_description',
                 'type' => 'textarea',
             ),
-        array(
-            'key' => 'field_faq_items',
-            'label' => 'Danh sách câu hỏi',
-            'name' => 'faq_items',
-            'type' => 'repeater',
-            'button_label' => 'Thêm câu hỏi',
-            'sub_fields' => array(
-                array(
-                    'key' => 'field_faq_question',
-                    'label' => 'Câu hỏi',
-                    'name' => 'question',
-                    'type' => 'text',
-                ),
-                array(
-                    'key' => 'field_faq_answer',
-                    'label' => 'Câu trả lời',
-                    'name' => 'answer',
-                    'type' => 'textarea',
-                    'rows' => 4,
-                ),
-            ),
-        ),
-    ),
-    'location' => array(
-        array(
             array(
-                'param' => 'page_template',
-                'operator' => '==',
-                'value' => 'page-landing.php',
+                'key' => 'field_faq_items',
+                'label' => 'Danh sách câu hỏi',
+                'name' => 'faq_items',
+                'type' => 'repeater',
+                'button_label' => 'Thêm câu hỏi',
+                'sub_fields' => array(
+                    array(
+                        'key' => 'field_faq_question',
+                        'label' => 'Câu hỏi',
+                        'name' => 'question',
+                        'type' => 'text',
+                    ),
+                    array(
+                        'key' => 'field_faq_answer',
+                        'label' => 'Câu trả lời',
+                        'name' => 'answer',
+                        'type' => 'textarea',
+                        'rows' => 4,
+                    ),
+                ),
             ),
         ),
-        ),
-));
-
-//Hình ảnh section
-acf_add_local_field_group(array(
-    'key' => 'group_activity_gallery',
-    'title' => 'Activity Gallery Section',
-    'fields' => array(
-        array(
-            'key' => 'field_activity_title',
-            'label' => 'Tiêu đề',
-            'name' => 'activity_title',
-             'type' => 'wysiwyg',
-    'toolbar' => 'basic',
-    'media_upload' => 0,
-        ),
-        array(
-            'key' => 'field_activity_description',
-            'label' => 'Mô tả',
-            'name' => 'activity_description',
-            'type' => 'textarea',
-        ),
-       // Hàng 1
-        array(
-            'key' => 'field_gallery_row_1',
-            'label' => 'Gallery hàng 1',
-            'name' => 'gallery_row_1',
-            'type' => 'gallery',
-            'return_format' => 'array',
-            'preview_size' => 'medium',
-        ),
-
-        // Hàng 2
-        array(
-            'key' => 'field_gallery_row_2',
-            'label' => 'Gallery hàng 2',
-            'name' => 'gallery_row_2',
-            'type' => 'gallery',
-            'return_format' => 'array',
-            'preview_size' => 'medium',
-        ),
-    ),
-    'location' => array(
-        array(
+        'location' => array(
             array(
-                'param' => 'page_template',
-                'operator' => '==',
-                'value' => 'page-landing.php',
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
+                ),
             ),
         ),
-    ),
-));
+    ));
 
-   
+    //Hình ảnh section
+    acf_add_local_field_group(array(
+        'key' => 'group_activity_gallery',
+        'title' => 'Activity Gallery Section',
+        'fields' => array(
+            array(
+                'key' => 'field_activity_title',
+                'label' => 'Tiêu đề',
+                'name' => 'activity_title',
+                'type' => 'wysiwyg',
+                'toolbar' => 'basic',
+                'media_upload' => 0,
+            ),
+            array(
+                'key' => 'field_activity_description',
+                'label' => 'Mô tả',
+                'name' => 'activity_description',
+                'type' => 'textarea',
+            ),
+            // Hàng 1
+            array(
+                'key' => 'field_gallery_row_1',
+                'label' => 'Gallery hàng 1',
+                'name' => 'gallery_row_1',
+                'type' => 'gallery',
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+            ),
+
+            // Hàng 2
+            array(
+                'key' => 'field_gallery_row_2',
+                'label' => 'Gallery hàng 2',
+                'name' => 'gallery_row_2',
+                'type' => 'gallery',
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-landing.php',
+                ),
+            ),
+        ),
+    ));
 });
 
 // Register Shortcode
-add_shortcode('landing_page', function() {
+add_shortcode('landing_page', function () {
     ob_start();
-    ?>
+?>
     <main id="main-landing" class="landing-page">
-        
+
         <!-- Hero Section -->
         <?php get_template_part('template-parts/hero'); ?>
-        
+
         <!-- Why Choose Us Section -->
         <?php get_template_part('template-parts/why-choose-us'); ?>
-        
+
         <!-- Featured Courses Section -->
         <?php get_template_part('template-parts/featured-courses'); ?>
-        
+
         <!-- Testimonials Section -->
         <?php get_template_part('template-parts/testimonials'); ?>
-        
+
         <!-- CTA Section -->
         <?php get_template_part('template-parts/cta-section'); ?>
-        
+
         <!-- Statistics Section -->
         <?php get_template_part('template-parts/statistics'); ?>
 
     </main>
-    <?php
+<?php
     return ob_get_clean();
 });
