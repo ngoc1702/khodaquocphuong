@@ -7,55 +7,23 @@ $intro_button = hotel_landing_link(
     hotel_landing_default('hotel_intro_button')['title'],
     hotel_landing_default('hotel_intro_button')['url']
 );
-$intro_images = hotel_landing_get_field('hotel_intro_images', hotel_landing_default('hotel_intro_images'));
+$intro_image = hotel_landing_get_field('hotel_intro_image', hotel_landing_default('hotel_intro_image'));
+$intro_image_url = hotel_landing_image_url($intro_image);
+$intro_image_alt = hotel_landing_image_alt($intro_image, $intro_title);
 $intro_reviews = hotel_landing_get_field('hotel_intro_reviews', hotel_landing_default('hotel_intro_reviews'));
-$rooms = hotel_landing_get_field('hotel_rooms', hotel_landing_default('hotel_rooms'));
-
-$intro_image_items = array();
-if (!empty($intro_images) && is_array($intro_images)) {
-    foreach ($intro_images as $item) {
-        $image = is_array($item) && array_key_exists('image', $item) ? $item['image'] : $item;
-        $image_url = hotel_landing_image_url($image);
-
-        if ($image_url) {
-            $intro_image_items[] = array(
-                'url' => $image_url,
-                'alt' => hotel_landing_image_alt($image, $intro_title),
-            );
-        }
-    }
-}
-
-if (empty($intro_image_items) && !empty($rooms) && is_array($rooms)) {
-    foreach ($rooms as $room) {
-        if (empty($room['image'])) {
-            continue;
-        }
-
-        $image_url = hotel_landing_image_url($room['image']);
-        if ($image_url) {
-            $intro_image_items[] = array(
-                'url' => $image_url,
-                'alt' => hotel_landing_image_alt($room['image'], !empty($room['title']) ? $room['title'] : $intro_title),
-            );
-        }
-    }
-}
 ?>
 
 <section class="hotel-section hotel-intro" id="gioi-thieu">
     <div class="hotel-container">
         <div class="hotel-intro__layout">
-            <div class="hotel-intro__media" aria-label="Hotel interior gallery">
-                <?php for ($index = 0; $index < 2; $index++) : ?>
-                    <?php if (!empty($intro_image_items[$index]['url'])) : ?>
-                        <figure class="hotel-intro__image">
-                            <img src="<?php echo esc_url($intro_image_items[$index]['url']); ?>" alt="<?php echo esc_attr($intro_image_items[$index]['alt']); ?>">
-                        </figure>
-                    <?php else : ?>
-                        <figure class="hotel-intro__image hotel-intro__image--placeholder" aria-hidden="true"></figure>
-                    <?php endif; ?>
-                <?php endfor; ?>
+            <div class="hotel-intro__media" aria-label="Hotel intro image">
+                <?php if ($intro_image_url) : ?>
+                    <figure class="hotel-intro__image">
+                        <img src="<?php echo esc_url($intro_image_url); ?>" alt="<?php echo esc_attr($intro_image_alt); ?>">
+                    </figure>
+                <?php else : ?>
+                    <figure class="hotel-intro__image hotel-intro__image--placeholder" aria-hidden="true"></figure>
+                <?php endif; ?>
             </div>
 
             <div class="hotel-intro__content">
@@ -74,7 +42,7 @@ if (empty($intro_image_items) && !empty($rooms) && is_array($rooms)) {
                 <?php if (!empty($intro_button['title'])) : ?>
                     <a class="hotel-btn hotel-btn--gold hotel-btn--small" href="<?php echo esc_url($intro_button['url']); ?>"<?php echo $intro_button['target'] ? ' target="' . esc_attr($intro_button['target']) . '"' : ''; ?>>
                         <?php echo esc_html($intro_button['title']); ?>
-                        <span aria-hidden="true">&rarr;</span>
+                       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="10" viewBox="0 0 18 12" fill="none"><path d="M-2.18557e-07 6L15.6008 6.00004M11.0001 1L16 6.00004L11 11" stroke="white" stroke-width="1.5"></path></svg>
                     </a>
                 <?php endif; ?>
             </div>

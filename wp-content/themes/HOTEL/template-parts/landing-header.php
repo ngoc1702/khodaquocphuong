@@ -44,7 +44,7 @@ $booking_button = hotel_landing_link(
 
         <?php if (!empty($booking_button['title'])) : ?>
             <a class="hotel-booking-btn" href="<?php echo esc_url($booking_button['url']); ?>"<?php echo $booking_button['target'] ? ' target="' . esc_attr($booking_button['target']) . '"' : ''; ?>>
-                <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar mr-2 h-4 w-4"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
                 <?php echo esc_html($booking_button['title']); ?>
             </a>
         <?php endif; ?>

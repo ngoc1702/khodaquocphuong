@@ -164,7 +164,7 @@ if (!function_exists('hotel_landing_default')) {
                 'hotel_intro_title' => 'Luxury hotel in the heart of the city.',
                 'hotel_intro_description' => 'Larita Luxury Hotel, in the heart of the city, offers over 500 modern, luxurious rooms. Enjoy premium facilities, perfect for relaxation and indulgence. Our friendly staff ensures a seamless, personalized experience with stunning city views.',
                 'hotel_intro_button' => array('title' => 'Read more', 'url' => '#gioi-thieu', 'target' => ''),
-                'hotel_intro_images' => array(),
+                'hotel_intro_image' => array(),
                 'hotel_intro_reviews' => array(
                     array('logo_text' => 'B.', 'rating' => '4.9/5', 'label' => 'Excellent', 'description' => '3.5K Reviews on Booking'),
                     array('logo_text' => 'a.', 'rating' => '5/5', 'label' => 'Excellent', 'description' => '4.1K Reviews on Agoda'),
@@ -430,8 +430,11 @@ add_action('acf/init', function () {
     ));
 
     hotel_landing_register_group('group_hotel_landing_intro', 'Landing - Giới thiệu', array(
+        hotel_landing_acf_image('field_hotel_intro_image', 'Ảnh bên trái', 'hotel_intro_image'),
+        hotel_landing_acf_text('field_hotel_intro_eyebrow', 'Tiêu đề phụ', 'hotel_intro_eyebrow', hotel_landing_default('hotel_intro_eyebrow')),
         hotel_landing_acf_text('field_hotel_intro_title', 'Tiêu đề', 'hotel_intro_title', hotel_landing_default('hotel_intro_title')),
-        hotel_landing_acf_text('field_hotel_intro_description', 'Mô tả', 'hotel_intro_description', hotel_landing_default('hotel_intro_description'), 'textarea'),
+        hotel_landing_acf_text('field_hotel_intro_description', 'Mô tả', 'hotel_intro_description', hotel_landing_default('hotel_intro_description'), 'textarea'),    
+        hotel_landing_acf_link('field_hotel_intro_button', 'Nút liên kết', 'hotel_intro_button'),
         array(
             'key' => 'field_hotel_intro_items',
             'label' => 'Lợi thế nổi bật',
@@ -449,6 +452,7 @@ add_action('acf/init', function () {
     ));
 
     hotel_landing_register_group('group_hotel_landing_rooms', 'Landing - Hạng phòng', array(
+        hotel_landing_acf_text('field_hotel_rooms_eyebrow', 'Tiêu đề phụ', 'hotel_rooms_eyebrow', hotel_landing_default('hotel_rooms_eyebrow')),
         hotel_landing_acf_text('field_hotel_rooms_title', 'Tiêu đề', 'hotel_rooms_title', hotel_landing_default('hotel_rooms_title')),
         hotel_landing_acf_link('field_hotel_rooms_button', 'Nút xem tất cả', 'hotel_rooms_button'),
         array(
@@ -482,6 +486,7 @@ add_action('acf/init', function () {
     ));
 
     hotel_landing_register_group('group_hotel_landing_amenities', 'Landing - Tiện ích', array(
+        hotel_landing_acf_text('field_hotel_amenities_eyebrow', 'Tiêu đề phụ', 'hotel_amenities_eyebrow', hotel_landing_default('hotel_amenities_eyebrow')),
         hotel_landing_acf_text('field_hotel_amenities_title', 'Tiêu đề', 'hotel_amenities_title', hotel_landing_default('hotel_amenities_title')),
         array(
             'key' => 'field_hotel_amenities',
@@ -564,25 +569,19 @@ add_action('acf/init', function () {
         ),
     ));
 
+    hotel_landing_register_group('group_hotel_landing_video', 'Landing - Video', array(
+        hotel_landing_acf_image('field_hotel_video_background', 'Ảnh nền video', 'hotel_video_background'),
+        hotel_landing_acf_text('field_hotel_video_eyebrow', 'Tiêu đề phụ', 'hotel_video_eyebrow', hotel_landing_default('hotel_video_eyebrow')),
+        hotel_landing_acf_text('field_hotel_video_title', 'Tiêu đề', 'hotel_video_title', hotel_landing_default('hotel_video_title')),
+        hotel_landing_acf_link('field_hotel_video_link', 'Link video', 'hotel_video_link'),
+    ));
+
     hotel_landing_register_group('group_hotel_landing_larita_extras', 'Landing - Larita Layout Extras', array(
         hotel_landing_acf_text('field_hotel_hero_rating', 'Hero rating text', 'hotel_hero_rating', hotel_landing_default('hotel_hero_rating')),
         hotel_landing_acf_text('field_hotel_hero_since_label', 'Hero since label', 'hotel_hero_since_label', hotel_landing_default('hotel_hero_since_label')),
         hotel_landing_acf_link('field_hotel_hero_story_button', 'Hero story button', 'hotel_hero_story_button'),
         hotel_landing_acf_text('field_hotel_hero_booking_stat', 'Hero booking stat', 'hotel_hero_booking_stat', hotel_landing_default('hotel_hero_booking_stat')),
         hotel_landing_acf_text('field_hotel_hero_review_stat', 'Hero review stat', 'hotel_hero_review_stat', hotel_landing_default('hotel_hero_review_stat')),
-        hotel_landing_acf_text('field_hotel_intro_eyebrow', 'Intro eyebrow', 'hotel_intro_eyebrow', hotel_landing_default('hotel_intro_eyebrow')),
-        hotel_landing_acf_link('field_hotel_intro_button', 'Intro button', 'hotel_intro_button'),
-        array(
-            'key' => 'field_hotel_intro_images',
-            'label' => 'Intro images',
-            'name' => 'hotel_intro_images',
-            'type' => 'repeater',
-            'layout' => 'row',
-            'button_label' => 'Add image',
-            'sub_fields' => array(
-                hotel_landing_acf_image('field_hotel_intro_image_item', 'Image', 'image'),
-            ),
-        ),
         array(
             'key' => 'field_hotel_intro_reviews',
             'label' => 'Intro review summaries',
@@ -598,13 +597,7 @@ add_action('acf/init', function () {
                 hotel_landing_acf_text('field_hotel_intro_review_description', 'Description', 'description'),
             ),
         ),
-        hotel_landing_acf_text('field_hotel_rooms_eyebrow', 'Rooms eyebrow', 'hotel_rooms_eyebrow', hotel_landing_default('hotel_rooms_eyebrow')),
         hotel_landing_acf_link('field_hotel_room_booking_button', 'Room booking button', 'hotel_room_booking_button'),
-        hotel_landing_acf_text('field_hotel_amenities_eyebrow', 'Amenities eyebrow', 'hotel_amenities_eyebrow', hotel_landing_default('hotel_amenities_eyebrow')),
-        hotel_landing_acf_image('field_hotel_video_background', 'Video background', 'hotel_video_background'),
-        hotel_landing_acf_text('field_hotel_video_eyebrow', 'Video eyebrow', 'hotel_video_eyebrow', hotel_landing_default('hotel_video_eyebrow')),
-        hotel_landing_acf_text('field_hotel_video_title', 'Video title', 'hotel_video_title', hotel_landing_default('hotel_video_title')),
-        hotel_landing_acf_link('field_hotel_video_link', 'Video link', 'hotel_video_link'),
     ));
 
     hotel_landing_register_group('group_hotel_landing_footer', 'Landing - Footer', array(
