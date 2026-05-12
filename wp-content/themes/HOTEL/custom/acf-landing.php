@@ -112,6 +112,11 @@ if (!function_exists('hotel_landing_default')) {
                     array('rating' => 5, 'comment' => 'Everything was excellent from room, service to location. Will come back.', 'name' => 'John Smith', 'location' => 'Australia'),
                 ),
                 'hotel_footer_description' => 'XHOME Đà Nẵng Hotel & Suites mang đến không gian nghỉ dưỡng hiện đại, sang trọng và tiện nghi ngay giữa lòng thành phố đáng sống nhất Việt Nam.',
+                'hotel_footer_title' => 'Thông tin liên hệ',
+                'hotel_footer_map_title' => 'Bản đồ',
+                'hotel_footer_map_embed' => 'https://www.google.com/maps?q=21%20My%20Da%20Dong%204%2C%20Ngu%20Hanh%20Son%2C%20Da%20Nang&output=embed',
+                'hotel_footer_map_caption' => '',
+                'hotel_footer_map_link' => 'https://www.google.com/maps/search/?api=1&query=21%20My%20Da%20Dong%204%2C%20Ngu%20Hanh%20Son%2C%20Da%20Nang',
                 'hotel_footer_contacts' => array(
                     array('icon_class' => 'fa-solid fa-location-dot', 'text' => '21 Mỹ Đa Đông 4, Ngũ Hành Sơn, Đà Nẵng', 'url' => ''),
                     array('icon_class' => 'fa-solid fa-phone', 'text' => '0822335343', 'url' => 'tel:0822335343'),
@@ -576,6 +581,7 @@ add_action('acf/init', function () {
 
     hotel_landing_register_group('group_hotel_landing_footer', 'Landing - Footer', array(
         hotel_landing_acf_image('field_hotel_footer_logo', 'Logo footer', 'hotel_footer_logo'),
+        hotel_landing_acf_text('field_hotel_footer_title', 'Tiêu đề cột liên hệ', 'hotel_footer_title', hotel_landing_default('hotel_footer_title')),
         hotel_landing_acf_text('field_hotel_footer_description', 'Mô tả', 'hotel_footer_description', hotel_landing_default('hotel_footer_description'), 'textarea'),
         array(
             'key' => 'field_hotel_footer_contacts',
@@ -602,6 +608,11 @@ add_action('acf/init', function () {
                 hotel_landing_acf_text('field_hotel_footer_social_url', 'Link', 'url', '#'),
             ),
         ),
+        hotel_landing_acf_text('field_hotel_footer_map_title', 'Tiêu đề bản đồ', 'hotel_footer_map_title', hotel_landing_default('hotel_footer_map_title')),
+        hotel_landing_acf_text('field_hotel_footer_map_embed', 'Google Maps embed URL', 'hotel_footer_map_embed', hotel_landing_default('hotel_footer_map_embed'), 'textarea'),
+        hotel_landing_acf_image('field_hotel_footer_map_image', 'Ảnh bản đồ fallback', 'hotel_footer_map_image'),
+        hotel_landing_acf_text('field_hotel_footer_map_caption', 'Chú thích bản đồ', 'hotel_footer_map_caption', hotel_landing_default('hotel_footer_map_caption')),
+        hotel_landing_acf_text('field_hotel_footer_map_link', 'Link mở Google Maps', 'hotel_footer_map_link', hotel_landing_default('hotel_footer_map_link')),
         array(
             'key' => 'field_hotel_footer_links',
             'label' => 'Liên kết nhanh',

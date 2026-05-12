@@ -45,9 +45,22 @@ $video_style = $video_background_url
         <?php endif; ?>
 
         <?php if (!empty($video_link['url'])) : ?>
-            <a class="hotel-video__play" href="<?php echo esc_url($video_link['url']); ?>"<?php echo $video_link['target'] ? ' target="' . esc_attr($video_link['target']) . '"' : ''; ?> aria-label="<?php echo esc_attr($video_link['title']); ?>">
+            <a class="hotel-video__play js-hotel-video-play" href="<?php echo esc_url($video_link['url']); ?>" data-video-url="<?php echo esc_url($video_link['url']); ?>"<?php echo $video_link['target'] ? ' target="' . esc_attr($video_link['target']) . '"' : ''; ?> aria-label="<?php echo esc_attr($video_link['title']); ?>" aria-haspopup="dialog" aria-controls="hotel-video-modal">
                 <i class="fa-solid fa-play" aria-hidden="true"></i>
             </a>
         <?php endif; ?>
     </div>
+
+    <?php if (!empty($video_link['url'])) : ?>
+        <div class="hotel-video-modal" id="hotel-video-modal" aria-hidden="true">
+            <div class="hotel-video-modal__dialog" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr($video_link['title']); ?>">
+                <button class="hotel-video-modal__close" type="button" aria-label="Close video">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+                <div class="hotel-video-modal__player">
+                    <div class="hotel-video-modal__frame" data-video-frame></div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
 </section>

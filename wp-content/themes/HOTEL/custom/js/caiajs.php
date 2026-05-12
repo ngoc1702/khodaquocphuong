@@ -409,6 +409,112 @@ jQuery(document).ready( function($){
     'use strict';
 
     $(function () {
+        var $videoModal = $('.hotel-video-modal');
+        var $videoFrame = $videoModal.find('[data-video-frame]');
+        var lastVideoTrigger = null;
+
+        function getHotelVideoEmbed(url) {
+            if (!url || url === '#') {
+                return null;
+            }
+
+            try {
+                var parsedUrl = new URL(url, window.location.href);
+                var host = parsedUrl.hostname.replace(/^www\./, '');
+                var videoId = '';
+
+                if (host === 'youtu.be') {
+                    videoId = parsedUrl.pathname.split('/').filter(Boolean)[0];
+                    return videoId ? { type: 'iframe', url: 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0' } : null;
+                }
+
+                if (host === 'youtube.com' || host === 'm.youtube.com') {
+                    if (parsedUrl.pathname === '/watch') {
+                        videoId = parsedUrl.searchParams.get('v');
+                    } else {
+                        videoId = parsedUrl.pathname.split('/').filter(Boolean).pop();
+                    }
+
+                    return videoId ? { type: 'iframe', url: 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0' } : null;
+                }
+
+                if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+                    videoId = parsedUrl.pathname.split('/').filter(Boolean).pop();
+                    return videoId ? { type: 'iframe', url: 'https://player.vimeo.com/video/' + videoId + '?autoplay=1' } : null;
+                }
+
+                if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(parsedUrl.href)) {
+                    return { type: 'video', url: parsedUrl.href };
+                }
+            } catch (error) {
+                return null;
+            }
+
+            return null;
+        }
+
+        function closeHotelVideoModal() {
+            if (!$videoModal.length) {
+                return;
+            }
+
+            $videoModal.removeClass('is-open').attr('aria-hidden', 'true');
+            $videoFrame.empty();
+            $('body').removeClass('hotel-video-modal-open');
+
+            if (lastVideoTrigger) {
+                lastVideoTrigger.focus();
+                lastVideoTrigger = null;
+            }
+        }
+
+        $('.js-hotel-video-play').on('click', function (event) {
+            var embed = getHotelVideoEmbed($(this).data('video-url') || $(this).attr('href'));
+
+            event.preventDefault();
+
+            if (!$videoModal.length || !embed) {
+                return;
+            }
+
+            lastVideoTrigger = this;
+            $videoFrame.empty();
+
+            if (embed.type === 'video') {
+                $('<video>', {
+                    src: embed.url,
+                    controls: true,
+                    autoplay: true,
+                    playsinline: true
+                }).appendTo($videoFrame);
+            } else {
+                $('<iframe>', {
+                    src: embed.url,
+                    title: $(this).attr('aria-label') || 'Hotel video',
+                    allow: 'autoplay; fullscreen; picture-in-picture',
+                    allowfullscreen: 'allowfullscreen'
+                }).appendTo($videoFrame);
+            }
+
+            $('body').addClass('hotel-video-modal-open');
+            $videoModal.addClass('is-open').attr('aria-hidden', 'false');
+            $videoModal.find('.hotel-video-modal__close').focus();
+        });
+
+        $videoModal.on('click', function (event) {
+            if ($(event.target).is('.hotel-video-modal')) {
+                closeHotelVideoModal();
+            }
+        });
+
+        $videoModal.find('.hotel-video-modal__close').on('click', closeHotelVideoModal);
+
+        $(document).on('keydown', function (event) {
+            if (event.key === 'Escape' && $videoModal.hasClass('is-open')) {
+                closeHotelVideoModal();
+            }
+        });
+
         $('.hotel-landing a[href^="#"]').on('click', function (event) {
             var target = $(this).attr('href');
 
