@@ -176,45 +176,13 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                         <?php foreach (thanh_hung_home_items('home_banner_slides') as $item) : ?>
                             <?php
                             $image_url = !empty($item['image']) ? thanh_hung_home_image_url($item['image']) : '';
-                            $image_alt = !empty($item['image']) ? thanh_hung_home_image_alt($item['image'], !empty($item['title']) ? $item['title'] : '') : '';
-                            $has_content = !empty($item['eyebrow']) || !empty($item['title']) || !empty($item['description']) || !empty($item['primary_text']) || !empty($item['secondary_text']);
+                            if (!$image_url) {
+                                continue;
+                            }
+                            $image_alt = !empty($item['image']) ? thanh_hung_home_image_alt($item['image']) : '';
                             ?>
-                            <div class="home-banner-slide <?php echo $image_url ? 'has-image' : 'no-image'; ?>">
-                                <?php if ($image_url) : ?>
-                                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($image_alt); ?>">
-                                <?php endif; ?>
-
-                                <?php if ($has_content) : ?>
-                                    <div class="home-banner-overlay">
-                                        <div class="home-banner-content">
-                                            <?php if (!empty($item['eyebrow'])) : ?>
-                                                <p class="home-banner-eyebrow"><?php echo esc_html($item['eyebrow']); ?></p>
-                                            <?php endif; ?>
-                                            <?php if (!empty($item['title'])) : ?>
-                                                <h1><?php echo esc_html($item['title']); ?></h1>
-                                            <?php endif; ?>
-                                            <?php if (!empty($item['description'])) : ?>
-                                                <div class="home-banner-description">
-                                                    <?php echo wp_kses_post(wpautop($item['description'])); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                            <div class="home-banner-actions">
-                                                <?php if (!empty($item['primary_text'])) : ?>
-                                                    <a class="home-btn home-btn--primary" href="<?php echo esc_url(!empty($item['primary_url']) ? $item['primary_url'] : '#'); ?>">
-                                                        <i class="fa-solid fa-clipboard-list"></i>
-                                                        <span><?php echo esc_html($item['primary_text']); ?></span>
-                                                    </a>
-                                                <?php endif; ?>
-                                                <?php if (!empty($item['secondary_text'])) : ?>
-                                                    <a class="home-btn home-btn--outline home-btn--light" href="<?php echo esc_url(!empty($item['secondary_url']) ? $item['secondary_url'] : '#'); ?>">
-                                                        <i class="fa-solid fa-phone"></i>
-                                                        <span><?php echo esc_html($item['secondary_text']); ?></span>
-                                                    </a>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
+                            <div class="home-banner-slide has-image">
+                                <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($image_alt); ?>">
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -320,27 +288,6 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                                 <h2><?php echo esc_html(thanh_hung_home_field('home_services_title')); ?></h2>
                             <?php endif; ?>
                         </header>
-
-                        <div class="home-services-tabs">
-                            <?php foreach (thanh_hung_home_items('home_services_tabs') as $index => $item) : ?>
-                                <?php
-                                $label = !empty($item['label']) ? $item['label'] : '';
-                                $url = !empty($item['url']) ? $item['url'] : '#';
-                                $icon = !empty($item['icon_class']) ? $item['icon_class'] : '';
-                                $is_active = !empty($item['active']);
-
-                                if (!$label) {
-                                    continue;
-                                }
-                                ?>
-                                <a class="home-services-tab <?php echo $is_active ? 'is-active' : ''; ?>" href="<?php echo esc_url($url); ?>">
-                                    <?php if ($icon) : ?>
-                                        <i class="<?php echo esc_attr($icon); ?>"></i>
-                                    <?php endif; ?>
-                                    <span><?php echo esc_html($label); ?></span>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
 
                         <div class="home-services-grid">
                             <?php foreach (thanh_hung_home_items('home_services_items') as $item) : ?>

@@ -12,13 +12,6 @@ if (!function_exists('thanh_hung_home_defaults')) {
             'home_banner_slides' => array(
                 array(
                     'image' => '',
-                    'eyebrow' => 'Dịch vụ chuyển nhà trọn gói',
-                    'title' => 'Taxi Tải Thành Hưng',
-                    'description' => 'Chuyển nhà, chuyển văn phòng, chuyển kho xưởng nhanh chóng với đội xe tải đa dạng và đội ngũ bốc xếp chuyên nghiệp.',
-                    'primary_text' => 'Nhận báo giá miễn phí',
-                    'primary_url' => '#',
-                    'secondary_text' => 'Gọi 1800.00.08',
-                    'secondary_url' => 'tel:18000008',
                 ),
             ),
             'home_intro_enable' => 1,
@@ -62,44 +55,6 @@ if (!function_exists('thanh_hung_home_defaults')) {
             'home_services_enable' => 1,
             'home_services_subtitle' => 'Các Dịch Vụ Chính Tại',
             'home_services_title' => 'Hãng Taxi Tải Thành Hưng',
-            'home_services_tabs' => array(
-                array(
-                    'label' => 'Chuyển nhà TPHCM',
-                    'url' => '#',
-                    'icon_class' => 'fa-solid fa-house-chimney',
-                    'active' => 1,
-                ),
-                array(
-                    'label' => 'Chuyển nhà quận 1',
-                    'url' => '#',
-                    'icon_class' => '',
-                    'active' => 0,
-                ),
-                array(
-                    'label' => 'Chuyển nhà quận 7',
-                    'url' => '#',
-                    'icon_class' => '',
-                    'active' => 0,
-                ),
-                array(
-                    'label' => 'Chuyển nhà quận 12',
-                    'url' => '#',
-                    'icon_class' => '',
-                    'active' => 0,
-                ),
-                array(
-                    'label' => 'Chuyển nhà Thủ Đức',
-                    'url' => '#',
-                    'icon_class' => '',
-                    'active' => 0,
-                ),
-                array(
-                    'label' => 'Chuyển nhà Bình Tân',
-                    'url' => '#',
-                    'icon_class' => '',
-                    'active' => 0,
-                ),
-            ),
             'home_services_items' => array(
                 array('icon_class' => 'fa-solid fa-truck-fast', 'title' => 'Taxi tải', 'url' => '#'),
                 array('icon_class' => 'fa-solid fa-house-chimney', 'title' => 'Chuyển nhà trọn gói', 'url' => '#'),
@@ -529,13 +484,6 @@ add_action('acf/init', function () {
                 'home_banner_slides',
                 array(
                     thanh_hung_home_acf_image('field_th_home_banner_image', 'Ảnh banner', 'image', 'Khuyến nghị ảnh ngang 1920x650 trở lên.'),
-                    thanh_hung_home_acf_text('field_th_home_banner_eyebrow', 'Dòng nhỏ', 'eyebrow'),
-                    thanh_hung_home_acf_text('field_th_home_banner_title', 'Tiêu đề', 'title'),
-                    thanh_hung_home_acf_text('field_th_home_banner_description', 'Mô tả', 'description', '', 'textarea'),
-                    thanh_hung_home_acf_text('field_th_home_banner_primary_text', 'Text nút chính', 'primary_text'),
-                    thanh_hung_home_acf_text('field_th_home_banner_primary_url', 'Link nút chính', 'primary_url', '#'),
-                    thanh_hung_home_acf_text('field_th_home_banner_secondary_text', 'Text nút phụ', 'secondary_text'),
-                    thanh_hung_home_acf_text('field_th_home_banner_secondary_url', 'Link nút phụ', 'secondary_url', '#'),
                 ),
                 'Thêm slide'
             ),
@@ -578,25 +526,6 @@ add_action('acf/init', function () {
             thanh_hung_home_acf_true_false('field_th_home_services_enable', 'Hiển thị section', 'home_services_enable'),
             thanh_hung_home_acf_text('field_th_home_services_subtitle', 'Dòng tiêu đề nhỏ', 'home_services_subtitle', $defaults['home_services_subtitle']),
             thanh_hung_home_acf_text('field_th_home_services_title', 'Tiêu đề đỏ', 'home_services_title', $defaults['home_services_title']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_services_tabs',
-                'Danh sách nút link nhanh',
-                'home_services_tabs',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_services_tab_label', 'Nhãn', 'label'),
-                    thanh_hung_home_acf_text('field_th_home_services_tab_url', 'Link trang dịch vụ', 'url', '#'),
-                    thanh_hung_home_acf_text('field_th_home_services_tab_icon', 'FontAwesome class', 'icon_class', ''),
-                    array(
-                        'key' => 'field_th_home_services_tab_active',
-                        'label' => 'Nút nổi bật màu đỏ',
-                        'name' => 'active',
-                        'type' => 'true_false',
-                        'ui' => 1,
-                        'default_value' => 0,
-                    ),
-                ),
-                'Thêm nút link'
-            ),
             thanh_hung_home_acf_repeater(
                 'field_th_home_services_items',
                 'Danh sách dịch vụ',
