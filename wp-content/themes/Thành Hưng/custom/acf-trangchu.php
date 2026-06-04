@@ -74,35 +74,31 @@ if (!function_exists('thanh_hung_home_defaults')) {
             'home_press_title' => 'Taxi Tải Chuyển Nhà Thành Hưng',
             'home_press_description' => 'Niềm tin tưởng Quý Khách tạo động lực và sự phát triển công ty <strong>Thành Hưng</strong>. Chúng tôi cam kết phục vụ bằng sự tận tâm và chân tình.',
             'home_press_logos' => array(
-                array('name' => 'VTV Online', 'logo' => '', 'url' => '#'),
-                array('name' => 'VNExpress', 'logo' => '', 'url' => '#'),
-                array('name' => 'Thanh Niên', 'logo' => '', 'url' => '#'),
-                array('name' => 'Pháp Luật', 'logo' => '', 'url' => '#'),
-                array('name' => 'Dân Trí', 'logo' => '', 'url' => '#'),
-                array('name' => 'Công An', 'logo' => '', 'url' => '#'),
-                array('name' => 'Người Lao Động', 'logo' => '', 'url' => '#'),
-                array('name' => 'Tiền Phong', 'logo' => '', 'url' => '#'),
-                array('name' => 'VietnamBiz', 'logo' => '', 'url' => '#'),
+                array('logo' => ''),
+                array('logo' => ''),
+                array('logo' => ''),
+                array('logo' => ''),
+                array('logo' => ''),
+                array('logo' => ''),
+                array('logo' => ''),
+                array('logo' => ''),
+                array('logo' => ''),
             ),
             'home_press_articles' => array(
                 array(
                     'image' => '',
-                    'title' => 'Báo chí nói về chúng tôi',
                     'url' => '#',
                 ),
                 array(
                     'image' => '',
-                    'title' => 'Dịch vụ di dời chuyên dọn kho xưởng trọn gói',
                     'url' => '#',
                 ),
                 array(
                     'image' => '',
-                    'title' => 'Chuyển nhà Thành Hưng tại Hà Nội',
                     'url' => '#',
                 ),
                 array(
                     'image' => '',
-                    'title' => 'Chuyển nhà Thành Hưng TPHCM',
                     'url' => '#',
                 ),
             ),
@@ -118,17 +114,14 @@ if (!function_exists('thanh_hung_home_defaults')) {
             'home_video_title' => 'Những khoảnh khắc đẹp được chúng tôi ghi lại hoặc những hướng dẫn chia sẻ liên quan đến dịch vụ chuyển nhà.',
             'home_video_items' => array(
                 array(
-                    'title' => 'Review về dịch vụ Taxi Tải Thành Hưng',
                     'video_url' => '',
                     'thumbnail' => '',
                 ),
                 array(
-                    'title' => 'Khách hàng chia sẻ sau vận chuyển',
                     'video_url' => '',
                     'thumbnail' => '',
                 ),
                 array(
-                    'title' => 'Dịch vụ chuyển nhà trọn gói',
                     'video_url' => '',
                     'thumbnail' => '',
                 ),
@@ -231,7 +224,6 @@ if (!function_exists('thanh_hung_home_defaults')) {
                 ),
             ),
             'home_faq_enable' => 1,
-            'home_faq_eyebrow' => 'FAQ',
             'home_faq_subtitle' => 'Câu Hỏi Thường Gặp Về',
             'home_faq_title' => 'Dịch Vụ Chuyển Nhà Thành Hưng',
             'home_faq_items' => array(
@@ -276,6 +268,7 @@ if (!function_exists('thanh_hung_home_field')) {
     function thanh_hung_home_field($name)
     {
         $defaults = thanh_hung_home_defaults();
+        $has_default = array_key_exists($name, $defaults);
 
         if (function_exists('get_field')) {
             $value = get_field($name);
@@ -291,12 +284,20 @@ if (!function_exists('thanh_hung_home_field')) {
                 return (bool) $value;
             }
 
+            if ($has_default && is_array($defaults[$name])) {
+                $post_id = get_the_ID();
+
+                if ($post_id && metadata_exists('post', $post_id, $name) && ($value === null || $value === '' || $value === false)) {
+                    return array();
+                }
+            }
+
             if ($value !== null && $value !== '' && $value !== false) {
                 return $value;
             }
         }
 
-        return array_key_exists($name, $defaults) ? $defaults[$name] : null;
+        return $has_default ? $defaults[$name] : null;
     }
 }
 
@@ -312,6 +313,10 @@ if (!function_exists('thanh_hung_home_items')) {
 if (!function_exists('thanh_hung_home_image_url')) {
     function thanh_hung_home_image_url($image, $size = 'full')
     {
+        if (is_array($image) && !empty($image['sizes'][$size])) {
+            return $image['sizes'][$size];
+        }
+
         if (is_array($image) && !empty($image['url'])) {
             return $image['url'];
         }
@@ -341,8 +346,40 @@ if (!function_exists('thanh_hung_home_image_alt')) {
     }
 }
 
+if (!function_exists('thanh_hung_home_acf_with_wrapper')) {
+    function thanh_hung_home_acf_with_wrapper($field, $width = 0)
+    {
+        if ($width > 0) {
+            $field['wrapper'] = array(
+                'width' => $width,
+                'class' => '',
+                'id' => '',
+            );
+        }
+
+        return $field;
+    }
+}
+
+if (!function_exists('thanh_hung_home_acf_repeater_collapsed_key')) {
+    function thanh_hung_home_acf_repeater_collapsed_key($sub_fields)
+    {
+        $priority_names = array('title', 'question', 'name', 'step_label', 'label', 'value', 'url', 'video_url');
+
+        foreach ($priority_names as $name) {
+            foreach ($sub_fields as $sub_field) {
+                if (!empty($sub_field['name']) && $sub_field['name'] === $name && !empty($sub_field['key'])) {
+                    return $sub_field['key'];
+                }
+            }
+        }
+
+        return '';
+    }
+}
+
 if (!function_exists('thanh_hung_home_acf_text')) {
-    function thanh_hung_home_acf_text($key, $label, $name, $default = '', $type = 'text', $instructions = '')
+    function thanh_hung_home_acf_text($key, $label, $name, $default = '', $type = 'text', $instructions = '', $width = null)
     {
         $field = array(
             'key' => $key,
@@ -358,23 +395,23 @@ if (!function_exists('thanh_hung_home_acf_text')) {
             $field['new_lines'] = '';
         }
 
-        return $field;
+        return thanh_hung_home_acf_with_wrapper($field, $width !== null ? $width : ($type === 'textarea' ? 100 : 50));
     }
 }
 
 if (!function_exists('thanh_hung_home_acf_image')) {
-    function thanh_hung_home_acf_image($key, $label, $name, $instructions = '')
+    function thanh_hung_home_acf_image($key, $label, $name, $instructions = '', $width = 50, $preview_size = 'medium')
     {
-        return array(
+        return thanh_hung_home_acf_with_wrapper(array(
             'key' => $key,
             'label' => $label,
             'name' => $name,
             'type' => 'image',
             'return_format' => 'array',
-            'preview_size' => 'medium',
+            'preview_size' => $preview_size,
             'library' => 'all',
             'instructions' => $instructions,
-        );
+        ), $width);
     }
 }
 
@@ -395,14 +432,14 @@ if (!function_exists('thanh_hung_home_acf_number')) {
             $field['max'] = $max;
         }
 
-        return $field;
+        return thanh_hung_home_acf_with_wrapper($field, 25);
     }
 }
 
 if (!function_exists('thanh_hung_home_acf_taxonomy')) {
     function thanh_hung_home_acf_taxonomy($key, $label, $name)
     {
-        return array(
+        return thanh_hung_home_acf_with_wrapper(array(
             'key' => $key,
             'label' => $label,
             'name' => $name,
@@ -414,21 +451,21 @@ if (!function_exists('thanh_hung_home_acf_taxonomy')) {
             'save_terms' => 0,
             'load_terms' => 0,
             'return_format' => 'id',
-        );
+        ), 50);
     }
 }
 
 if (!function_exists('thanh_hung_home_acf_true_false')) {
     function thanh_hung_home_acf_true_false($key, $label, $name)
     {
-        return array(
+        return thanh_hung_home_acf_with_wrapper(array(
             'key' => $key,
             'label' => $label,
             'name' => $name,
             'type' => 'true_false',
             'ui' => 1,
             'default_value' => 1,
-        );
+        ), 25);
     }
 }
 
@@ -456,9 +493,14 @@ if (!function_exists('thanh_hung_home_acf_repeater')) {
             'button_label' => $button_label,
             'sub_fields' => $sub_fields,
         );
+        $collapsed_key = thanh_hung_home_acf_repeater_collapsed_key($sub_fields);
 
         if ($max > 0) {
             $field['max'] = $max;
+        }
+
+        if ($collapsed_key) {
+            $field['collapsed'] = $collapsed_key;
         }
 
         return $field;
@@ -531,6 +573,7 @@ add_action('acf/init', function () {
                 'Danh sách dịch vụ',
                 'home_services_items',
                 array(
+                    thanh_hung_home_acf_image('field_th_home_services_item_image', 'Ảnh/Icon tải lên', 'image', 'Nếu có ảnh, frontend sẽ ưu tiên ảnh này thay cho FontAwesome class.'),
                     thanh_hung_home_acf_text('field_th_home_services_item_icon', 'FontAwesome class', 'icon_class', 'fa-solid fa-truck-fast'),
                     thanh_hung_home_acf_text('field_th_home_services_item_title', 'Tên dịch vụ', 'title'),
                     thanh_hung_home_acf_text('field_th_home_services_item_url', 'Link trang dịch vụ', 'url', '#'),
@@ -593,7 +636,6 @@ add_action('acf/init', function () {
 
             thanh_hung_home_acf_tab('field_th_home_tab_faq', 'FAQ'),
             thanh_hung_home_acf_true_false('field_th_home_faq_enable', 'Hiển thị section', 'home_faq_enable'),
-            thanh_hung_home_acf_text('field_th_home_faq_eyebrow', 'Dòng nhỏ', 'home_faq_eyebrow', $defaults['home_faq_eyebrow']),
             thanh_hung_home_acf_text('field_th_home_faq_subtitle', 'Dòng tiêu đề nhỏ', 'home_faq_subtitle', $defaults['home_faq_subtitle']),
             thanh_hung_home_acf_text('field_th_home_faq_title', 'Tiêu đề đỏ', 'home_faq_title', $defaults['home_faq_title']),
             thanh_hung_home_acf_repeater(
@@ -617,9 +659,7 @@ add_action('acf/init', function () {
                 'Logo báo chí',
                 'home_press_logos',
                 array(
-                    thanh_hung_home_acf_text('field_th_home_press_logo_name', 'Tên báo', 'name'),
                     thanh_hung_home_acf_image('field_th_home_press_logo_image', 'Logo', 'logo'),
-                    thanh_hung_home_acf_text('field_th_home_press_logo_url', 'Link', 'url', '#'),
                 ),
                 'Thêm logo'
             ),
@@ -628,9 +668,8 @@ add_action('acf/init', function () {
                 'Bài báo nổi bật',
                 'home_press_articles',
                 array(
-                    thanh_hung_home_acf_image('field_th_home_press_article_image', 'Ảnh bài báo', 'image'),
-                    thanh_hung_home_acf_text('field_th_home_press_article_title', 'Tiêu đề', 'title'),
-                    thanh_hung_home_acf_text('field_th_home_press_article_url', 'Link', 'url', '#'),
+                    thanh_hung_home_acf_image('field_th_home_press_article_image', 'Ảnh bài báo', 'image', '', 35, 'thumbnail'),
+                    thanh_hung_home_acf_text('field_th_home_press_article_url', 'Link bài viết', 'url', '#', 'text', '', 65),
                 ),
                 'Thêm bài báo'
             ),
@@ -647,17 +686,17 @@ add_action('acf/init', function () {
             thanh_hung_home_acf_tab('field_th_home_tab_video', 'Video'),
             thanh_hung_home_acf_true_false('field_th_home_video_enable', 'Hiển thị section', 'home_video_enable'),
             thanh_hung_home_acf_text('field_th_home_video_subtitle', 'Dòng tiêu đề nhỏ', 'home_video_subtitle', $defaults['home_video_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_video_title', 'Mô tả / tiêu đề lớn', 'home_video_title', $defaults['home_video_title'], 'textarea'),
+            thanh_hung_home_acf_text('field_th_home_video_title', 'Tiêu đề đỏ', 'home_video_title', $defaults['home_video_title']),
             thanh_hung_home_acf_repeater(
                 'field_th_home_video_items',
                 'Danh sách video',
                 'home_video_items',
                 array(
-                    thanh_hung_home_acf_text('field_th_home_video_item_title', 'Tiêu đề video', 'title'),
                     thanh_hung_home_acf_text('field_th_home_video_item_url', 'Link YouTube / video', 'video_url'),
                     thanh_hung_home_acf_image('field_th_home_video_item_thumbnail', 'Ảnh thumbnail', 'thumbnail'),
                 ),
-                'Thêm video'
+                'Thêm video',
+                4
             ),
         ),
         'location' => array(
@@ -683,4 +722,62 @@ add_action('acf/init', function () {
         'instruction_placement' => 'label',
         'active' => true,
     ));
+});
+
+add_action('acf/input/admin_footer', function () {
+    ?>
+    <style>
+        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_article_image"] .image-wrap img,
+        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_logo_image"] .image-wrap img {
+            max-height: 150px;
+            width: auto;
+        }
+
+        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_article_image"] .acf-image-uploader,
+        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_logo_image"] .acf-image-uploader {
+            max-width: 260px;
+        }
+    </style>
+    <script>
+        (function ($) {
+            function thanhHungHomeIsPressTab($box) {
+                var $pressAnchor = $box.find('.acf-tab-group a[data-key="field_th_home_tab_press"]');
+                var $activeTab = $box.find('.acf-tab-group li.active a, .acf-tab-group a.active, .acf-tab-group a[aria-selected="true"]').first();
+
+                if ($pressAnchor.parent().hasClass('active') || $pressAnchor.hasClass('active') || $pressAnchor.attr('aria-selected') === 'true') {
+                    return true;
+                }
+
+                if ($activeTab.length) {
+                    return $activeTab.data('key') === 'field_th_home_tab_press' || $.trim($activeTab.text()) === 'Báo chí';
+                }
+
+                return $box.find('.acf-field[data-key="field_th_home_press_enable"], .acf-field[data-key="field_th_home_press_subtitle"], .acf-field[data-key="field_th_home_press_title"]').filter(function () {
+                    return $(this).is(':visible');
+                }).length > 0;
+            }
+
+            function thanhHungHomeSyncPressFields() {
+                var $box = $('#acf-group_thanh_hung_home_sections');
+
+                if (!$box.length) {
+                    return;
+                }
+
+                $box.find('.acf-field[data-key="field_th_home_press_logos"], .acf-field[data-key="field_th_home_press_articles"]').toggle(thanhHungHomeIsPressTab($box));
+            }
+
+            if (window.acf) {
+                acf.addAction('ready append show_field', thanhHungHomeSyncPressFields);
+            }
+
+            $(document).on('click', '#acf-group_thanh_hung_home_sections .acf-tab-group li a', function () {
+                setTimeout(thanhHungHomeSyncPressFields, 0);
+                setTimeout(thanhHungHomeSyncPressFields, 50);
+            });
+
+            $(thanhHungHomeSyncPressFields);
+        })(jQuery);
+    </script>
+    <?php
 });

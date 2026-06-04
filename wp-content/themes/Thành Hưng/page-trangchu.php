@@ -295,13 +295,21 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                                 $title = !empty($item['title']) ? $item['title'] : '';
                                 $url = !empty($item['url']) ? $item['url'] : '#';
                                 $icon = !empty($item['icon_class']) ? $item['icon_class'] : 'fa-solid fa-truck-fast';
+                                $service_image_url = !empty($item['image']) ? thanh_hung_home_image_url($item['image'], 'medium') : '';
+                                $service_image_alt = $service_image_url ? thanh_hung_home_image_alt($item['image'], $title) : '';
 
                                 if (!$title) {
                                     continue;
                                 }
                                 ?>
                                 <a class="home-service-card" href="<?php echo esc_url($url); ?>">
-                                    <span class="home-service-icon"><i class="<?php echo esc_attr($icon); ?>"></i></span>
+                                    <?php if ($service_image_url) : ?>
+                                        <span class="home-service-icon home-service-icon--image">
+                                            <img src="<?php echo esc_url($service_image_url); ?>" alt="<?php echo esc_attr($service_image_alt); ?>" loading="lazy">
+                                        </span>
+                                    <?php else : ?>
+                                        <span class="home-service-icon"><i class="<?php echo esc_attr($icon); ?>"></i></span>
+                                    <?php endif; ?>
                                     <strong><?php echo esc_html($title); ?></strong>
                                 </a>
                             <?php endforeach; ?>
@@ -388,9 +396,6 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                 <section class="home-acf-section home-acf-faq">
                     <div class="home-acf-wrap">
                         <header class="home-acf-title-block home-acf-title-block--faq">
-                            <?php if (thanh_hung_home_field('home_faq_eyebrow')) : ?>
-                                <p class="home-acf-eyebrow"><?php echo esc_html(thanh_hung_home_field('home_faq_eyebrow')); ?></p>
-                            <?php endif; ?>
                             <?php if (thanh_hung_home_field('home_faq_subtitle')) : ?>
                                 <p><?php echo esc_html(thanh_hung_home_field('home_faq_subtitle')); ?></p>
                             <?php endif; ?>
@@ -429,6 +434,14 @@ if (!function_exists('thanh_hung_render_home_acf')) {
             <?php if (thanh_hung_home_field('home_press_enable')) : ?>
                 <section class="home-press-section">
                     <div class="home-wide-wrap">
+                        <?php
+                        $press_logos = array_values(array_filter(thanh_hung_home_items('home_press_logos'), function ($item) {
+                            return !empty($item['logo']);
+                        }));
+                        $press_articles = array_values(array_filter(thanh_hung_home_items('home_press_articles'), function ($item) {
+                            return !empty($item['image']);
+                        }));
+                        ?>
                         <header class="home-section-heading">
                             <?php if (thanh_hung_home_field('home_press_subtitle')) : ?>
                                 <p><?php echo esc_html(thanh_hung_home_field('home_press_subtitle')); ?></p>
@@ -443,39 +456,42 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                             <?php endif; ?>
                         </header>
 
-                        <div class="home-press-logo-grid">
-                            <?php foreach (thanh_hung_home_items('home_press_logos') as $item) : ?>
-                                <?php
-                                $logo_url = !empty($item['logo']) ? thanh_hung_home_image_url($item['logo']) : '';
-                                $logo_alt = !empty($item['logo']) ? thanh_hung_home_image_alt($item['logo'], !empty($item['name']) ? $item['name'] : '') : '';
-                                $logo_link = !empty($item['url']) ? $item['url'] : '#';
-                                ?>
-                                <a class="home-press-logo" href="<?php echo esc_url($logo_link); ?>">
-                                    <?php if ($logo_url) : ?>
-                                        <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($logo_alt); ?>">
-                                    <?php elseif (!empty($item['name'])) : ?>
-                                        <span><?php echo esc_html($item['name']); ?></span>
-                                    <?php endif; ?>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
+                        <?php if ($press_logos) : ?>
+                            <div class="home-press-logo-grid">
+                                <?php foreach ($press_logos as $item) : ?>
+                                    <?php
+                                    $logo_url = thanh_hung_home_image_url($item['logo']);
+                                    $logo_alt = thanh_hung_home_image_alt($item['logo'], 'Logo báo chí');
 
-                        <div class="home-press-articles-slider">
-                            <?php foreach (thanh_hung_home_items('home_press_articles') as $item) : ?>
-                                <?php
-                                $article_url = !empty($item['url']) ? $item['url'] : '#';
-                                $article_image_url = !empty($item['image']) ? thanh_hung_home_image_url($item['image']) : '';
-                                $article_title = !empty($item['title']) ? $item['title'] : thanh_hung_home_field('home_press_title');
-                                ?>
-                                <a class="home-press-article" href="<?php echo esc_url($article_url); ?>">
-                                    <?php if ($article_image_url) : ?>
-                                        <img src="<?php echo esc_url($article_image_url); ?>" alt="<?php echo esc_attr(thanh_hung_home_image_alt($item['image'], $article_title)); ?>">
-                                    <?php else : ?>
-                                        <span><?php echo esc_html($article_title); ?></span>
-                                    <?php endif; ?>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
+                                    if (!$logo_url) {
+                                        continue;
+                                    }
+                                    ?>
+                                    <span class="home-press-logo">
+                                        <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($logo_alt); ?>">
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($press_articles) : ?>
+                            <div class="home-press-articles-slider">
+                                <?php foreach ($press_articles as $item) : ?>
+                                    <?php
+                                    $article_url = !empty($item['url']) ? $item['url'] : '#';
+                                    $article_image_url = thanh_hung_home_image_url($item['image']);
+                                    $article_alt = thanh_hung_home_image_alt($item['image'], thanh_hung_home_field('home_press_title'));
+
+                                    if (!$article_image_url) {
+                                        continue;
+                                    }
+                                    ?>
+                                    <a class="home-press-article" href="<?php echo esc_url($article_url); ?>">
+                                        <img src="<?php echo esc_url($article_image_url); ?>" alt="<?php echo esc_attr($article_alt); ?>">
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </section>
             <?php endif; ?>
@@ -524,10 +540,6 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                                             <?php else : ?>
                                                 <span><?php echo esc_html(get_the_title()); ?></span>
                                             <?php endif; ?>
-                                            <time datetime="<?php echo esc_attr(get_the_date('c')); ?>">
-                                                <strong><?php echo esc_html(get_the_date('d')); ?></strong>
-                                                <span><?php echo esc_html(get_the_date('m/Y')); ?></span>
-                                            </time>
                                         </a>
                                         <div class="home-news-body">
                                             <span class="home-news-category"><?php echo esc_html($category_name); ?></span>
@@ -552,7 +564,7 @@ if (!function_exists('thanh_hung_render_home_acf')) {
             <?php endif; ?>
 
             <?php if (thanh_hung_home_field('home_video_enable')) : ?>
-                <?php $videos = thanh_hung_home_items('home_video_items'); ?>
+                <?php $videos = array_slice(thanh_hung_home_items('home_video_items'), 0, 4); ?>
                 <section class="home-video-section">
                     <div class="home-wide-wrap">
                         <header class="home-section-heading home-section-heading--video">
@@ -560,9 +572,7 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                                 <p><?php echo esc_html(thanh_hung_home_field('home_video_subtitle')); ?></p>
                             <?php endif; ?>
                             <?php if (thanh_hung_home_field('home_video_title')) : ?>
-                                <div class="home-section-desc">
-                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_video_title'))); ?>
-                                </div>
+                                <h2><?php echo esc_html(thanh_hung_home_field('home_video_title')); ?></h2>
                             <?php endif; ?>
                         </header>
 
@@ -570,15 +580,16 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                             <?php
                             $main_video = $videos[0];
                             $main_embed = !empty($main_video['video_url']) ? thanh_hung_home_video_embed_url($main_video['video_url']) : '';
+                            $video_label = thanh_hung_home_field('home_video_subtitle') ? thanh_hung_home_field('home_video_subtitle') : 'Video';
                             ?>
                             <div class="home-video-layout">
                                 <div class="home-video-frame">
                                     <?php if ($main_embed) : ?>
-                                        <iframe src="<?php echo esc_url($main_embed); ?>" title="<?php echo esc_attr(!empty($main_video['title']) ? $main_video['title'] : thanh_hung_home_field('home_video_subtitle')); ?>" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                                        <iframe src="<?php echo esc_url($main_embed); ?>" title="<?php echo esc_attr($video_label); ?>" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                                     <?php else : ?>
                                         <div class="home-video-placeholder">
                                             <i class="fa-solid fa-play"></i>
-                                            <span><?php echo esc_html(!empty($main_video['title']) ? $main_video['title'] : thanh_hung_home_field('home_video_subtitle')); ?></span>
+                                            <span><?php echo esc_html($video_label); ?></span>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -586,15 +597,14 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                                 <div class="home-video-thumbs">
                                     <?php foreach ($videos as $index => $item) : ?>
                                         <?php
-                                        $video_title = !empty($item['title']) ? $item['title'] : thanh_hung_home_field('home_video_subtitle');
                                         $video_embed = !empty($item['video_url']) ? thanh_hung_home_video_embed_url($item['video_url']) : '';
                                         $video_thumb = !empty($item['thumbnail']) ? thanh_hung_home_image_url($item['thumbnail']) : thanh_hung_home_video_thumb_url(!empty($item['video_url']) ? $item['video_url'] : '');
                                         ?>
-                                        <a class="home-video-thumb <?php echo $index === 0 ? 'is-active' : ''; ?>" href="<?php echo esc_url(!empty($item['video_url']) ? $item['video_url'] : '#'); ?>" data-embed="<?php echo esc_url($video_embed); ?>" data-title="<?php echo esc_attr($video_title); ?>">
+                                        <a class="home-video-thumb <?php echo $index === 0 ? 'is-active' : ''; ?>" href="<?php echo esc_url(!empty($item['video_url']) ? $item['video_url'] : '#'); ?>" data-embed="<?php echo esc_url($video_embed); ?>" data-title="<?php echo esc_attr($video_label); ?>">
                                             <?php if ($video_thumb) : ?>
-                                                <img src="<?php echo esc_url($video_thumb); ?>" alt="<?php echo esc_attr($video_title); ?>">
+                                                <img src="<?php echo esc_url($video_thumb); ?>" alt="<?php echo esc_attr($video_label); ?>">
                                             <?php else : ?>
-                                                <span><?php echo esc_html($video_title); ?></span>
+                                                <span><?php echo esc_html($video_label); ?></span>
                                             <?php endif; ?>
                                             <i class="fa-solid fa-play"></i>
                                         </a>
