@@ -113,7 +113,7 @@ if (!function_exists('thanh_hung_home_acf_slider_script')) {
                 $('.home-press-articles-slider').each(function () {
                     var $slider = $(this);
 
-                    if ($slider.children().length > 4 && $.fn.slick) {
+                    if ($slider.children().length > 3 && $.fn.slick) {
                         $slider.slick({
                             autoplay: true,
                             autoplaySpeed: 3500,
@@ -121,7 +121,7 @@ if (!function_exists('thanh_hung_home_acf_slider_script')) {
                             dots: true,
                             infinite: true,
                             speed: 500,
-                            slidesToShow: 4,
+                            slidesToShow: 3,
                             slidesToScroll: 1,
                             responsive: [
                                 { breakpoint: 1180, settings: { slidesToShow: 3 } },
@@ -510,7 +510,7 @@ if (!function_exists('thanh_hung_render_home_acf')) {
 
                         <?php
                         $news_count = absint(thanh_hung_home_field('home_news_count'));
-                        $news_count = $news_count ? $news_count : 4;
+                        $news_count = $news_count ? min($news_count, 3) : 3;
                         $news_args = array(
                             'post_type' => 'post',
                             'posts_per_page' => $news_count,

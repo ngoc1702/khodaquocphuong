@@ -106,7 +106,7 @@ if (!function_exists('thanh_hung_home_defaults')) {
             'home_news_subtitle' => 'Tin Chia Sẻ Mới Nhất Về',
             'home_news_title' => 'Taxi Tải Thành Hưng',
             'home_news_category' => '',
-            'home_news_count' => 4,
+            'home_news_count' => 3,
             'home_news_button_text' => 'Xem tất cả tin tức →',
             'home_news_button_url' => '#',
             'home_video_enable' => 1,
@@ -679,7 +679,7 @@ add_action('acf/init', function () {
             thanh_hung_home_acf_text('field_th_home_news_subtitle', 'Dòng tiêu đề nhỏ', 'home_news_subtitle', $defaults['home_news_subtitle']),
             thanh_hung_home_acf_text('field_th_home_news_title', 'Tiêu đề chính', 'home_news_title', $defaults['home_news_title']),
             thanh_hung_home_acf_taxonomy('field_th_home_news_category', 'Danh mục bài viết', 'home_news_category'),
-            thanh_hung_home_acf_number('field_th_home_news_count', 'Số bài hiển thị', 'home_news_count', $defaults['home_news_count'], 1, 12),
+            thanh_hung_home_acf_number('field_th_home_news_count', 'Số bài hiển thị', 'home_news_count', $defaults['home_news_count'], 1, 3),
             thanh_hung_home_acf_text('field_th_home_news_button_text', 'Text nút xem tất cả', 'home_news_button_text', $defaults['home_news_button_text']),
             thanh_hung_home_acf_text('field_th_home_news_button_url', 'Link nút xem tất cả', 'home_news_button_url', $defaults['home_news_button_url']),
 

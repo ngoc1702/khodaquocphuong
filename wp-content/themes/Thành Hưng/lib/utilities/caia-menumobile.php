@@ -209,11 +209,17 @@ if (! class_exists('ResponsiveMenu')) {
 					color: <?php echo $color_menu; ?>;
 					position: absolute;
 					right: 10px;
-					top: 50%;
-					transform: translateY(-50%);
+					top: 0;
+					width: 44px;
+					height: 44px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
 					z-index: 10;
 					cursor: pointer;
-					font-size: 14px;
+					font-size: 13px;
+					line-height: 1;
+					user-select: none;
 				}
 
 				.active-menu.close {
@@ -248,11 +254,6 @@ if (! class_exists('ResponsiveMenu')) {
   background: none;
 }
 
-/* Khi mở class "open" thì hiển thị submenu */
-.mobile-menu li.open > ul.sub-menu {
-  display: block;
-}
-
 /* Thụt lề submenu theo cấp */
 .mobile-menu ul.sub-menu > li            { padding-left: 20px; }
 .mobile-menu ul.sub-menu .sub-menu > li  { padding-left: 35px; }
@@ -262,13 +263,21 @@ if (! class_exists('ResponsiveMenu')) {
 .mobile-menu li {
   position: relative;
 }
+.mobile-menu li.menu-item-has-children > a {
+  padding-right: 56px !important;
+}
 .mobile-menu .active-menu {
   position: absolute;
   right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1;
   user-select: none;
 }
 
@@ -281,76 +290,51 @@ if (! class_exists('ResponsiveMenu')) {
 		?>
 			<script>
 				jQuery(document).ready(function($) {
-
 					$("#click-menu").click(function() {
 						$(this).toggleClass("change");
 						$("#responsive-menu").toggle();
 					});
 
+					$(".mobile-menu li.menu-item-has-children").each(function() {
+						var $item = $(this);
 
-					$("#responsive-menu li.menu-item-has-children").each(function() {
-						if (!$(this).find("> .active-menu").length) {
-							$(this).prepend(
-								'<span class="active-menu open">▼</span><span class="active-menu close">▲</span>'
-							);
+						$item.removeClass("open");
+						$item.children("ul.sub-menu").hide();
+
+						var $toggles = $item.children(".active-menu.toggle");
+						if (!$toggles.length) {
+							$item.prepend('<span class="active-menu toggle" role="button" aria-expanded="false">▼</span>');
+						} else {
+							$toggles.not(":first").remove();
+							$toggles.first().text("▼").attr("aria-expanded", "false");
 						}
 					});
 
-
-					$(document).on("click", ".active-menu.open", function(e) {
+					$(document).on("click", ".mobile-menu .active-menu.toggle", function(e) {
+						e.preventDefault();
 						e.stopPropagation();
-						var parentLi = $(this).closest("li");
-						$(this).hide();
-						parentLi.children(".active-menu.close").show();
-						parentLi.addClass("open");
-						parentLi.children("ul.sub-menu").stop(true, true).slideDown();
+
+						var $toggle = $(this);
+						var $item = $toggle.closest("li");
+						var $submenu = $item.children("ul.sub-menu");
+						var isOpen = $item.hasClass("open");
+
+						$item.toggleClass("open", !isOpen);
+						$toggle.text(isOpen ? "▼" : "▲").attr("aria-expanded", isOpen ? "false" : "true");
+
+						if (isOpen) {
+							$submenu.stop(true, true).slideUp(220);
+						} else {
+							$submenu.stop(true, true).slideDown(220);
+						}
 					});
 
-
-					$(document).on("click", ".active-menu.close", function(e) {
-						e.stopPropagation();
-						var parentLi = $(this).closest("li");
-						$(this).hide();
-						parentLi.children(".active-menu.open").show();
-						parentLi.removeClass("open");
-						parentLi.children("ul.sub-menu").stop(true, true).slideUp();
+					$(document).on("click", ".mobile-menu li.menu-item-has-children > a", function(e) {
+						e.preventDefault();
+						$(this).closest("li").children(".active-menu.toggle").trigger("click");
 					});
 				});
 			</script>
-
-<script>
-jQuery(document).ready(function($) {
-  var $menuRoot = $(".mobile-menu");
-
-  // Thêm nút toggle cho tất cả li có submenu
-  $menuRoot.find("li.menu-item-has-children").each(function() {
-    if (!$(this).find("> .active-menu").length) {
-      $(this).prepend(
-        '<span class="active-menu toggle">▼</span>'
-      );
-    }
-  });
-
-  // Toggle mở/đóng submenu
-  $(document).on("click", ".mobile-menu .active-menu.toggle", function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var $li = $(this).closest("li");
-
-    if ($li.hasClass("open")) {
-      // Đóng
-      $li.removeClass("open");
-      $li.children("ul.sub-menu").stop(true, true).slideUp();
-      $(this).text("▼"); // icon đóng
-    } else {
-      // Mở
-      $li.addClass("open");
-      $li.children("ul.sub-menu").stop(true, true).slideDown();
-      $(this).text("▲"); // icon mở
-    }
-  });
-});
-</script>
 
 <?php
 		}

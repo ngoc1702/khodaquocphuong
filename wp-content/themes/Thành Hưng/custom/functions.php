@@ -156,18 +156,44 @@ function caia_add_font_website(){
 	<?php
 }
 
-// add_action( 'genesis_header', function() {
-//     if ( is_active_sidebar( 'header-menusub' ) ) {
-//         echo '<div class="header-menusub-widget-area"><div class="wrap">';
-//         dynamic_sidebar( 'header-menusub' );
-//         echo '</div></div>';
-//     }
-// }, 1 ); 
+genesis_register_sidebar( 
+	array(
+		'id'			=> 'header-menusub',
+		'name'			=> 'Toàn bộ - Thanh trên header',
+	)
+);
+
+function caia_has_header_menusub() {
+	return is_active_sidebar( 'header-menusub' );
+}
+
+add_filter( 'body_class', function( $classes ) {
+	if ( caia_has_header_menusub() ) {
+		$classes[] = 'has-header-menusub';
+	}
+
+	return $classes;
+});
+
+add_action( 'genesis_before_header', function() {
+    if ( is_active_sidebar( 'header-menusub' ) ) {
+        echo '<div class="header-menusub-widget-area"><div class="wrap">';
+        dynamic_sidebar( 'header-menusub' );
+        echo '</div></div>';
+    }
+}, 1 ); 
 
 genesis_register_sidebar( 
 	array(
 		'id'			=> 'nhantuvan',
 		'name'			=> 'Toàn bộ - Nhận tư vấn',
+	)
+);
+
+genesis_register_sidebar( 
+	array(
+		'id'			=> 'content-cta',
+		'name'			=> 'Form - CTA',
 	)
 );
 
@@ -217,12 +243,22 @@ function caia_add_content_after_footer(){
 	echo '</div></div>';
 }
 
+add_action('genesis_before_footer','caia_add_content_cta',9);
+function caia_add_content_cta(){
+	if( is_active_sidebar( 'content-cta' ) ){
+		echo '<div class="content-cta section"><div class="wrap">';
+			dynamic_sidebar( 'content-cta' );
+		echo '</div></div>';
+	}
+}
+
 add_action('genesis_before_footer','caia_add_content_after_footer2');
 function caia_add_content_after_footer2(){
-	echo '<div class="before_footer section"><div class="wrap"><div class="wrap-section">';
-
-		dynamic_sidebar( 'Toàn bộ - Nội dung trước chân trang' );
-	echo '</div></div></div>';
+	if( is_active_sidebar( 'content-bfooter' ) ){
+		echo '<div class="before_footer section"><div class="wrap"><div class="wrap-section">';
+			dynamic_sidebar( 'content-bfooter' );
+		echo '</div></div></div>';
+	}
 }
 
 add_action('genesis_after_footer','caia_add_content_fix');

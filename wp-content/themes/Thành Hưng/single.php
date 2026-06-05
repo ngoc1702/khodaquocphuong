@@ -136,6 +136,20 @@ if (!function_exists('thanh_hung_render_single_blog_post')) {
                             <div class="single-blog-content" itemprop="articleBody">
                                 <?php the_content(); ?>
                             </div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    document.querySelectorAll('.single-blog-content table').forEach(function(table) {
+                                        if (table.closest('.wp-block-table, .single-table-scroll')) {
+                                            return;
+                                        }
+
+                                        var wrapper = document.createElement('div');
+                                        wrapper.className = 'single-table-scroll';
+                                        table.parentNode.insertBefore(wrapper, table);
+                                        wrapper.appendChild(table);
+                                    });
+                                });
+                            </script>
                         </article>
 
                         <aside class="single-blog-sidebar" aria-label="Bai viet lien quan">
