@@ -50,6 +50,69 @@ if (!function_exists('thanh_hung_home_render_card')) {
     }
 }
 
+if (!function_exists('thanh_hung_home_render_pricing_table')) {
+    function thanh_hung_home_render_pricing_table($title, $columns, $rows)
+    {
+        if (!empty($columns['vehicle']) && empty($columns['title'])) {
+            $columns['title'] = $columns['vehicle'];
+        }
+        unset($columns['vehicle']);
+
+        $columns = wp_parse_args($columns, array(
+            'title' => 'Loại xe',
+            'dimensions' => '',
+            'primary_price' => '',
+            'secondary_price' => '',
+        ));
+        $columns = array_filter($columns, function ($label) {
+            return $label !== null && $label !== '';
+        });
+        $rows = array_values(array_filter($rows, function ($row) use ($columns) {
+            foreach (array_keys($columns) as $field) {
+                if (!empty($row[$field])) {
+                    return true;
+                }
+            }
+
+            return false;
+        }));
+
+        if (!$title && !$rows) {
+            return;
+        }
+        ?>
+        <article class="home-pricing-card">
+            <?php if ($title) : ?>
+                <h3><?php echo esc_html($title); ?></h3>
+            <?php endif; ?>
+
+            <?php if ($rows) : ?>
+                <div class="home-pricing-table-scroll">
+                    <table class="home-pricing-table">
+                        <thead>
+                            <tr>
+                                <?php foreach ($columns as $label) : ?>
+                                    <th><?php echo esc_html($label); ?></th>
+                                <?php endforeach; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($rows as $row) : ?>
+                                <tr>
+                                    <?php foreach (array_keys($columns) as $field) : ?>
+                                        <td><?php echo esc_html(!empty($row[$field]) ? $row[$field] : ''); ?></td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </article>
+        <?php
+    }
+}
+
 if (!function_exists('thanh_hung_home_video_embed_url')) {
     function thanh_hung_home_video_embed_url($url)
     {
@@ -314,6 +377,170 @@ if (!function_exists('thanh_hung_render_home_acf')) {
                                 </a>
                             <?php endforeach; ?>
                         </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if (thanh_hung_home_field('home_pricing_enable')) : ?>
+                <section class="home-pricing-section">
+                    <div class="home-wide-wrap">
+                        <header class="home-pricing-heading">
+                            <?php if (thanh_hung_home_field('home_pricing_title')) : ?>
+                                <h2><?php echo esc_html(thanh_hung_home_field('home_pricing_title')); ?></h2>
+                            <?php endif; ?>
+                            <?php if (thanh_hung_home_field('home_pricing_subtitle')) : ?>
+                                <p><?php echo esc_html(thanh_hung_home_field('home_pricing_subtitle')); ?></p>
+                            <?php endif; ?>
+                        </header>
+
+                        <?php
+                        $pricing_notes = thanh_hung_home_items('home_pricing_formula_notes');
+                        $has_pricing_formula = thanh_hung_home_field('home_pricing_formula_heading') || thanh_hung_home_field('home_pricing_formula_equation') || $pricing_notes || thanh_hung_home_field('home_pricing_hotline');
+                        ?>
+                        <?php if ($has_pricing_formula) : ?>
+                            <div class="home-pricing-formula">
+                                <?php if (thanh_hung_home_field('home_pricing_formula_heading')) : ?>
+                                    <p class="home-pricing-formula-heading"><?php echo wp_kses_post(thanh_hung_home_field('home_pricing_formula_heading')); ?></p>
+                                <?php endif; ?>
+
+                                <?php if (thanh_hung_home_field('home_pricing_formula_equation')) : ?>
+                                    <div class="home-pricing-equation"><?php echo wp_kses_post(thanh_hung_home_field('home_pricing_formula_equation')); ?></div>
+                                <?php endif; ?>
+
+                                <?php if ($pricing_notes) : ?>
+                                    <ul class="home-pricing-notes">
+                                        <?php foreach ($pricing_notes as $note) : ?>
+                                            <?php
+                                            $note_title = !empty($note['title']) ? $note['title'] : '';
+                                            $note_description = !empty($note['description']) ? $note['description'] : '';
+
+                                            if (!$note_title && !$note_description) {
+                                                continue;
+                                            }
+                                            ?>
+                                            <li>
+                                                <?php if ($note_title) : ?>
+                                                    <strong><?php echo esc_html($note_title); ?>:</strong>
+                                                <?php endif; ?>
+                                                <?php echo wp_kses_post($note_description); ?>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php endif; ?>
+
+                                <?php if (thanh_hung_home_field('home_pricing_hotline')) : ?>
+                                    <p class="home-pricing-hotline"><?php echo wp_kses_post(thanh_hung_home_field('home_pricing_hotline')); ?></p>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <header class="home-pricing-table-heading">
+                            <?php if (thanh_hung_home_field('home_pricing_table_title')) : ?>
+                                <h3><?php echo esc_html(thanh_hung_home_field('home_pricing_table_title')); ?></h3>
+                            <?php endif; ?>
+                            <?php if (thanh_hung_home_field('home_pricing_table_description')) : ?>
+                                <div class="home-pricing-table-desc">
+                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_pricing_table_description'))); ?>
+                                </div>
+                            <?php endif; ?>
+                        </header>
+
+                        <div class="home-pricing-tables">
+                            <?php
+                            thanh_hung_home_render_pricing_table(
+                                thanh_hung_home_field('home_pricing_local_title'),
+                                array(
+                                    'vehicle' => 'Loại xe',
+                                    'dimensions' => 'Kích thước thùng',
+                                    'primary_price' => thanh_hung_home_field('home_pricing_local_primary_label'),
+                                    'secondary_price' => thanh_hung_home_field('home_pricing_local_secondary_label'),
+                                ),
+                                thanh_hung_home_items('home_pricing_local_rows')
+                            );
+
+                            thanh_hung_home_render_pricing_table(
+                                thanh_hung_home_field('home_pricing_long_title'),
+                                array(
+                                    'vehicle' => 'Loại xe',
+                                    'dimensions' => 'Kích thước thùng',
+                                    'primary_price' => thanh_hung_home_field('home_pricing_long_primary_label'),
+                                    'secondary_price' => thanh_hung_home_field('home_pricing_long_secondary_label'),
+                                ),
+                                thanh_hung_home_items('home_pricing_long_rows')
+                            );
+                            ?>
+                        </div>
+
+                        <?php
+                        $pricing_labor_rows = thanh_hung_home_items('home_pricing_labor_rows');
+                        $pricing_extra_rows = thanh_hung_home_items('home_pricing_extra_rows');
+                        $has_pricing_labor = thanh_hung_home_field('home_pricing_labor_title') || thanh_hung_home_field('home_pricing_labor_description') || $pricing_labor_rows;
+                        $has_pricing_extra = thanh_hung_home_field('home_pricing_extra_title') || thanh_hung_home_field('home_pricing_extra_description') || $pricing_extra_rows;
+                        $pricing_notice = thanh_hung_home_field('home_pricing_notice');
+                        ?>
+                        <?php if ($has_pricing_labor || $has_pricing_extra || $pricing_notice) : ?>
+                            <div class="home-pricing-extra-tables">
+                                <?php if ($has_pricing_labor) : ?>
+                                    <div class="home-pricing-table-block">
+                                        <header class="home-pricing-subtable-heading">
+                                            <?php if (thanh_hung_home_field('home_pricing_labor_title')) : ?>
+                                                <h3><?php echo esc_html(thanh_hung_home_field('home_pricing_labor_title')); ?></h3>
+                                            <?php endif; ?>
+                                            <?php if (thanh_hung_home_field('home_pricing_labor_description')) : ?>
+                                                <div class="home-pricing-table-desc">
+                                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_pricing_labor_description'))); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </header>
+
+                                        <?php
+                                        thanh_hung_home_render_pricing_table(
+                                            '',
+                                            array(
+                                                'title' => 'Loại xe',
+                                                'dimensions' => 'Kích thước',
+                                                'primary_price' => thanh_hung_home_field('home_pricing_labor_price_label'),
+                                            ),
+                                            $pricing_labor_rows
+                                        );
+                                        ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($has_pricing_extra) : ?>
+                                    <div class="home-pricing-table-block">
+                                        <header class="home-pricing-subtable-heading">
+                                            <?php if (thanh_hung_home_field('home_pricing_extra_title')) : ?>
+                                                <h3><?php echo esc_html(thanh_hung_home_field('home_pricing_extra_title')); ?></h3>
+                                            <?php endif; ?>
+                                            <?php if (thanh_hung_home_field('home_pricing_extra_description')) : ?>
+                                                <div class="home-pricing-table-desc">
+                                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_pricing_extra_description'))); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </header>
+
+                                        <?php
+                                        thanh_hung_home_render_pricing_table(
+                                            '',
+                                            array(
+                                                'title' => 'Hạng mục',
+                                                'primary_price' => thanh_hung_home_field('home_pricing_extra_fee_label'),
+                                                'secondary_price' => thanh_hung_home_field('home_pricing_extra_note_label'),
+                                            ),
+                                            $pricing_extra_rows
+                                        );
+                                        ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($pricing_notice) : ?>
+                                    <div class="home-pricing-notice">
+                                        <?php echo wp_kses_post(wpautop($pricing_notice)); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </section>
             <?php endif; ?>
