@@ -128,19 +128,6 @@ function _genesis_register_default_widget_areas_cb() {
 
 	global $wp_registered_sidebars;
 
-		add_action('widgets_init', function () {
-		genesis_register_widget_area(
-			[
-				'id'               => 'header-menusub',
-				'name'             => __('Header Menu Sub', 'genesis'),
-				'description'      => __('This is the header widget area. It typically appears next to the site cart and login.', 'genesis'),
-				'_genesis_builtin' => true,
-			]
-		);
-	});   
-
-
-
 	if ( isset( $wp_registered_sidebars['header-right'] ) ) {
 		genesis_register_widget_area(
 			[
@@ -152,22 +139,16 @@ function _genesis_register_default_widget_areas_cb() {
 		);
 	}
 
-	
-// Đăng ký các khu vực widget
-add_action( 'widgets_init', function() {
-
-	
-
-	genesis_register_widget_area([
-		'id'               => 'sidebar',
-		'name'             => __( 'Primary Sidebar', 'genesis' ),
-		'description'      => __( 'Sidebar mặc định nếu không có sidebar riêng.', 'genesis' ),
-		'_genesis_builtin' => true,
-	]);
-});
-
-
-
+	if ( isset( $wp_registered_sidebars['sidebar'] ) ) {
+		genesis_register_widget_area(
+			[
+				'id'               => 'sidebar',
+				'name'             => __( 'Primary Sidebar', 'genesis' ),
+				'description'      => __( 'This is the primary sidebar if you are using a two or three column site layout option.', 'genesis' ),
+				'_genesis_builtin' => true,
+			]
+		);
+	}
 
 	if ( isset( $wp_registered_sidebars['sidebar-alt'] ) ) {
 		genesis_register_widget_area(
