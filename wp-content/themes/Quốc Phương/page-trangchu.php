@@ -3,844 +3,271 @@
  * Template Name: Trang chủ ACF
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 add_filter('genesis_site_layout', function () {
     return 'full-width-content';
 });
 
 remove_action('genesis_loop', 'genesis_do_loop');
-add_action('genesis_after_header', 'thanh_hung_render_home_acf');
-add_action('wp_footer', 'thanh_hung_home_acf_slider_script', 20);
+add_action('genesis_after_header', 'quoc_phuong_render_home_acf');
 
-if (!function_exists('thanh_hung_home_render_label')) {
-    function thanh_hung_home_render_label($text, $icon_class)
-    {
-        if (!$text) {
-            return;
-        }
-        ?>
-        <div class="home-acf-label">
-            <i class="<?php echo esc_attr($icon_class); ?>"></i>
-            <span><?php echo esc_html($text); ?></span>
-        </div>
-        <?php
-    }
-}
-
-if (!function_exists('thanh_hung_home_render_card')) {
-    function thanh_hung_home_render_card($item, $class_name = '')
-    {
-        $icon = !empty($item['icon_class']) ? $item['icon_class'] : 'fa-solid fa-check';
-        $title = !empty($item['title']) ? $item['title'] : '';
-        $description = !empty($item['description']) ? $item['description'] : '';
-
-        if (!$title && !$description) {
-            return;
-        }
-        ?>
-        <article class="home-acf-card <?php echo esc_attr($class_name); ?>">
-            <span class="home-acf-icon"><i class="<?php echo esc_attr($icon); ?>"></i></span>
-            <?php if ($title) : ?>
-                <h3><?php echo esc_html($title); ?></h3>
-            <?php endif; ?>
-            <?php if ($description) : ?>
-                <p><?php echo wp_kses_post($description); ?></p>
-            <?php endif; ?>
-        </article>
-        <?php
-    }
-}
-
-if (!function_exists('thanh_hung_home_render_pricing_table')) {
-    function thanh_hung_home_render_pricing_table($title, $columns, $rows)
-    {
-        if (!empty($columns['vehicle']) && empty($columns['title'])) {
-            $columns['title'] = $columns['vehicle'];
-        }
-        unset($columns['vehicle']);
-
-        $columns = wp_parse_args($columns, array(
-            'title' => 'Loại xe',
-            'dimensions' => '',
-            'primary_price' => '',
-            'secondary_price' => '',
-        ));
-        $columns = array_filter($columns, function ($label) {
-            return $label !== null && $label !== '';
-        });
-        $rows = array_values(array_filter($rows, function ($row) use ($columns) {
-            foreach (array_keys($columns) as $field) {
-                if (!empty($row[$field])) {
-                    return true;
-                }
-            }
-
-            return false;
-        }));
-
-        if (!$title && !$rows) {
-            return;
-        }
-        ?>
-        <article class="home-pricing-card">
-            <?php if ($title) : ?>
-                <h3><?php echo esc_html($title); ?></h3>
-            <?php endif; ?>
-
-            <?php if ($rows) : ?>
-                <div class="home-pricing-table-scroll">
-                    <table class="home-pricing-table">
-                        <thead>
-                            <tr>
-                                <?php foreach ($columns as $label) : ?>
-                                    <th><?php echo esc_html($label); ?></th>
-                                <?php endforeach; ?>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($rows as $row) : ?>
-                                <tr>
-                                    <?php foreach (array_keys($columns) as $field) : ?>
-                                        <td><?php echo esc_html(!empty($row[$field]) ? $row[$field] : ''); ?></td>
-                                    <?php endforeach; ?>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-        </article>
-        <?php
-    }
-}
-
-if (!function_exists('thanh_hung_home_video_embed_url')) {
-    function thanh_hung_home_video_embed_url($url)
-    {
-        if (!$url) {
-            return '';
-        }
-
-        if (preg_match('~youtu\.be/([A-Za-z0-9_-]{6,})~', $url, $matches)) {
-            return 'https://www.youtube.com/embed/' . $matches[1];
-        }
-
-        if (preg_match('~[?&]v=([A-Za-z0-9_-]{6,})~', $url, $matches)) {
-            return 'https://www.youtube.com/embed/' . $matches[1];
-        }
-
-        if (preg_match('~/embed/([A-Za-z0-9_-]{6,})~', $url, $matches)) {
-            return 'https://www.youtube.com/embed/' . $matches[1];
-        }
-
-        return $url;
-    }
-}
-
-if (!function_exists('thanh_hung_home_video_thumb_url')) {
-    function thanh_hung_home_video_thumb_url($url)
-    {
-        if (!$url) {
-            return '';
-        }
-
-        if (preg_match('~youtu\.be/([A-Za-z0-9_-]{6,})~', $url, $matches) || preg_match('~[?&]v=([A-Za-z0-9_-]{6,})~', $url, $matches) || preg_match('~/embed/([A-Za-z0-9_-]{6,})~', $url, $matches)) {
-            return 'https://img.youtube.com/vi/' . $matches[1] . '/hqdefault.jpg';
-        }
-
-        return '';
-    }
-}
-
-if (!function_exists('thanh_hung_home_acf_slider_script')) {
-    function thanh_hung_home_acf_slider_script()
-    {
-        ?>
-        <script>
-            jQuery(function ($) {
-                $('.home-banner-slider').each(function () {
-                    var $slider = $(this);
-
-                    if ($slider.children().length > 1 && $.fn.slick) {
-                        $slider.slick({
-                            autoplay: true,
-                            autoplaySpeed: 4500,
-                            arrows: true,
-                            dots: true,
-                            fade: true,
-                            infinite: true,
-                            speed: 700
-                        });
-                    }
-                });
-
-                $('.home-press-articles-slider').each(function () {
-                    var $slider = $(this);
-
-                    if ($slider.children().length > 3 && $.fn.slick) {
-                        $slider.slick({
-                            autoplay: true,
-                            autoplaySpeed: 3500,
-                            arrows: false,
-                            dots: true,
-                            infinite: true,
-                            speed: 500,
-                            slidesToShow: 3,
-                            slidesToScroll: 1,
-                            responsive: [
-                                { breakpoint: 1180, settings: { slidesToShow: 3 } },
-                                { breakpoint: 768, settings: { slidesToShow: 1 } }
-                            ]
-                        });
-                    }
-                });
-
-                $('.home-video-thumb').on('click', function (event) {
-                    event.preventDefault();
-
-                    var $thumb = $(this);
-                    var embed = $thumb.data('embed');
-                    var title = $thumb.data('title');
-                    var $section = $thumb.closest('.home-video-section');
-                    var $frame = $section.find('.home-video-frame');
-                    var $iframe = $frame.find('iframe');
-
-                    if (!embed) {
-                        return;
-                    }
-
-                    if ($iframe.length) {
-                        $iframe.attr('src', embed).attr('title', title);
-                    } else {
-                        $frame.empty().append($('<iframe>', {
-                            src: embed,
-                            title: title,
-                            allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
-                            allowfullscreen: 'allowfullscreen'
-                        }));
-                    }
-
-                    $section.find('.home-video-thumb').removeClass('is-active');
-                    $thumb.addClass('is-active');
-                });
-            });
-        </script>
-        <?php
-    }
-}
-
-if (!function_exists('thanh_hung_render_home_acf')) {
-    function thanh_hung_render_home_acf()
+if (!function_exists('quoc_phuong_render_home_acf')) {
+    function quoc_phuong_render_home_acf()
     {
         ?>
         <main class="home-acf-main">
-            <?php if (thanh_hung_home_field('home_banner_enable')) : ?>
-                <section class="home-banner-section">
-                    <div class="home-banner-slider">
-                        <?php foreach (thanh_hung_home_items('home_banner_slides') as $item) : ?>
+            <?php if (quoc_phuong_home_field('home_banner_enable')): ?>
+                <?php
+                $banner_image = quoc_phuong_home_field('home_banner_image');
+                $banner_image_url = $banner_image ? quoc_phuong_home_image_url($banner_image) : '';
+                $banner_stats = quoc_phuong_home_items('home_banner_stats');
+                ?>
+
+                <section class="home-banner-section" <?php if ($banner_image_url): ?>
+                    style="background-image: url('<?php echo esc_url($banner_image_url); ?>');"
+                <?php endif; ?>>
+                    <div class="home-banner-overlay">
+                        <div class="home-banner-inner">
+                            <div class="home-banner-content">
+                                <?php if (quoc_phuong_home_field('home_banner_eyebrow')): ?>
+                                    <div class="home-banner-eyebrow">
+                                        <?php echo esc_html(quoc_phuong_home_field('home_banner_eyebrow')); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <h1>
+                                    <?php if (quoc_phuong_home_field('home_banner_title_highlight')): ?>
+                                        <span><?php echo esc_html(quoc_phuong_home_field('home_banner_title_highlight')); ?></span>
+                                    <?php endif; ?>
+                                </h1>
+
+                                <h3>
+                                      <?php if (quoc_phuong_home_field('home_banner_title')): ?>
+                                        <?php echo esc_html(quoc_phuong_home_field('home_banner_title')); ?>
+                                    <?php endif; ?>
+                                </h3>
+
+                                <?php if (quoc_phuong_home_field('home_banner_description')): ?>
+                                    <div class="home-banner-description">
+                                        <?php echo wp_kses_post(wpautop(quoc_phuong_home_field('home_banner_description'))); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="home-banner-actions">
+                                    <?php if (quoc_phuong_home_field('home_banner_primary_text')): ?>
+                                        <a class="home-btn home-btn--primary"
+                                            href="<?php echo esc_url(quoc_phuong_home_field('home_banner_primary_url') ?: '#'); ?>">
+                                            <?php echo esc_html(quoc_phuong_home_field('home_banner_primary_text')); ?>
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if (quoc_phuong_home_field('home_banner_secondary_text')): ?>
+                                        <a class="home-btn home-btn--outline"
+                                            href="<?php echo esc_url(quoc_phuong_home_field('home_banner_secondary_url') ?: '#'); ?>">
+                                            <?php echo esc_html(quoc_phuong_home_field('home_banner_secondary_text')); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <?php if (!empty($banner_stats)): ?>
+                                <div class="home-banner-stats">
+                                    <?php foreach ($banner_stats as $stat): ?>
+                                        <?php
+                                        $icon_image = !empty($stat['icon_image']) ? quoc_phuong_home_image_url($stat['icon_image'], 'thumbnail') : '';
+                                        $icon_class = !empty($stat['icon_class']) ? $stat['icon_class'] : 'fa-solid fa-gem';
+
+                                        if (empty($stat['value']) && empty($stat['label']) && empty($stat['description'])) {
+                                            continue;
+                                        }
+                                        ?>
+
+                                        <div class="home-banner-stat">
+                                            <div class="home-banner-stat-icon">
+                                                <?php if ($icon_image): ?>
+                                                    <img src="<?php echo esc_url($icon_image); ?>" alt="<?php echo esc_attr($stat['label'] ?? ''); ?>">
+                                                <?php else: ?>
+                                                    <i class="<?php echo esc_attr($icon_class); ?>"></i>
+                                                <?php endif; ?>
+                                            </div>
+
+                                            <div>
+                                                <?php if (!empty($stat['value'])): ?>
+                                                    <strong><?php echo esc_html($stat['value']); ?></strong>
+                                                <?php endif; ?>
+
+                                                <?php if (!empty($stat['label'])): ?>
+                                                    <span><?php echo esc_html($stat['label']); ?></span>
+                                                <?php endif; ?>
+
+                                                <?php if (!empty($stat['description'])): ?>
+                                                    <small><?php echo esc_html($stat['description']); ?></small>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Giới thiệu -->
+                 <?php if (quoc_phuong_home_field('home_intro_enable')): ?>
+    <?php
+    $intro_image = quoc_phuong_home_field('home_intro_image');
+    $intro_image_url = $intro_image ? quoc_phuong_home_image_url($intro_image) : '';
+    $intro_features = quoc_phuong_home_items('home_intro_features');
+    $intro_bottom_image = quoc_phuong_home_field('home_intro_bottom_image');
+     $intro_bottom_image_url = $intro_bottom_image ? quoc_phuong_home_image_url($intro_bottom_image) : '';
+    ?>
+
+    <section class="home-intro-section" <?php if ($intro_image_url): ?>
+        style="background-image: url('<?php echo esc_url($intro_image_url); ?>');"
+    <?php endif; ?>>
+        <div class="home-intro-overlay">
+            <div class="home-intro-inner">
+                <div class="home-intro-content">
+                    <?php if (quoc_phuong_home_field('home_intro_eyebrow')): ?>
+                        <div class="home-intro-eyebrow">
+                            <?php echo esc_html(quoc_phuong_home_field('home_intro_eyebrow')); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <h2>
+                        <?php if (quoc_phuong_home_field('home_intro_title')): ?>
+                            <span><?php echo esc_html(quoc_phuong_home_field('home_intro_title')); ?></span>
+                        <?php endif; ?>
+
+                        <?php if (quoc_phuong_home_field('home_intro_title_red')): ?>
+                            <em><?php echo esc_html(quoc_phuong_home_field('home_intro_title_red')); ?></em>
+                        <?php endif; ?>
+                    </h2>
+
+                    <?php if (quoc_phuong_home_field('home_intro_description')): ?>
+                        <div class="home-intro-description">
+                            <?php echo wp_kses_post(wpautop(quoc_phuong_home_field('home_intro_description'))); ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <?php if (!empty($intro_features)): ?>
+                <div class="home-intro-features-wrap">
+                    <div class="home-intro-features">
+                        <?php foreach ($intro_features as $feature): ?>
                             <?php
-                            $image_url = !empty($item['image']) ? thanh_hung_home_image_url($item['image']) : '';
-                            if (!$image_url) {
+                            $icon_image = !empty($feature['icon_image']) ? quoc_phuong_home_image_url($feature['icon_image'], 'thumbnail') : '';
+                            $icon_class = !empty($feature['icon_class']) ? $feature['icon_class'] : 'fa-solid fa-gem';
+
+                            if (empty($feature['title']) && empty($feature['description'])) {
                                 continue;
                             }
-                            $image_alt = !empty($item['image']) ? thanh_hung_home_image_alt($item['image']) : '';
                             ?>
-                            <div class="home-banner-slide has-image">
-                                <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($image_alt); ?>">
+
+                            <div class="home-intro-feature">
+                                <div class="home-intro-feature-icon">
+                                    <?php if ($icon_image): ?>
+                                        <img src="<?php echo esc_url($icon_image); ?>" alt="<?php echo esc_attr($feature['title'] ?? ''); ?>">
+                                    <?php else: ?>
+                                        <i class="<?php echo esc_attr($icon_class); ?>"></i>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div>
+                                    <?php if (!empty($feature['title'])): ?>
+                                        <strong><?php echo esc_html($feature['title']); ?></strong>
+                                    <?php endif; ?>
+
+                                  <div class="home-intro-feature-desc">
+    <?php echo wpautop(esc_html($feature['description'])); ?>
+</div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
-                </section>
+                </div>
             <?php endif; ?>
+        </div>
 
-            <?php if (thanh_hung_home_field('home_intro_enable')) : ?>
-                <section class="home-intro-section">
-                    <div class="home-intro-wrap">
-                        <div class="home-intro-grid">
-                            <div class="home-intro-content">
-                                <?php if (thanh_hung_home_field('home_intro_badge')) : ?>
-                                    <div class="home-intro-badge"><?php echo esc_html(thanh_hung_home_field('home_intro_badge')); ?></div>
-                                <?php endif; ?>
+    </section>
+            <?php if ($intro_bottom_image_url): ?>
+    <div class="home-intro-bottom-image">
+        <img src="<?php echo esc_url($intro_bottom_image_url); ?>" alt="">
+    </div>
+<?php endif; ?>
 
-                                <h2>
-                                    <?php if (thanh_hung_home_field('home_intro_title_highlight')) : ?>
-                                        <span><?php echo esc_html(thanh_hung_home_field('home_intro_title_highlight')); ?></span>
-                                    <?php endif; ?>
-                                    <?php echo esc_html(thanh_hung_home_field('home_intro_title')); ?>
-                                </h2>
 
-                                <?php if (thanh_hung_home_field('home_intro_description')) : ?>
-                                    <div class="home-intro-description">
-                                        <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_intro_description'))); ?>
-                                    </div>
-                                <?php endif; ?>
+<!-- Sản phẩm nổi bật -->
+ <?php if (quoc_phuong_home_field('home_featured_products_enable')): ?>
+    <?php
+    $featured_bg = quoc_phuong_home_field('home_featured_products_background_image');
+    $featured_bg_url = $featured_bg ? quoc_phuong_home_image_url($featured_bg) : '';
+    $featured_products = quoc_phuong_home_field('home_featured_products');
+    ?>
 
-                                <div class="home-intro-actions">
-                                    <?php if (thanh_hung_home_field('home_intro_primary_text')) : ?>
-                                        <a class="home-btn home-btn--primary" href="<?php echo esc_url(thanh_hung_home_field('home_intro_primary_url') ?: '#'); ?>">
-                                            <i class="fa-solid fa-clipboard-list"></i>
-                                            <span><?php echo esc_html(thanh_hung_home_field('home_intro_primary_text')); ?></span>
-                                        </a>
-                                    <?php endif; ?>
-                                    <?php if (thanh_hung_home_field('home_intro_secondary_text')) : ?>
-                                        <a class="home-btn home-btn--outline" href="<?php echo esc_url(thanh_hung_home_field('home_intro_secondary_url') ?: '#'); ?>">
-                                            <i class="fa-solid fa-phone"></i>
-                                            <span><?php echo esc_html(thanh_hung_home_field('home_intro_secondary_text')); ?></span>
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-
-                            <div class="home-intro-media">
-                                <?php
-                                $intro_image = thanh_hung_home_field('home_intro_image');
-                                $intro_image_url = $intro_image ? thanh_hung_home_image_url($intro_image) : '';
-                                ?>
-                                <?php if ($intro_image_url) : ?>
-                                    <img src="<?php echo esc_url($intro_image_url); ?>" alt="<?php echo esc_attr(thanh_hung_home_image_alt($intro_image, thanh_hung_home_field('home_intro_title'))); ?>">
-                                <?php else : ?>
-                                    <div class="home-intro-placeholder">
-                                        <strong>Taxi Tải<br>Thành Hưng</strong>
-                                        <span>Since 1996</span>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <div class="home-intro-stats">
-                            <?php foreach (thanh_hung_home_items('home_intro_stats') as $item) : ?>
-                                <?php if (empty($item['value']) && empty($item['label'])) { continue; } ?>
-                                <div class="home-intro-stat">
-                                    <?php if (!empty($item['value'])) : ?>
-                                        <strong><?php echo esc_html($item['value']); ?></strong>
-                                    <?php endif; ?>
-                                    <?php if (!empty($item['label'])) : ?>
-                                        <span><?php echo esc_html($item['label']); ?></span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
+    <section class="home-featured-products-section" <?php if ($featured_bg_url): ?>
+        style="background-image: url('<?php echo esc_url($featured_bg_url); ?>');"
+    <?php endif; ?>>
+        <div class="home-featured-products-inner">
+            <div class="home-section-heading">
+                <?php if (quoc_phuong_home_field('home_featured_products_eyebrow')): ?>
+                    <div class="home-section-eyebrow">
+                        <?php echo esc_html(quoc_phuong_home_field('home_featured_products_eyebrow')); ?>
                     </div>
+                <?php endif; ?>
 
-                    <div class="home-intro-strip">
-                        <div class="home-intro-strip-inner">
-                            <?php foreach (thanh_hung_home_items('home_intro_strip_items') as $item) : ?>
-                                <?php
-                                $icon = !empty($item['icon_class']) ? $item['icon_class'] : 'fa-solid fa-check';
-                                if (empty($item['title'])) {
-                                    continue;
-                                }
-                                ?>
-                                <div class="home-intro-strip-item">
-                                    <i class="<?php echo esc_attr($icon); ?>"></i>
-                                    <span><?php echo esc_html($item['title']); ?></span>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </section>
-            <?php endif; ?>
+                <h2>
+                    <?php echo esc_html(quoc_phuong_home_field('home_featured_products_title')); ?>
+                    <span><?php echo esc_html(quoc_phuong_home_field('home_featured_products_title_red')); ?></span>
+                </h2>
+            </div>
 
-            <?php if (thanh_hung_home_field('home_services_enable')) : ?>
-                <section class="home-services-section">
-                    <div class="home-wide-wrap">
-                        <header class="home-services-heading">
-                            <?php if (thanh_hung_home_field('home_services_subtitle')) : ?>
-                                <p><?php echo esc_html(thanh_hung_home_field('home_services_subtitle')); ?></p>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_services_title')) : ?>
-                                <h2><?php echo esc_html(thanh_hung_home_field('home_services_title')); ?></h2>
-                            <?php endif; ?>
-                        </header>
+            <?php if (!empty($featured_products)): ?>
+                <div class="home-featured-products-grid">
+                    <?php foreach ($featured_products as $product_post): ?>
+                        <?php
+                        $product_id = is_object($product_post) ? $product_post->ID : (int) $product_post;
+                        $product_title = get_the_title($product_id);
+                        $product_link = get_permalink($product_id);
+                        $product_image = get_the_post_thumbnail_url($product_id, 'large');
+                        ?>
 
-                        <div class="home-services-grid">
-                            <?php foreach (thanh_hung_home_items('home_services_items') as $item) : ?>
-                                <?php
-                                $title = !empty($item['title']) ? $item['title'] : '';
-                                $url = !empty($item['url']) ? $item['url'] : '#';
-                                $icon = !empty($item['icon_class']) ? $item['icon_class'] : 'fa-solid fa-truck-fast';
-                                $service_image_url = !empty($item['image']) ? thanh_hung_home_image_url($item['image'], 'medium') : '';
-                                $service_image_alt = $service_image_url ? thanh_hung_home_image_alt($item['image'], $title) : '';
+                        <article class="home-featured-product-card">
+                            <a class="home-featured-product-image" href="<?php echo esc_url($product_link); ?>">
+                                <?php if ($product_image): ?>
+                                    <img src="<?php echo esc_url($product_image); ?>" alt="<?php echo esc_attr($product_title); ?>">
+                                <?php endif; ?>
+                            </a>
 
-                                if (!$title) {
-                                    continue;
-                                }
-                                ?>
-                                <a class="home-service-card" href="<?php echo esc_url($url); ?>">
-                                    <?php if ($service_image_url) : ?>
-                                        <span class="home-service-icon home-service-icon--image">
-                                            <img src="<?php echo esc_url($service_image_url); ?>" alt="<?php echo esc_attr($service_image_alt); ?>" loading="lazy">
-                                        </span>
-                                    <?php else : ?>
-                                        <span class="home-service-icon"><i class="<?php echo esc_attr($icon); ?>"></i></span>
-                                    <?php endif; ?>
-                                    <strong><?php echo esc_html($title); ?></strong>
+                            <h3>
+                                <a href="<?php echo esc_url($product_link); ?>">
+                                    <?php echo esc_html($product_title); ?>
                                 </a>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </section>
+                            </h3>
+
+                            <a class="home-featured-product-btn" href="<?php echo esc_url($product_link); ?>">
+                                Nhận tư vấn
+                            </a>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
             <?php endif; ?>
 
-            <?php if (thanh_hung_home_field('home_pricing_enable')) : ?>
-                <section class="home-pricing-section">
-                    <div class="home-wide-wrap">
-                        <header class="home-pricing-heading">
-                            <?php if (thanh_hung_home_field('home_pricing_title')) : ?>
-                                <h2><?php echo esc_html(thanh_hung_home_field('home_pricing_title')); ?></h2>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_pricing_subtitle')) : ?>
-                                <p><?php echo esc_html(thanh_hung_home_field('home_pricing_subtitle')); ?></p>
-                            <?php endif; ?>
-                        </header>
-
-                        <?php
-                        $pricing_notes = thanh_hung_home_items('home_pricing_formula_notes');
-                        $has_pricing_formula = thanh_hung_home_field('home_pricing_formula_heading') || thanh_hung_home_field('home_pricing_formula_equation') || $pricing_notes || thanh_hung_home_field('home_pricing_hotline');
-                        ?>
-                        <?php if ($has_pricing_formula) : ?>
-                            <div class="home-pricing-formula">
-                                <?php if (thanh_hung_home_field('home_pricing_formula_heading')) : ?>
-                                    <p class="home-pricing-formula-heading"><?php echo wp_kses_post(thanh_hung_home_field('home_pricing_formula_heading')); ?></p>
-                                <?php endif; ?>
-
-                                <?php if (thanh_hung_home_field('home_pricing_formula_equation')) : ?>
-                                    <div class="home-pricing-equation"><?php echo wp_kses_post(thanh_hung_home_field('home_pricing_formula_equation')); ?></div>
-                                <?php endif; ?>
-
-                                <?php if ($pricing_notes) : ?>
-                                    <ul class="home-pricing-notes">
-                                        <?php foreach ($pricing_notes as $note) : ?>
-                                            <?php
-                                            $note_title = !empty($note['title']) ? $note['title'] : '';
-                                            $note_description = !empty($note['description']) ? $note['description'] : '';
-
-                                            if (!$note_title && !$note_description) {
-                                                continue;
-                                            }
-                                            ?>
-                                            <li>
-                                                <?php if ($note_title) : ?>
-                                                    <strong><?php echo esc_html($note_title); ?>:</strong>
-                                                <?php endif; ?>
-                                                <?php echo wp_kses_post($note_description); ?>
-                                            </li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                <?php endif; ?>
-
-                                <?php if (thanh_hung_home_field('home_pricing_hotline')) : ?>
-                                    <p class="home-pricing-hotline"><?php echo wp_kses_post(thanh_hung_home_field('home_pricing_hotline')); ?></p>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <header class="home-pricing-table-heading">
-                            <?php if (thanh_hung_home_field('home_pricing_table_title')) : ?>
-                                <h3><?php echo esc_html(thanh_hung_home_field('home_pricing_table_title')); ?></h3>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_pricing_table_description')) : ?>
-                                <div class="home-pricing-table-desc">
-                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_pricing_table_description'))); ?>
-                                </div>
-                            <?php endif; ?>
-                        </header>
-
-                        <div class="home-pricing-tables">
-                            <?php
-                            thanh_hung_home_render_pricing_table(
-                                thanh_hung_home_field('home_pricing_local_title'),
-                                array(
-                                    'vehicle' => 'Loại xe',
-                                    'dimensions' => 'Kích thước thùng',
-                                    'primary_price' => thanh_hung_home_field('home_pricing_local_primary_label'),
-                                    'secondary_price' => thanh_hung_home_field('home_pricing_local_secondary_label'),
-                                ),
-                                thanh_hung_home_items('home_pricing_local_rows')
-                            );
-
-                            thanh_hung_home_render_pricing_table(
-                                thanh_hung_home_field('home_pricing_long_title'),
-                                array(
-                                    'vehicle' => 'Loại xe',
-                                    'dimensions' => 'Kích thước thùng',
-                                    'primary_price' => thanh_hung_home_field('home_pricing_long_primary_label'),
-                                    'secondary_price' => thanh_hung_home_field('home_pricing_long_secondary_label'),
-                                ),
-                                thanh_hung_home_items('home_pricing_long_rows')
-                            );
-                            ?>
-                        </div>
-
-                        <?php
-                        $pricing_labor_rows = thanh_hung_home_items('home_pricing_labor_rows');
-                        $pricing_extra_rows = thanh_hung_home_items('home_pricing_extra_rows');
-                        $has_pricing_labor = thanh_hung_home_field('home_pricing_labor_title') || thanh_hung_home_field('home_pricing_labor_description') || $pricing_labor_rows;
-                        $has_pricing_extra = thanh_hung_home_field('home_pricing_extra_title') || thanh_hung_home_field('home_pricing_extra_description') || $pricing_extra_rows;
-                        $pricing_notice = thanh_hung_home_field('home_pricing_notice');
-                        ?>
-                        <?php if ($has_pricing_labor || $has_pricing_extra || $pricing_notice) : ?>
-                            <div class="home-pricing-extra-tables">
-                                <?php if ($has_pricing_labor) : ?>
-                                    <div class="home-pricing-table-block">
-                                        <header class="home-pricing-subtable-heading">
-                                            <?php if (thanh_hung_home_field('home_pricing_labor_title')) : ?>
-                                                <h3><?php echo esc_html(thanh_hung_home_field('home_pricing_labor_title')); ?></h3>
-                                            <?php endif; ?>
-                                            <?php if (thanh_hung_home_field('home_pricing_labor_description')) : ?>
-                                                <div class="home-pricing-table-desc">
-                                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_pricing_labor_description'))); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </header>
-
-                                        <?php
-                                        thanh_hung_home_render_pricing_table(
-                                            '',
-                                            array(
-                                                'title' => 'Loại xe',
-                                                'dimensions' => 'Kích thước',
-                                                'primary_price' => thanh_hung_home_field('home_pricing_labor_price_label'),
-                                            ),
-                                            $pricing_labor_rows
-                                        );
-                                        ?>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if ($has_pricing_extra) : ?>
-                                    <div class="home-pricing-table-block">
-                                        <header class="home-pricing-subtable-heading">
-                                            <?php if (thanh_hung_home_field('home_pricing_extra_title')) : ?>
-                                                <h3><?php echo esc_html(thanh_hung_home_field('home_pricing_extra_title')); ?></h3>
-                                            <?php endif; ?>
-                                            <?php if (thanh_hung_home_field('home_pricing_extra_description')) : ?>
-                                                <div class="home-pricing-table-desc">
-                                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_pricing_extra_description'))); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </header>
-
-                                        <?php
-                                        thanh_hung_home_render_pricing_table(
-                                            '',
-                                            array(
-                                                'title' => 'Hạng mục',
-                                                'primary_price' => thanh_hung_home_field('home_pricing_extra_fee_label'),
-                                                'secondary_price' => thanh_hung_home_field('home_pricing_extra_note_label'),
-                                            ),
-                                            $pricing_extra_rows
-                                        );
-                                        ?>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if ($pricing_notice) : ?>
-                                    <div class="home-pricing-notice">
-                                        <?php echo wp_kses_post(wpautop($pricing_notice)); ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </section>
+            <?php if (quoc_phuong_home_field('home_featured_products_button_text')): ?>
+                <div class="home-featured-products-more">
+                    <a href="<?php echo esc_url(quoc_phuong_home_field('home_featured_products_button_url') ?: '#'); ?>">
+                        <?php echo esc_html(quoc_phuong_home_field('home_featured_products_button_text')); ?>
+                    </a>
+                </div>
             <?php endif; ?>
-
-            <?php if (thanh_hung_home_field('home_capabilities_enable')) : ?>
-                <section class="home-acf-section home-acf-capabilities">
-                    <div class="home-acf-wrap">
-                        <header class="home-acf-title-block">
-                            <?php if (thanh_hung_home_field('home_capabilities_subtitle')) : ?>
-                                <p><?php echo esc_html(thanh_hung_home_field('home_capabilities_subtitle')); ?></p>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_capabilities_title')) : ?>
-                                <h2><?php echo esc_html(thanh_hung_home_field('home_capabilities_title')); ?></h2>
-                            <?php endif; ?>
-                        </header>
-
-                        <?php thanh_hung_home_render_label(thanh_hung_home_field('home_capabilities_eyebrow'), 'fa-solid fa-bolt'); ?>
-
-                        <div class="home-acf-grid">
-                            <?php foreach (thanh_hung_home_items('home_capabilities_cards') as $item) : ?>
-                                <?php thanh_hung_home_render_card($item, 'home-acf-card--soft'); ?>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </section>
-            <?php endif; ?>
-
-            <?php if (thanh_hung_home_field('home_commitments_enable')) : ?>
-                <section class="home-acf-section home-acf-commitments">
-                    <div class="home-acf-wrap">
-                        <?php thanh_hung_home_render_label(thanh_hung_home_field('home_commitments_eyebrow'), 'fa-solid fa-shield-halved'); ?>
-
-                        <div class="home-acf-grid">
-                            <?php foreach (thanh_hung_home_items('home_commitments_cards') as $item) : ?>
-                                <?php thanh_hung_home_render_card($item, 'home-acf-card--outline'); ?>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </section>
-            <?php endif; ?>
-
-            <?php if (thanh_hung_home_field('home_process_enable')) : ?>
-                <section class="home-acf-section home-acf-process">
-                    <div class="home-acf-wrap home-acf-wrap--process">
-                        <header class="home-acf-title-block home-acf-title-block--process">
-                            <h2>
-                                <?php echo esc_html(thanh_hung_home_field('home_process_title')); ?>
-                                <span><?php echo esc_html(thanh_hung_home_field('home_process_highlight')); ?></span>
-                            </h2>
-                        </header>
-
-                        <div class="home-process-list">
-                            <?php foreach (thanh_hung_home_items('home_process_steps') as $item) : ?>
-                                <?php
-                                $icon = !empty($item['icon_class']) ? $item['icon_class'] : 'fa-solid fa-check';
-                                $badge = !empty($item['badge']) ? $item['badge'] : '';
-                                ?>
-                                <article class="home-process-step">
-                                    <?php if ($badge) : ?>
-                                        <span class="home-process-badge"><?php echo esc_html($badge); ?></span>
-                                    <?php endif; ?>
-                                    <span class="home-process-icon"><i class="<?php echo esc_attr($icon); ?>"></i></span>
-                                    <?php if (!empty($item['step_label'])) : ?>
-                                        <span class="home-process-index"><?php echo esc_html($item['step_label']); ?></span>
-                                    <?php endif; ?>
-                                    <?php if (!empty($item['title'])) : ?>
-                                        <h3><?php echo esc_html($item['title']); ?></h3>
-                                    <?php endif; ?>
-                                    <?php if (!empty($item['description'])) : ?>
-                                        <p><?php echo wp_kses_post($item['description']); ?></p>
-                                    <?php endif; ?>
-                                </article>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </section>
-            <?php endif; ?>
-
-            <?php if (thanh_hung_home_field('home_faq_enable')) : ?>
-                <section class="home-acf-section home-acf-faq">
-                    <div class="home-acf-wrap">
-                        <header class="home-acf-title-block home-acf-title-block--faq">
-                            <?php if (thanh_hung_home_field('home_faq_subtitle')) : ?>
-                                <p><?php echo esc_html(thanh_hung_home_field('home_faq_subtitle')); ?></p>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_faq_title')) : ?>
-                                <h2><?php echo esc_html(thanh_hung_home_field('home_faq_title')); ?></h2>
-                            <?php endif; ?>
-                        </header>
-
-                        <div class="home-faq-list">
-                            <?php foreach (thanh_hung_home_items('home_faq_items') as $item) : ?>
-                                <?php
-                                $question = !empty($item['question']) ? $item['question'] : '';
-                                $answer = !empty($item['answer']) ? $item['answer'] : '';
-
-                                if (!$question) {
-                                    continue;
-                                }
-                                ?>
-                                <details class="home-faq-item">
-                                    <summary>
-                                        <span><?php echo esc_html($question); ?></span>
-                                        <i class="fa-solid fa-plus"></i>
-                                    </summary>
-                                    <?php if ($answer) : ?>
-                                        <div class="home-faq-answer">
-                                            <?php echo wp_kses_post(wpautop($answer)); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </details>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </section>
-            <?php endif; ?>
-
-            <?php if (thanh_hung_home_field('home_press_enable')) : ?>
-                <section class="home-press-section">
-                    <div class="home-wide-wrap">
-                        <?php
-                        $press_logos = array_values(array_filter(thanh_hung_home_items('home_press_logos'), function ($item) {
-                            return !empty($item['logo']);
-                        }));
-                        $press_articles = array_values(array_filter(thanh_hung_home_items('home_press_articles'), function ($item) {
-                            return !empty($item['image']);
-                        }));
-                        ?>
-                        <header class="home-section-heading">
-                            <?php if (thanh_hung_home_field('home_press_subtitle')) : ?>
-                                <p><?php echo esc_html(thanh_hung_home_field('home_press_subtitle')); ?></p>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_press_title')) : ?>
-                                <h2><?php echo esc_html(thanh_hung_home_field('home_press_title')); ?></h2>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_press_description')) : ?>
-                                <div class="home-section-desc">
-                                    <?php echo wp_kses_post(wpautop(thanh_hung_home_field('home_press_description'))); ?>
-                                </div>
-                            <?php endif; ?>
-                        </header>
-
-                        <?php if ($press_logos) : ?>
-                            <div class="home-press-logo-grid">
-                                <?php foreach ($press_logos as $item) : ?>
-                                    <?php
-                                    $logo_url = thanh_hung_home_image_url($item['logo']);
-                                    $logo_alt = thanh_hung_home_image_alt($item['logo'], 'Logo báo chí');
-
-                                    if (!$logo_url) {
-                                        continue;
-                                    }
-                                    ?>
-                                    <span class="home-press-logo">
-                                        <img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr($logo_alt); ?>">
-                                    </span>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if ($press_articles) : ?>
-                            <div class="home-press-articles-slider">
-                                <?php foreach ($press_articles as $item) : ?>
-                                    <?php
-                                    $article_url = !empty($item['url']) ? $item['url'] : '#';
-                                    $article_image_url = thanh_hung_home_image_url($item['image']);
-                                    $article_alt = thanh_hung_home_image_alt($item['image'], thanh_hung_home_field('home_press_title'));
-
-                                    if (!$article_image_url) {
-                                        continue;
-                                    }
-                                    ?>
-                                    <a class="home-press-article" href="<?php echo esc_url($article_url); ?>">
-                                        <img src="<?php echo esc_url($article_image_url); ?>" alt="<?php echo esc_attr($article_alt); ?>">
-                                    </a>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </section>
-            <?php endif; ?>
-
-            <?php if (thanh_hung_home_field('home_news_enable')) : ?>
-                <section class="home-news-section">
-                    <div class="home-wide-wrap">
-                        <header class="home-section-heading home-section-heading--dark">
-                            <?php if (thanh_hung_home_field('home_news_subtitle')) : ?>
-                                <p><?php echo esc_html(thanh_hung_home_field('home_news_subtitle')); ?></p>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_news_title')) : ?>
-                                <h2><?php echo esc_html(thanh_hung_home_field('home_news_title')); ?></h2>
-                            <?php endif; ?>
-                        </header>
-
-                        <?php
-                        $news_count = absint(thanh_hung_home_field('home_news_count'));
-                        $news_count = $news_count ? min($news_count, 3) : 3;
-                        $news_args = array(
-                            'post_type' => 'post',
-                            'posts_per_page' => $news_count,
-                            'ignore_sticky_posts' => true,
-                        );
-                        $news_category = absint(thanh_hung_home_field('home_news_category'));
-
-                        if ($news_category) {
-                            $news_args['cat'] = $news_category;
-                        }
-
-                        $news_query = new WP_Query($news_args);
-                        ?>
-
-                        <?php if ($news_query->have_posts()) : ?>
-                            <div class="home-news-grid">
-                                <?php while ($news_query->have_posts()) : $news_query->the_post(); ?>
-                                    <?php
-                                    $thumbnail = get_the_post_thumbnail_url(get_the_ID(), 'large');
-                                    $categories = get_the_category();
-                                    $category_name = !empty($categories) ? $categories[0]->name : 'Tin tức';
-                                    ?>
-                                    <article class="home-news-card">
-                                        <a class="home-news-image" href="<?php the_permalink(); ?>">
-                                            <?php if ($thumbnail) : ?>
-                                                <img src="<?php echo esc_url($thumbnail); ?>" alt="<?php echo esc_attr(get_the_title()); ?>">
-                                            <?php else : ?>
-                                                <span><?php echo esc_html(get_the_title()); ?></span>
-                                            <?php endif; ?>
-                                        </a>
-                                        <div class="home-news-body">
-                                            <span class="home-news-category"><?php echo esc_html($category_name); ?></span>
-                                            <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-                                            <p><?php echo esc_html(wp_trim_words(get_the_excerpt(), 24, '...')); ?></p>
-                                        </div>
-                                    </article>
-                                <?php endwhile; ?>
-                            </div>
-                            <?php wp_reset_postdata(); ?>
-                        <?php endif; ?>
-
-                        <?php if (thanh_hung_home_field('home_news_button_text')) : ?>
-                            <div class="home-news-more">
-                                <a class="home-btn home-btn--primary" href="<?php echo esc_url(thanh_hung_home_field('home_news_button_url') ?: '#'); ?>">
-                                    <span><?php echo esc_html(thanh_hung_home_field('home_news_button_text')); ?></span>
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </section>
-            <?php endif; ?>
-
-            <?php if (thanh_hung_home_field('home_video_enable')) : ?>
-                <?php $videos = array_slice(thanh_hung_home_items('home_video_items'), 0, 4); ?>
-                <section class="home-video-section">
-                    <div class="home-wide-wrap">
-                        <header class="home-section-heading home-section-heading--video">
-                            <?php if (thanh_hung_home_field('home_video_subtitle')) : ?>
-                                <p><?php echo esc_html(thanh_hung_home_field('home_video_subtitle')); ?></p>
-                            <?php endif; ?>
-                            <?php if (thanh_hung_home_field('home_video_title')) : ?>
-                                <h2><?php echo esc_html(thanh_hung_home_field('home_video_title')); ?></h2>
-                            <?php endif; ?>
-                        </header>
-
-                        <?php if (!empty($videos)) : ?>
-                            <?php
-                            $main_video = $videos[0];
-                            $main_embed = !empty($main_video['video_url']) ? thanh_hung_home_video_embed_url($main_video['video_url']) : '';
-                            $video_label = thanh_hung_home_field('home_video_subtitle') ? thanh_hung_home_field('home_video_subtitle') : 'Video';
-                            ?>
-                            <div class="home-video-layout">
-                                <div class="home-video-frame">
-                                    <?php if ($main_embed) : ?>
-                                        <iframe src="<?php echo esc_url($main_embed); ?>" title="<?php echo esc_attr($video_label); ?>" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                                    <?php else : ?>
-                                        <div class="home-video-placeholder">
-                                            <i class="fa-solid fa-play"></i>
-                                            <span><?php echo esc_html($video_label); ?></span>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-
-                                <div class="home-video-thumbs">
-                                    <?php foreach ($videos as $index => $item) : ?>
-                                        <?php
-                                        $video_embed = !empty($item['video_url']) ? thanh_hung_home_video_embed_url($item['video_url']) : '';
-                                        $video_thumb = !empty($item['thumbnail']) ? thanh_hung_home_image_url($item['thumbnail']) : thanh_hung_home_video_thumb_url(!empty($item['video_url']) ? $item['video_url'] : '');
-                                        ?>
-                                        <a class="home-video-thumb <?php echo $index === 0 ? 'is-active' : ''; ?>" href="<?php echo esc_url(!empty($item['video_url']) ? $item['video_url'] : '#'); ?>" data-embed="<?php echo esc_url($video_embed); ?>" data-title="<?php echo esc_attr($video_label); ?>">
-                                            <?php if ($video_thumb) : ?>
-                                                <img src="<?php echo esc_url($video_thumb); ?>" alt="<?php echo esc_attr($video_label); ?>">
-                                            <?php else : ?>
-                                                <span><?php echo esc_html($video_label); ?></span>
-                                            <?php endif; ?>
-                                            <i class="fa-solid fa-play"></i>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </section>
+        </div>
+    </section>
+<?php endif; ?>
+<?php endif; ?>
             <?php endif; ?>
         </main>
         <?php

@@ -4,352 +4,89 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-if (!function_exists('thanh_hung_home_defaults')) {
-    function thanh_hung_home_defaults()
+if (!function_exists('quoc_phuong_home_defaults')) {
+    function quoc_phuong_home_defaults()
     {
         return array(
             'home_banner_enable' => 1,
-            'home_banner_slides' => array(
+            'home_banner_eyebrow' => 'KHO ĐÁ TỰ NHIÊN QUỐC PHƯƠNG',
+            'home_banner_title_highlight' => 'Tinh hoa đá tự nhiên',
+            'home_banner_title' => 'Nâng tầm không gian sống',
+            'home_banner_description' => 'Nhập khẩu và phân phối các loại đá tự nhiên cao cấp: Marble, Granite, Quartzite... cùng giải pháp thi công trọn gói cho mọi công trình.',
+            'home_banner_primary_text' => 'Khám phá sản phẩm',
+            'home_banner_primary_url' => '#sanpham',
+            'home_banner_secondary_text' => 'Liên hệ ngay',
+            'home_banner_secondary_url' => 'tel:0919101868',
+            'home_banner_image' => '',
+            'home_banner_stats' => array(
                 array(
-                    'image' => '',
+                    'icon_image' => '',
+                    'icon_class' => 'fa-solid fa-gem',
+                    'value' => '1000+',
+                    'label' => 'Mẫu đá đa dạng',
+                    'description' => 'Đáp ứng mọi nhu cầu',
                 ),
-            ),
-            'home_intro_enable' => 1,
-            'home_intro_badge' => '✓ Thương hiệu chính hãng từ 1996',
-            'home_intro_title_highlight' => 'Taxi Tải Thành Hưng',
-            'home_intro_title' => 'Dịch Vụ Chuyển Nhà Trọn Gói Thành Hưng',
-            'home_intro_description' => 'Thành Hưng Group Since 1996, còn được gọi là <strong>Taxi Tải Thành Hưng, Xe Tải Thành Hưng, Chuyển Nhà Thành Hưng</strong> - công ty vận tải chuyển nghiệp tại TPHCM, Hà Nội và toàn quốc. Thành Hưng chính hãng chuyên cung cấp các dịch vụ: chuyển nhà trọn gói, chuyển văn phòng, dời đổi kho xưởng, cho thuê taxi tải/xe tải chở hàng và vận chuyển đồ đặc thù.',
-            'home_intro_primary_text' => 'Nhận báo giá miễn phí',
-            'home_intro_primary_url' => '#',
-            'home_intro_secondary_text' => 'Gọi 1800.00.08',
-            'home_intro_secondary_url' => 'tel:18000008',
-            'home_intro_image' => '',
-            'home_intro_stats' => array(
                 array(
-                    'value' => '29+',
+                    'icon_image' => '',
+                    'icon_class' => 'fa-solid fa-users',
+                    'value' => '15+',
                     'label' => 'Năm kinh nghiệm',
+                    'description' => 'Uy tín tạo nên thương hiệu',
                 ),
                 array(
-                    'value' => '1M+',
-                    'label' => 'Khách hàng tin tưởng',
-                ),
-                array(
-                    'value' => '24/7',
-                    'label' => 'Sẵn sàng phục vụ',
-                ),
-            ),
-            'home_intro_strip_items' => array(
-                array(
-                    'icon_class' => 'fa-solid fa-shield-halved',
-                    'title' => 'Bồi thường 100%',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-sack-dollar',
-                    'title' => 'Báo giá minh bạch',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-handshake-angle',
-                    'title' => 'Hỗ trợ sau vận chuyển',
+                    'icon_image' => '',
+                    'icon_class' => 'fa-solid fa-layer-group',
+                    'value' => 'Nhập khẩu',
+                    'label' => 'Chính hãng 100%',
+                    'description' => 'Cam kết chất lượng',
                 ),
             ),
-            'home_services_enable' => 1,
-            'home_services_subtitle' => 'Các Dịch Vụ Chính Tại',
-            'home_services_title' => 'Hãng Taxi Tải Thành Hưng',
-            'home_services_items' => array(
-                array('icon_class' => 'fa-solid fa-truck-fast', 'title' => 'Taxi tải', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-house-chimney', 'title' => 'Chuyển nhà trọn gói', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-building', 'title' => 'Chuyển văn phòng', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-warehouse', 'title' => 'Chuyển kho xưởng', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-dolly', 'title' => 'Bốc xếp hàng hóa', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-house-user', 'title' => 'Chuyển phòng trọ', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-broom', 'title' => 'Hoàn trả mặt bằng', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-truck', 'title' => 'Thuê xe tải chở hàng', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-box-open', 'title' => 'Chuyển đồ', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-boxes-stacked', 'title' => 'Vận chuyển hàng hóa', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-vault', 'title' => 'Vận chuyển két sắt', 'url' => '#'),
-                array('icon_class' => 'fa-solid fa-music', 'title' => 'Vận chuyển đàn piano', 'url' => '#'),
-            ),
-            'home_pricing_enable' => 1,
-            'home_pricing_title' => 'Bảng Giá Xe Tải & Chuyển Nhà Thành Hưng',
-            'home_pricing_subtitle' => 'Bảng Giá Chuyển Nhà Thành Hưng - Cập nhật tháng 05/2026',
-            'home_pricing_formula_heading' => 'Giá chuyển nhà trọn gói tại Thành Hưng được tính minh bạch theo công thức:',
-            'home_pricing_formula_equation' => 'Chi phí chuyển nhà trọn gói = Cước thuê xe tải + Phí bốc xếp + Vật tư đóng gói + Chi phí khác (nếu có)',
-            'home_pricing_formula_notes' => array(
+            // Giới thiệu
+            'home_intro_enable' => 1,
+            'home_intro_eyebrow' => 'LỜI GIỚI THIỆU',
+            'home_intro_title' => 'KHO ĐÁ HOA CƯƠNG',
+            'home_intro_title_red' => 'QUỐC PHƯƠNG',
+            'home_intro_description' => "Kho đá hoa cương Quốc Phương chuyên cung cấp các loại đá Granite, đá Marble chất lượng và uy tín tại TPHCM. Đến với Kho đá Quốc Phương các bạn sẽ được lựa chọn nhiều mẫu đá đa dạng về kích thước, màu sắc, hoa văn tinh tế, sang trọng và phù hợp với từng công trình khác nhau.\n\nĐá hoa cương được cung cấp có độ bền cao, phù hợp thi công nhiều hạng mục công trình ví dụ như đá ốp lát cầu thang, đá lát nền, đá ốp mặt tiền, Tranh đá. Sản phẩm không chỉ có được chất lượng vượt trội mà còn có giá thành cạnh tranh trên thị trường.",
+            'home_intro_image' => '',
+            'home_intro_bottom_image' => '',
+            'home_intro_features' => array(
                 array(
-                    'title' => 'Cước thuê xe tải',
-                    'description' => 'Tùy tải trọng xe và quãng đường, xem bảng giá cước chi tiết bên dưới.',
+                    'icon_image' => '',
+                    'icon_class' => 'fa-solid fa-gem',
+                    'title' => 'Đa dạng mẫu mã',
+                    'description' => 'Hàng trăm mẫu đá tự nhiên cao cấp, độc đáo',
                 ),
                 array(
-                    'title' => 'Phí bốc xếp',
-                    'description' => 'Tính theo loại xe và số nhân công, bao gồm cả 2 đầu đi - đến.',
-                ),
-                array(
-                    'title' => 'Vật tư đóng gói',
-                    'description' => 'Thùng carton, màng PE, xốp chống sốc, băng keo - sản xuất tại nhà máy Bao Bì Thành Hưng.',
-                ),
-                array(
-                    'title' => 'Chi phí khác (nếu có)',
-                    'description' => 'Phụ phí hẻm, lầu cao, tháo lắp máy lạnh - được thông báo khi khảo sát và ghi rõ trong hợp đồng.',
-                ),
-            ),
-            'home_pricing_hotline' => 'Liên hệ tổng đài 1800.00.08 hoặc Zalo 09.38.38.38.80',
-            'home_pricing_table_title' => 'Bảng Giá Cước Thuê Xe Taxi Tải Thành Hưng',
-            'home_pricing_table_description' => 'Mỗi tải trọng xe, mỗi quãng đường vận chuyển sẽ có mức giá khác nhau. Bảng giá dưới đây áp dụng cho nội thành TPHCM và các tỉnh lân cận.',
-            'home_pricing_local_title' => 'Cước nội thành (<50km)',
-            'home_pricing_local_primary_label' => '10km đầu',
-            'home_pricing_local_secondary_label' => '11-50km/km',
-            'home_pricing_local_rows' => array(
-                array('title' => 'Xe Transit 800kg', 'dimensions' => '2m x 1.5m x 1.5m', 'primary_price' => '400.000đ', 'secondary_price' => '20.000đ'),
-                array('title' => 'Xe tải 1.2 tấn', 'dimensions' => '3m x 1.6m x 1.6m', 'primary_price' => '450.000đ', 'secondary_price' => '20.000đ'),
-                array('title' => 'Xe tải 1.4 tấn', 'dimensions' => '3.4m x 1.65m x 1.6m', 'primary_price' => '480.000đ', 'secondary_price' => '25.000đ'),
-                array('title' => 'Xe tải 2.3 tấn', 'dimensions' => '3.5m x 1.7m x 1.7m', 'primary_price' => '520.000đ', 'secondary_price' => '30.000đ'),
-                array('title' => 'Xe tải 1.9 tấn', 'dimensions' => '4.38m x 1.85m x 1.8m', 'primary_price' => '550.000đ', 'secondary_price' => '35.000đ'),
-                array('title' => 'Xe tải 1.9 tấn Ben', 'dimensions' => '4.4m x 1.9m x 1.9m', 'primary_price' => '800.000đ', 'secondary_price' => '50.000đ'),
-                array('title' => 'Xe tải 2.5 tấn', 'dimensions' => '4.5m x 2m x 2m', 'primary_price' => '600.000đ', 'secondary_price' => '40.000đ'),
-                array('title' => 'Xe tải 2 tấn (6m2)', 'dimensions' => '6.2m x 2m x 2m', 'primary_price' => '800.000đ', 'secondary_price' => '50.000đ'),
-            ),
-            'home_pricing_long_title' => 'Cước liên tỉnh (>50km)',
-            'home_pricing_long_primary_label' => '51-100km/km',
-            'home_pricing_long_secondary_label' => '>100km/km',
-            'home_pricing_long_rows' => array(
-                array('title' => 'Xe Transit 800kg', 'dimensions' => '2m x 1.5m x 1.5m', 'primary_price' => '11.000đ', 'secondary_price' => '9.000đ'),
-                array('title' => 'Xe tải 1.2 tấn', 'dimensions' => '3m x 1.6m x 1.6m', 'primary_price' => '11.000đ', 'secondary_price' => '9.000đ'),
-                array('title' => 'Xe tải 1.4 tấn', 'dimensions' => '3.4m x 1.65m x 1.6m', 'primary_price' => '12.000đ', 'secondary_price' => '10.000đ'),
-                array('title' => 'Xe tải 2.3 tấn', 'dimensions' => '3.5m x 1.7m x 1.7m', 'primary_price' => '13.000đ', 'secondary_price' => '11.000đ'),
-                array('title' => 'Xe tải 1.9 tấn', 'dimensions' => '4.38m x 1.85m x 1.8m', 'primary_price' => '14.000đ', 'secondary_price' => '12.000đ'),
-                array('title' => 'Xe tải 1.9 tấn Ben', 'dimensions' => '4.4m x 1.9m x 1.9m', 'primary_price' => '20.000đ', 'secondary_price' => '18.000đ'),
-                array('title' => 'Xe tải 2.5 tấn', 'dimensions' => '4.5m x 2m x 2m', 'primary_price' => '15.000đ', 'secondary_price' => '13.000đ'),
-                array('title' => 'Xe tải 2 tấn (6m2)', 'dimensions' => '6.2m x 2m x 2m', 'primary_price' => '25.000đ', 'secondary_price' => '20.000đ'),
-            ),
-            'home_pricing_labor_title' => 'Bảng Giá Thuê Bốc Xếp Thành Hưng',
-            'home_pricing_labor_description' => 'Phí bốc xếp tính cho cả 2 đầu (đi và đến), bao gồm nhân công khuân vác, sắp xếp lên xe và dỡ hàng tại nhà mới. Phí chưa bao gồm chi phí xe tải vận chuyển, vật tư bao bọc, trung chuyển hẻm nhỏ hoặc lầu cao, tháo lắp máy lạnh và các thiết bị điện gia đình khác.',
-            'home_pricing_labor_price_label' => 'Phí bốc xếp 2 đầu',
-            'home_pricing_labor_rows' => array(
-                array('title' => 'Xe Transit 800kg', 'dimensions' => '2m x 1.5m x 1.5m', 'primary_price' => '400.000 đ'),
-                array('title' => 'Xe tải 1.2 tấn', 'dimensions' => '3m x 1.6m x 1.6m', 'primary_price' => '600.000 đ'),
-                array('title' => 'Xe tải 1.4 tấn', 'dimensions' => '3.4m x 1.65m x 1.6m', 'primary_price' => '800.000 đ'),
-                array('title' => 'Xe tải 2.3 tấn', 'dimensions' => '3.5m x 1.7m x 1.7m', 'primary_price' => '1.000.000 đ'),
-                array('title' => 'Xe tải 1.9 tấn', 'dimensions' => '4.38m x 1.85m x 1.8m', 'primary_price' => '1.200.000 đ'),
-                array('title' => 'Xe tải 1.9 tấn Ben nâng', 'dimensions' => '4.4m x 1.9m x 1.9m', 'primary_price' => '1.500.000 đ'),
-                array('title' => 'Xe tải 2.5 tấn', 'dimensions' => '4.5m x 2m x 2m', 'primary_price' => '1.400.000 đ'),
-                array('title' => 'Xe tải 2 tấn', 'dimensions' => '6.2m x 2m x 2m', 'primary_price' => '2.000.000 đ'),
-            ),
-            'home_pricing_extra_title' => 'Phí Dịch Vụ Hỗ Trợ & Phụ Phí Phát Sinh',
-            'home_pricing_extra_description' => 'Các phụ phí dưới đây chỉ áp dụng khi có phát sinh thực tế, sẽ được thông báo rõ khi khảo sát và ghi trong hợp đồng trước khi thực hiện. Thành Hưng cam kết không phát sinh ngoài thỏa thuận.',
-            'home_pricing_extra_fee_label' => 'Chi phí',
-            'home_pricing_extra_note_label' => 'Ghi chú',
-            'home_pricing_extra_rows' => array(
-                array('title' => 'Phụ phí hẻm dưới 50m', 'primary_price' => 'Miễn phí', 'secondary_price' => '—'),
-                array('title' => 'Phụ phí hẻm 50-100m', 'primary_price' => '100.000đ', 'secondary_price' => 'Trên 100m: liên hệ'),
-                array('title' => 'Bốc xếp lầu cao (thang bộ)', 'primary_price' => '300.000đ / lầu', 'secondary_price' => 'Khi không có thang máy'),
-                array('title' => 'Hầm chung cư', 'primary_price' => 'Miễn phí', 'secondary_price' => '—'),
-                array('title' => 'Tháo lắp máy lạnh', 'primary_price' => '300.000đ / bộ', 'secondary_price' => 'Bảo hành 1 tháng. Chưa gồm ống đồng, gas, phụ kiện điện'),
-                array('title' => 'Tháo lắp máy giặt, nước nóng', 'primary_price' => 'Liên hệ', 'secondary_price' => 'Tùy model'),
-                array('title' => 'Tháo lắp nội thất (giường, tủ, kệ)', 'primary_price' => 'Liên hệ', 'secondary_price' => 'Đánh giá khi khảo sát'),
-                array('title' => 'Phí chờ quá giờ', 'primary_price' => '100.000 - 200.000đ / giờ', 'secondary_price' => 'Tùy tải trọng xe'),
-                array('title' => 'Phí lưu đêm', 'primary_price' => '200.000 - 500.000đ', 'secondary_price' => 'Tùy tải trọng xe'),
-                array('title' => 'Thùng carton (mua thêm)', 'primary_price' => 'Liên hệ baobithanhhung.com', 'secondary_price' => 'Đa dạng kích thước, giá tận xưởng'),
-            ),
-            'home_pricing_notice' => 'Lưu ý quan trọng: Bảng giá trên đây mang tính tham khảo, có thể thay đổi tùy theo tình hình thực tế (biến động giá xăng dầu, điều kiện giao thông, địa hình vận chuyển). Để nhận báo giá chính xác và phù hợp nhất cho nhu cầu của quý khách, vui lòng liên hệ tổng đài 1800.00.08 hoặc Zalo 09.38.38.38.80 - Thành Hưng khảo sát và báo giá hoàn toàn miễn phí.',
-            'home_press_enable' => 1,
-            'home_press_subtitle' => 'Báo chí nói gì về thương hiệu',
-            'home_press_title' => 'Taxi Tải Chuyển Nhà Thành Hưng',
-            'home_press_description' => 'Niềm tin tưởng Quý Khách tạo động lực và sự phát triển công ty <strong>Thành Hưng</strong>. Chúng tôi cam kết phục vụ bằng sự tận tâm và chân tình.',
-            'home_press_logos' => array(
-                array('logo' => ''),
-                array('logo' => ''),
-                array('logo' => ''),
-                array('logo' => ''),
-                array('logo' => ''),
-                array('logo' => ''),
-                array('logo' => ''),
-                array('logo' => ''),
-                array('logo' => ''),
-            ),
-            'home_press_articles' => array(
-                array(
-                    'image' => '',
-                    'url' => '#',
-                ),
-                array(
-                    'image' => '',
-                    'url' => '#',
-                ),
-                array(
-                    'image' => '',
-                    'url' => '#',
-                ),
-                array(
-                    'image' => '',
-                    'url' => '#',
-                ),
-            ),
-            'home_news_enable' => 1,
-            'home_news_subtitle' => 'Tin Chia Sẻ Mới Nhất Về',
-            'home_news_title' => 'Taxi Tải Thành Hưng',
-            'home_news_category' => '',
-            'home_news_count' => 3,
-            'home_news_button_text' => 'Xem tất cả tin tức →',
-            'home_news_button_url' => '#',
-            'home_video_enable' => 1,
-            'home_video_subtitle' => 'Video Taxi Tải Thành Hưng',
-            'home_video_title' => 'Những khoảnh khắc đẹp được chúng tôi ghi lại hoặc những hướng dẫn chia sẻ liên quan đến dịch vụ chuyển nhà.',
-            'home_video_items' => array(
-                array(
-                    'video_url' => '',
-                    'thumbnail' => '',
-                ),
-                array(
-                    'video_url' => '',
-                    'thumbnail' => '',
-                ),
-                array(
-                    'video_url' => '',
-                    'thumbnail' => '',
-                ),
-            ),
-            'home_capabilities_enable' => 1,
-            'home_capabilities_eyebrow' => 'Năng lực',
-            'home_capabilities_subtitle' => 'Vì Sao Khách Hàng Chọn',
-            'home_capabilities_title' => 'Dịch Vụ Chuyển Nhà Thành Hưng',
-            'home_capabilities_cards' => array(
-                array(
-                    'icon_class' => 'fa-solid fa-user-tie',
-                    'title' => 'Đội ngũ tận tâm, thân thiện',
-                    'description' => 'Chú trọng tuyển dụng và đào tạo đội ngũ nhân viên chuyên nghiệp, thái độ đúng mực và luôn hỗ trợ khách hàng trong mọi tình huống.',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-gears',
-                    'title' => 'Quy trình chuyên nghiệp',
-                    'description' => 'Quy trình chuẩn hóa từ tiếp nhận, khảo sát, báo giá đến vận chuyển giúp hạn chế sai sót và tối ưu thời gian.',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-truck-fast',
-                    'title' => 'Đội xe đa dạng',
-                    'description' => 'Hệ thống xe tải nhiều tải trọng, phù hợp từng nhu cầu chuyển nhà, chuyển văn phòng và vận chuyển hàng hóa.',
-                ),
-                array(
+                    'icon_image' => '',
                     'icon_class' => 'fa-solid fa-award',
-                    'title' => 'Kinh nghiệm vận chuyển',
-                    'description' => 'Hơn 20 năm kinh nghiệm vận chuyển nhà, kho bãi, căn hộ và hàng hóa cồng kềnh với quy trình xử lý linh hoạt.',
+                    'title' => '100% Chất lượng',
+                    'description' => 'Đá nhập khẩu chính hãng, đạt chuẩn quốc tế',
+                ),
+                array(
+                    'icon_image' => '',
+                    'icon_class' => 'fa-solid fa-warehouse',
+                    'title' => 'Kho hàng lớn',
+                    'description' => 'Luôn sẵn số lượng lớn, đáp ứng nhanh mọi nhu cầu',
                 ),
             ),
-            'home_commitments_enable' => 1,
-            'home_commitments_eyebrow' => 'Cam kết',
-            'home_commitments_cards' => array(
-                array(
-                    'icon_class' => 'fa-regular fa-clipboard',
-                    'title' => 'Khảo sát miễn phí',
-                    'description' => 'Nhân viên đến tận nơi đánh giá khối lượng, địa hình thực tế và đưa ra phương án vận chuyển tối ưu.',
-                ),
-                array(
-                    'icon_class' => 'fa-regular fa-file-lines',
-                    'title' => 'Hợp đồng rõ ràng',
-                    'description' => 'Ký hợp đồng đầy đủ mức giá, trách nhiệm và thời gian thực hiện để khách hàng yên tâm sử dụng dịch vụ.',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-magnifying-glass-chart',
-                    'title' => 'Giám sát chất lượng',
-                    'description' => 'Chuyên viên kiểm soát chất lượng theo sát từng hạng mục, kịp thời xử lý các phát sinh trong ngày vận chuyển.',
-                ),
-                array(
-                    'icon_class' => 'fa-regular fa-face-smile',
-                    'title' => 'Chăm sóc sau vận chuyển',
-                    'description' => 'Chủ động gọi điện kiểm tra mức độ hài lòng, tiếp nhận yêu cầu bổ sung và hoàn tất hỗ trợ khi khách cần.',
-                ),
-            ),
-            'home_process_enable' => 1,
-            'home_process_title' => 'Quy trình vận chuyển tại',
-            'home_process_highlight' => 'Taxi Tải Thành Hưng',
-            'home_process_steps' => array(
-                array(
-                    'icon_class' => 'fa-solid fa-phone',
-                    'step_label' => 'Bước 1',
-                    'title' => 'Tiếp nhận yêu cầu',
-                    'description' => 'Tổng đài ghi nhận nhu cầu, địa chỉ, khối lượng và thời gian khách mong muốn.',
-                    'badge' => '',
-                ),
-                array(
-                    'icon_class' => 'fa-regular fa-clipboard',
-                    'step_label' => 'Bước 2',
-                    'title' => 'Khảo sát & báo giá',
-                    'description' => 'Nhân viên khảo sát thực tế, tư vấn phương án và báo giá chi tiết.',
-                    'badge' => '',
-                ),
-                array(
-                    'icon_class' => 'fa-regular fa-pen-to-square',
-                    'step_label' => 'Bước 3',
-                    'title' => 'Ký hợp đồng',
-                    'description' => 'Thống nhất chi phí, phương án thực hiện và các điều khoản vận chuyển.',
-                    'badge' => '',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-truck-ramp-box',
-                    'step_label' => 'Bước 4',
-                    'title' => 'Tiến hành thực hiện',
-                    'description' => 'Đóng gói, bốc xếp, vận chuyển và sắp xếp đồ đạc theo kế hoạch.',
-                    'badge' => '',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-check',
-                    'step_label' => 'Bước 5',
-                    'title' => 'Nghiệm thu bàn giao',
-                    'description' => 'Khách hàng kiểm tra hiện trạng đồ đạc, xác nhận bàn giao hoàn tất.',
-                    'badge' => '',
-                ),
-                array(
-                    'icon_class' => 'fa-solid fa-headset',
-                    'step_label' => 'Bước 6',
-                    'title' => 'Hỗ trợ sau vận chuyển',
-                    'description' => 'Chăm sóc sau dịch vụ và tiếp nhận phản hồi để hỗ trợ kịp thời.',
-                    'badge' => 'Chăm sóc Thành Hưng',
-                ),
-            ),
-            'home_faq_enable' => 1,
-            'home_faq_subtitle' => 'Câu Hỏi Thường Gặp Về',
-            'home_faq_title' => 'Dịch Vụ Chuyển Nhà Thành Hưng',
-            'home_faq_items' => array(
-                array(
-                    'question' => 'Số điện thoại chính hãng của Taxi Tải Thành Hưng là bao nhiêu?',
-                    'answer' => 'Khách hàng nên liên hệ qua số hotline được công bố trên website chính thức để được xác nhận thông tin dịch vụ và báo giá.',
-                ),
-                array(
-                    'question' => 'Làm sao phân biệt Thành Hưng chính hãng và giả mạo?',
-                    'answer' => 'Hãy kiểm tra tên thương hiệu, thông tin liên hệ, hợp đồng dịch vụ và yêu cầu nhân viên xuất trình thông tin khi khảo sát.',
-                ),
-                array(
-                    'question' => 'Dịch vụ chuyển nhà trọn gói Thành Hưng bao gồm những gì?',
-                    'answer' => 'Dịch vụ thường bao gồm khảo sát, tư vấn phương án, đóng gói, bốc xếp, vận chuyển, sắp xếp và nghiệm thu sau khi hoàn tất.',
-                ),
-                array(
-                    'question' => 'Thành Hưng có cam kết bồi thường khi đồ đạc bị hư hỏng không?',
-                    'answer' => 'Các hạng mục trách nhiệm được thể hiện trong hợp đồng. Khách hàng nên kiểm tra kỹ điều khoản bồi thường trước ngày vận chuyển.',
-                ),
-                array(
-                    'question' => 'Nhân viên chuyển nhà có phải người của công ty Thành Hưng không?',
-                    'answer' => 'Đội ngũ thực hiện được điều phối theo quy trình nội bộ, có giám sát và người phụ trách để khách hàng dễ dàng trao đổi.',
-                ),
-                array(
-                    'question' => 'Thành Hưng có chuyển nhà ngoài giờ, cuối tuần, ngày lễ không?',
-                    'answer' => 'Có thể sắp xếp theo lịch khách hàng yêu cầu. Với lịch ngoài giờ hoặc ngày lễ, chi phí sẽ được báo rõ trước khi thực hiện.',
-                ),
-                array(
-                    'question' => 'Cần chuẩn bị gì trước ngày Thành Hưng đến chuyển nhà?',
-                    'answer' => 'Khách hàng nên phân loại đồ quan trọng, giấy tờ cá nhân, vật dụng dễ vỡ và xác nhận lại thời gian, địa chỉ với nhân viên phụ trách.',
-                ),
-                array(
-                    'question' => 'Thành Hưng có hỗ trợ tư vấn ngày tốt nhập trạch không?',
-                    'answer' => 'Nhân viên có thể hỗ trợ sắp xếp lịch vận chuyển theo ngày giờ khách hàng đã chọn để quá trình chuyển nhà thuận tiện hơn.',
-                ),
-            ),
+
+            // Sản phẩm nổi bật
+            'home_featured_products_enable' => 1,
+            'home_featured_products_eyebrow' => 'NỔI BẬT',
+            'home_featured_products_title' => 'SẢN PHẨM',
+            'home_featured_products_title_red' => 'TIÊU BIỂU',
+            'home_featured_products_button_text' => 'Xem tất cả',
+            'home_featured_products_button_url' => '/san-pham',
+            'home_featured_products_background_image' => '',
+            'home_featured_products' => array(),
         );
     }
 }
 
-if (!function_exists('thanh_hung_home_field')) {
-    function thanh_hung_home_field($name)
+if (!function_exists('quoc_phuong_home_field')) {
+    function quoc_phuong_home_field($name)
     {
-        $defaults = thanh_hung_home_defaults();
+        $defaults = quoc_phuong_home_defaults();
         $has_default = array_key_exists($name, $defaults);
 
         if (function_exists('get_field')) {
@@ -359,7 +96,7 @@ if (!function_exists('thanh_hung_home_field')) {
                 $post_id = get_the_ID();
                 $raw_value = $post_id ? get_post_meta($post_id, $name, true) : null;
 
-                if ($value === false && $raw_value === '' && array_key_exists($name, $defaults)) {
+                if ($value === false && $raw_value === '' && $has_default) {
                     return (bool) $defaults[$name];
                 }
 
@@ -383,17 +120,16 @@ if (!function_exists('thanh_hung_home_field')) {
     }
 }
 
-if (!function_exists('thanh_hung_home_items')) {
-    function thanh_hung_home_items($name)
+if (!function_exists('quoc_phuong_home_items')) {
+    function quoc_phuong_home_items($name)
     {
-        $items = thanh_hung_home_field($name);
-
+        $items = quoc_phuong_home_field($name);
         return is_array($items) ? array_values(array_filter($items, 'is_array')) : array();
     }
 }
 
-if (!function_exists('thanh_hung_home_image_url')) {
-    function thanh_hung_home_image_url($image, $size = 'full')
+if (!function_exists('quoc_phuong_home_image_url')) {
+    function quoc_phuong_home_image_url($image, $size = 'full')
     {
         if (is_array($image) && !empty($image['sizes'][$size])) {
             return $image['sizes'][$size];
@@ -412,24 +148,8 @@ if (!function_exists('thanh_hung_home_image_url')) {
     }
 }
 
-if (!function_exists('thanh_hung_home_image_alt')) {
-    function thanh_hung_home_image_alt($image, $fallback = '')
-    {
-        if (is_array($image) && !empty($image['alt'])) {
-            return $image['alt'];
-        }
-
-        if (is_numeric($image)) {
-            $alt = get_post_meta((int) $image, '_wp_attachment_image_alt', true);
-            return $alt ? $alt : $fallback;
-        }
-
-        return $fallback;
-    }
-}
-
-if (!function_exists('thanh_hung_home_acf_with_wrapper')) {
-    function thanh_hung_home_acf_with_wrapper($field, $width = 0)
+if (!function_exists('quoc_phuong_home_acf_with_wrapper')) {
+    function quoc_phuong_home_acf_with_wrapper($field, $width = 0)
     {
         if ($width > 0) {
             $field['wrapper'] = array(
@@ -443,25 +163,8 @@ if (!function_exists('thanh_hung_home_acf_with_wrapper')) {
     }
 }
 
-if (!function_exists('thanh_hung_home_acf_repeater_collapsed_key')) {
-    function thanh_hung_home_acf_repeater_collapsed_key($sub_fields)
-    {
-        $priority_names = array('title', 'question', 'name', 'step_label', 'label', 'value', 'url', 'video_url');
-
-        foreach ($priority_names as $name) {
-            foreach ($sub_fields as $sub_field) {
-                if (!empty($sub_field['name']) && $sub_field['name'] === $name && !empty($sub_field['key'])) {
-                    return $sub_field['key'];
-                }
-            }
-        }
-
-        return '';
-    }
-}
-
-if (!function_exists('thanh_hung_home_acf_text')) {
-    function thanh_hung_home_acf_text($key, $label, $name, $default = '', $type = 'text', $instructions = '', $width = null)
+if (!function_exists('quoc_phuong_home_acf_text')) {
+    function quoc_phuong_home_acf_text($key, $label, $name, $default = '', $type = 'text', $instructions = '', $width = null)
     {
         $field = array(
             'key' => $key,
@@ -477,14 +180,14 @@ if (!function_exists('thanh_hung_home_acf_text')) {
             $field['new_lines'] = '';
         }
 
-        return thanh_hung_home_acf_with_wrapper($field, $width !== null ? $width : ($type === 'textarea' ? 100 : 50));
+        return quoc_phuong_home_acf_with_wrapper($field, $width !== null ? $width : ($type === 'textarea' ? 100 : 50));
     }
 }
 
-if (!function_exists('thanh_hung_home_acf_image')) {
-    function thanh_hung_home_acf_image($key, $label, $name, $instructions = '', $width = 50, $preview_size = 'medium')
+if (!function_exists('quoc_phuong_home_acf_image')) {
+    function quoc_phuong_home_acf_image($key, $label, $name, $instructions = '', $width = 50, $preview_size = 'large')
     {
-        return thanh_hung_home_acf_with_wrapper(array(
+        return quoc_phuong_home_acf_with_wrapper(array(
             'key' => $key,
             'label' => $label,
             'name' => $name,
@@ -497,50 +200,28 @@ if (!function_exists('thanh_hung_home_acf_image')) {
     }
 }
 
-if (!function_exists('thanh_hung_home_acf_number')) {
-    function thanh_hung_home_acf_number($key, $label, $name, $default = 0, $min = 0, $max = 0)
+if (!function_exists('quoc_phuong_home_acf_relationship')) {
+    function quoc_phuong_home_acf_relationship($key, $label, $name, $post_type = 'product', $width = 100)
     {
-        $field = array(
+        return quoc_phuong_home_acf_with_wrapper(array(
             'key' => $key,
             'label' => $label,
             'name' => $name,
-            'type' => 'number',
-            'default_value' => $default,
-            'min' => $min,
-            'step' => 1,
-        );
-
-        if ($max > 0) {
-            $field['max'] = $max;
-        }
-
-        return thanh_hung_home_acf_with_wrapper($field, 25);
+            'type' => 'relationship',
+            'post_type' => array($post_type),
+            'filters' => array('search', 'taxonomy'),
+            'return_format' => 'object',
+            'min' => 0,
+            'max' => 12,
+            'elements' => array('featured_image'),
+        ), $width);
     }
 }
 
-if (!function_exists('thanh_hung_home_acf_taxonomy')) {
-    function thanh_hung_home_acf_taxonomy($key, $label, $name)
+if (!function_exists('quoc_phuong_home_acf_true_false')) {
+    function quoc_phuong_home_acf_true_false($key, $label, $name)
     {
-        return thanh_hung_home_acf_with_wrapper(array(
-            'key' => $key,
-            'label' => $label,
-            'name' => $name,
-            'type' => 'taxonomy',
-            'taxonomy' => 'category',
-            'field_type' => 'select',
-            'allow_null' => 1,
-            'add_term' => 0,
-            'save_terms' => 0,
-            'load_terms' => 0,
-            'return_format' => 'id',
-        ), 50);
-    }
-}
-
-if (!function_exists('thanh_hung_home_acf_true_false')) {
-    function thanh_hung_home_acf_true_false($key, $label, $name)
-    {
-        return thanh_hung_home_acf_with_wrapper(array(
+        return quoc_phuong_home_acf_with_wrapper(array(
             'key' => $key,
             'label' => $label,
             'name' => $name,
@@ -551,8 +232,8 @@ if (!function_exists('thanh_hung_home_acf_true_false')) {
     }
 }
 
-if (!function_exists('thanh_hung_home_acf_tab')) {
-    function thanh_hung_home_acf_tab($key, $label)
+if (!function_exists('quoc_phuong_home_acf_tab')) {
+    function quoc_phuong_home_acf_tab($key, $label)
     {
         return array(
             'key' => $key,
@@ -563,8 +244,23 @@ if (!function_exists('thanh_hung_home_acf_tab')) {
     }
 }
 
-if (!function_exists('thanh_hung_home_acf_repeater')) {
-    function thanh_hung_home_acf_repeater($key, $label, $name, $sub_fields, $button_label, $max = 0)
+if (!function_exists('quoc_phuong_home_acf_repeater_collapsed_key')) {
+    function quoc_phuong_home_acf_repeater_collapsed_key($sub_fields)
+    {
+        foreach (array('value', 'label', 'title', 'name') as $name) {
+            foreach ($sub_fields as $sub_field) {
+                if (!empty($sub_field['name']) && $sub_field['name'] === $name && !empty($sub_field['key'])) {
+                    return $sub_field['key'];
+                }
+            }
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('quoc_phuong_home_acf_repeater')) {
+    function quoc_phuong_home_acf_repeater($key, $label, $name, $sub_fields, $button_label, $max = 0)
     {
         $field = array(
             'key' => $key,
@@ -575,7 +271,8 @@ if (!function_exists('thanh_hung_home_acf_repeater')) {
             'button_label' => $button_label,
             'sub_fields' => $sub_fields,
         );
-        $collapsed_key = thanh_hung_home_acf_repeater_collapsed_key($sub_fields);
+
+        $collapsed_key = quoc_phuong_home_acf_repeater_collapsed_key($sub_fields);
 
         if ($max > 0) {
             $field['max'] = $max;
@@ -594,273 +291,271 @@ add_action('acf/init', function () {
         return;
     }
 
-    $defaults = thanh_hung_home_defaults();
+    $defaults = quoc_phuong_home_defaults();
 
     acf_add_local_field_group(array(
-        'key' => 'group_thanh_hung_home_sections',
+        'key' => 'group_quoc_phuong_home_sections',
         'title' => 'Trang chủ - Quản lý section',
         'fields' => array(
-            thanh_hung_home_acf_tab('field_th_home_tab_banner', 'Banner slide'),
-            thanh_hung_home_acf_true_false('field_th_home_banner_enable', 'Hiển thị section', 'home_banner_enable'),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_banner_slides',
-                'Danh sách slide',
-                'home_banner_slides',
-                array(
-                    thanh_hung_home_acf_image('field_th_home_banner_image', 'Ảnh banner', 'image', 'Khuyến nghị ảnh ngang 1920x650 trở lên.'),
-                ),
-                'Thêm slide'
+            quoc_phuong_home_acf_tab('field_qp_home_tab_banner', 'Banner'),
+
+            quoc_phuong_home_acf_true_false('field_qp_home_banner_enable', 'Hiển thị banner', 'home_banner_enable'),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_eyebrow', 'Text nhỏ phía trên', 'home_banner_eyebrow', $defaults['home_banner_eyebrow']),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_title_highlight', 'Tiêu đề lớn', 'home_banner_title_highlight', $defaults['home_banner_title_highlight']),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_title', 'Tiêu đề phụ', 'home_banner_title', $defaults['home_banner_title']),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_description', 'Mô tả', 'home_banner_description', $defaults['home_banner_description'], 'textarea'),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_primary_text', 'Text nút chính', 'home_banner_primary_text', $defaults['home_banner_primary_text']),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_primary_url', 'Link nút chính', 'home_banner_primary_url', $defaults['home_banner_primary_url']),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_secondary_text', 'Text nút phụ', 'home_banner_secondary_text', $defaults['home_banner_secondary_text']),
+
+            quoc_phuong_home_acf_text('field_qp_home_banner_secondary_url', 'Link nút phụ', 'home_banner_secondary_url', $defaults['home_banner_secondary_url']),
+
+            quoc_phuong_home_acf_image(
+                'field_qp_home_banner_image',
+                'Ảnh banner',
+                'home_banner_image',
+                'Ảnh ngang khoảng 1920x700 hoặc 1920x800.',
+                100,
+                'large'
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_intro', 'Giới thiệu'),
-            thanh_hung_home_acf_true_false('field_th_home_intro_enable', 'Hiển thị section', 'home_intro_enable'),
-            thanh_hung_home_acf_text('field_th_home_intro_badge', 'Nhãn xanh', 'home_intro_badge', $defaults['home_intro_badge']),
-            thanh_hung_home_acf_text('field_th_home_intro_title_highlight', 'Phần tiêu đề màu đỏ', 'home_intro_title_highlight', $defaults['home_intro_title_highlight']),
-            thanh_hung_home_acf_text('field_th_home_intro_title', 'Tiêu đề chính', 'home_intro_title', $defaults['home_intro_title']),
-            thanh_hung_home_acf_text('field_th_home_intro_description', 'Mô tả', 'home_intro_description', $defaults['home_intro_description'], 'textarea', 'Có thể dùng thẻ <strong> để in đậm.'),
-            thanh_hung_home_acf_text('field_th_home_intro_primary_text', 'Text nút chính', 'home_intro_primary_text', $defaults['home_intro_primary_text']),
-            thanh_hung_home_acf_text('field_th_home_intro_primary_url', 'Link nút chính', 'home_intro_primary_url', $defaults['home_intro_primary_url']),
-            thanh_hung_home_acf_text('field_th_home_intro_secondary_text', 'Text nút phụ', 'home_intro_secondary_text', $defaults['home_intro_secondary_text']),
-            thanh_hung_home_acf_text('field_th_home_intro_secondary_url', 'Link nút phụ', 'home_intro_secondary_url', $defaults['home_intro_secondary_url']),
-            thanh_hung_home_acf_image('field_th_home_intro_image', 'Ảnh giới thiệu', 'home_intro_image', 'Ảnh như poster/đội xe trong section giới thiệu.'),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_intro_stats',
-                'Thông số',
-                'home_intro_stats',
+            quoc_phuong_home_acf_repeater(
+                'field_qp_home_banner_stats',
+                '3 khối thống kê banner',
+                'home_banner_stats',
                 array(
-                    thanh_hung_home_acf_text('field_th_home_intro_stat_value', 'Số liệu', 'value'),
-                    thanh_hung_home_acf_text('field_th_home_intro_stat_label', 'Nhãn', 'label'),
+                    quoc_phuong_home_acf_image(
+                        'field_qp_home_banner_stat_icon_image',
+                        'Ảnh icon',
+                        'icon_image',
+                        'Có thể tải icon PNG/SVG.',
+                        50,
+                        'thumbnail'
+                    ),
+
+                    quoc_phuong_home_acf_text(
+                        'field_qp_home_banner_stat_icon_class',
+                        'FontAwesome class dự phòng',
+                        'icon_class',
+                        'fa-solid fa-gem',
+                        'Nếu không tải ảnh icon thì dùng class này.',
+                        50
+                    ),
+
+                    quoc_phuong_home_acf_text(
+                        'field_qp_home_banner_stat_value',
+                        'Số liệu / Giá trị',
+                        'value',
+                        '',
+                        'text',
+                        '',
+                        50
+                    ),
+
+                    quoc_phuong_home_acf_text(
+                        'field_qp_home_banner_stat_label',
+                        'Nhãn chính',
+                        'label',
+                        '',
+                        'text',
+                        '',
+                        50
+                    ),
+
+                    quoc_phuong_home_acf_text(
+                        'field_qp_home_banner_stat_description',
+                        'Mô tả nhỏ',
+                        'description',
+                        '',
+                        'text',
+                        '',
+                        50
+                    ),
                 ),
-                'Thêm thông số',
+                'Thêm khối',
                 3
             ),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_intro_strip_items',
-                'Thanh cam kết đỏ',
-                'home_intro_strip_items',
+
+            // Giới thiệu
+            quoc_phuong_home_acf_tab('field_qp_home_tab_intro', 'Giới thiệu'),
+
+            quoc_phuong_home_acf_true_false(
+                'field_qp_home_intro_enable',
+                'Hiển thị giới thiệu',
+                'home_intro_enable'
+            ),
+
+            quoc_phuong_home_acf_text(
+                'field_qp_home_intro_eyebrow',
+                'Text nhỏ phía trên',
+                'home_intro_eyebrow',
+                $defaults['home_intro_eyebrow']
+            ),
+
+            quoc_phuong_home_acf_text(
+                'field_qp_home_intro_title',
+                'Tiêu đề chính',
+                'home_intro_title',
+                $defaults['home_intro_title']
+            ),
+
+            quoc_phuong_home_acf_text(
+                'field_qp_home_intro_title_red',
+                'Tiêu đề màu đỏ',
+                'home_intro_title_red',
+                $defaults['home_intro_title_red']
+            ),
+
+            quoc_phuong_home_acf_text(
+                'field_qp_home_intro_description',
+                'Nội dung giới thiệu',
+                'home_intro_description',
+                $defaults['home_intro_description'],
+                'textarea',
+                '',
+                100
+            ),
+
+            quoc_phuong_home_acf_image(
+                'field_qp_home_intro_image',
+                'Ảnh nền giới thiệu',
+                'home_intro_image',
+                'Ảnh ngang giống mẫu, khoảng 1920x760.',
+                100,
+                'large'
+            ),
+
+            quoc_phuong_home_acf_image(
+                'field_qp_home_intro_bottom_image',
+                'Ảnh bên dưới',
+                'home_intro_bottom_image',
+                'Ảnh hiển thị phía dưới section giới thiệu.',
+                100,
+                'large'
+            ),
+
+            quoc_phuong_home_acf_repeater(
+                'field_qp_home_intro_features',
+                '3 khối cam kết giới thiệu',
+                'home_intro_features',
                 array(
-                    thanh_hung_home_acf_text('field_th_home_intro_strip_icon', 'FontAwesome class', 'icon_class', 'fa-solid fa-shield-halved'),
-                    thanh_hung_home_acf_text('field_th_home_intro_strip_title', 'Nội dung', 'title'),
+                    quoc_phuong_home_acf_image(
+                        'field_qp_home_intro_feature_icon_image',
+                        'Ảnh icon',
+                        'icon_image',
+                        'Có thể tải icon PNG/SVG.',
+                        50,
+                        'thumbnail'
+                    ),
+
+                    quoc_phuong_home_acf_text(
+                        'field_qp_home_intro_feature_icon_class',
+                        'FontAwesome class dự phòng',
+                        'icon_class',
+                        'fa-solid fa-gem',
+                        '',
+                        50
+                    ),
+
+                    quoc_phuong_home_acf_text(
+                        'field_qp_home_intro_feature_title',
+                        'Tiêu đề',
+                        'title',
+                        '',
+                        'text',
+                        '',
+                        50
+                    ),
+
+                    quoc_phuong_home_acf_text(
+                        'field_qp_home_intro_feature_description',
+                        'Mô tả',
+                        'description',
+                        '',
+                        'textarea',
+                        '',
+                        100
+                    ),
                 ),
-                'Thêm cam kết',
+                'Thêm khối',
                 3
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_services', 'Dịch vụ'),
-            thanh_hung_home_acf_true_false('field_th_home_services_enable', 'Hiển thị section', 'home_services_enable'),
-            thanh_hung_home_acf_text('field_th_home_services_subtitle', 'Dòng tiêu đề nhỏ', 'home_services_subtitle', $defaults['home_services_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_services_title', 'Tiêu đề đỏ', 'home_services_title', $defaults['home_services_title']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_services_items',
-                'Danh sách dịch vụ',
-                'home_services_items',
-                array(
-                    thanh_hung_home_acf_image('field_th_home_services_item_image', 'Ảnh/Icon tải lên', 'image', 'Nếu có ảnh, frontend sẽ ưu tiên ảnh này thay cho FontAwesome class.'),
-                    thanh_hung_home_acf_text('field_th_home_services_item_icon', 'FontAwesome class', 'icon_class', 'fa-solid fa-truck-fast'),
-                    thanh_hung_home_acf_text('field_th_home_services_item_title', 'Tên dịch vụ', 'title'),
-                    thanh_hung_home_acf_text('field_th_home_services_item_url', 'Link trang dịch vụ', 'url', '#'),
-                ),
-                'Thêm dịch vụ'
+            // Sản phẩm nổi bật
+            quoc_phuong_home_acf_tab('field_qp_home_tab_featured_products', 'Sản phẩm nổi bật'),
+
+            quoc_phuong_home_acf_true_false(
+                'field_qp_home_featured_products_enable',
+                'Hiển thị section',
+                'home_featured_products_enable'
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_pricing', 'Bảng giá'),
-            thanh_hung_home_acf_true_false('field_th_home_pricing_enable', 'Hiển thị section', 'home_pricing_enable'),
-            thanh_hung_home_acf_text('field_th_home_pricing_title', 'Tiêu đề chính', 'home_pricing_title', $defaults['home_pricing_title']),
-            thanh_hung_home_acf_text('field_th_home_pricing_subtitle', 'Dòng cập nhật', 'home_pricing_subtitle', $defaults['home_pricing_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_pricing_formula_heading', 'Tiêu đề khung công thức', 'home_pricing_formula_heading', $defaults['home_pricing_formula_heading'], 'textarea'),
-            thanh_hung_home_acf_text('field_th_home_pricing_formula_equation', 'Công thức nổi bật', 'home_pricing_formula_equation', $defaults['home_pricing_formula_equation'], 'textarea'),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_pricing_formula_notes',
-                'Các dòng giải thích công thức',
-                'home_pricing_formula_notes',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_pricing_formula_note_title', 'Nhãn', 'title', '', 'text', '', 30),
-                    thanh_hung_home_acf_text('field_th_home_pricing_formula_note_description', 'Nội dung', 'description', '', 'textarea', 'Có thể dùng thẻ <strong> để in đậm.', 70),
-                ),
-                'Thêm dòng giải thích'
-            ),
-            thanh_hung_home_acf_text('field_th_home_pricing_hotline', 'Dòng hotline', 'home_pricing_hotline', $defaults['home_pricing_hotline']),
-            thanh_hung_home_acf_text('field_th_home_pricing_table_title', 'Tiêu đề cụm bảng', 'home_pricing_table_title', $defaults['home_pricing_table_title']),
-            thanh_hung_home_acf_text('field_th_home_pricing_table_description', 'Mô tả cụm bảng', 'home_pricing_table_description', $defaults['home_pricing_table_description'], 'textarea'),
-            thanh_hung_home_acf_text('field_th_home_pricing_local_title', 'Tên bảng nội thành', 'home_pricing_local_title', $defaults['home_pricing_local_title']),
-            thanh_hung_home_acf_text('field_th_home_pricing_local_primary_label', 'Cột giá 1 - nội thành', 'home_pricing_local_primary_label', $defaults['home_pricing_local_primary_label']),
-            thanh_hung_home_acf_text('field_th_home_pricing_local_secondary_label', 'Cột giá 2 - nội thành', 'home_pricing_local_secondary_label', $defaults['home_pricing_local_secondary_label']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_pricing_local_rows',
-                'Dòng giá nội thành',
-                'home_pricing_local_rows',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_pricing_local_vehicle', 'Loại xe', 'title', '', 'text', '', 25),
-                    thanh_hung_home_acf_text('field_th_home_pricing_local_dimensions', 'Kích thước thùng', 'dimensions', '', 'text', '', 25),
-                    thanh_hung_home_acf_text('field_th_home_pricing_local_primary_price', 'Giá cột 1', 'primary_price', '', 'text', '', 25),
-                    thanh_hung_home_acf_text('field_th_home_pricing_local_secondary_price', 'Giá cột 2', 'secondary_price', '', 'text', '', 25),
-                ),
-                'Thêm dòng giá'
-            ),
-            thanh_hung_home_acf_text('field_th_home_pricing_long_title', 'Tên bảng liên tỉnh', 'home_pricing_long_title', $defaults['home_pricing_long_title']),
-            thanh_hung_home_acf_text('field_th_home_pricing_long_primary_label', 'Cột giá 1 - liên tỉnh', 'home_pricing_long_primary_label', $defaults['home_pricing_long_primary_label']),
-            thanh_hung_home_acf_text('field_th_home_pricing_long_secondary_label', 'Cột giá 2 - liên tỉnh', 'home_pricing_long_secondary_label', $defaults['home_pricing_long_secondary_label']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_pricing_long_rows',
-                'Dòng giá liên tỉnh',
-                'home_pricing_long_rows',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_pricing_long_vehicle', 'Loại xe', 'title', '', 'text', '', 25),
-                    thanh_hung_home_acf_text('field_th_home_pricing_long_dimensions', 'Kích thước thùng', 'dimensions', '', 'text', '', 25),
-                    thanh_hung_home_acf_text('field_th_home_pricing_long_primary_price', 'Giá cột 1', 'primary_price', '', 'text', '', 25),
-                    thanh_hung_home_acf_text('field_th_home_pricing_long_secondary_price', 'Giá cột 2', 'secondary_price', '', 'text', '', 25),
-                ),
-                'Thêm dòng giá'
-            ),
-            thanh_hung_home_acf_text('field_th_home_pricing_labor_title', 'Tiêu đề bảng bốc xếp', 'home_pricing_labor_title', $defaults['home_pricing_labor_title']),
-            thanh_hung_home_acf_text('field_th_home_pricing_labor_description', 'Mô tả bảng bốc xếp', 'home_pricing_labor_description', $defaults['home_pricing_labor_description'], 'textarea'),
-            thanh_hung_home_acf_text('field_th_home_pricing_labor_price_label', 'Cột phí bốc xếp', 'home_pricing_labor_price_label', $defaults['home_pricing_labor_price_label']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_pricing_labor_rows',
-                'Dòng giá bốc xếp',
-                'home_pricing_labor_rows',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_pricing_labor_vehicle', 'Loại xe', 'title', '', 'text', '', 33),
-                    thanh_hung_home_acf_text('field_th_home_pricing_labor_dimensions', 'Kích thước', 'dimensions', '', 'text', '', 33),
-                    thanh_hung_home_acf_text('field_th_home_pricing_labor_price', 'Phí bốc xếp', 'primary_price', '', 'text', '', 34),
-                ),
-                'Thêm dòng bốc xếp'
-            ),
-            thanh_hung_home_acf_text('field_th_home_pricing_extra_title', 'Tiêu đề bảng phụ phí', 'home_pricing_extra_title', $defaults['home_pricing_extra_title']),
-            thanh_hung_home_acf_text('field_th_home_pricing_extra_description', 'Mô tả bảng phụ phí', 'home_pricing_extra_description', $defaults['home_pricing_extra_description'], 'textarea'),
-            thanh_hung_home_acf_text('field_th_home_pricing_extra_fee_label', 'Cột chi phí', 'home_pricing_extra_fee_label', $defaults['home_pricing_extra_fee_label']),
-            thanh_hung_home_acf_text('field_th_home_pricing_extra_note_label', 'Cột ghi chú', 'home_pricing_extra_note_label', $defaults['home_pricing_extra_note_label']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_pricing_extra_rows',
-                'Dòng phụ phí phát sinh',
-                'home_pricing_extra_rows',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_pricing_extra_item', 'Hạng mục', 'title', '', 'text', '', 30),
-                    thanh_hung_home_acf_text('field_th_home_pricing_extra_fee', 'Chi phí', 'primary_price', '', 'text', '', 30),
-                    thanh_hung_home_acf_text('field_th_home_pricing_extra_note', 'Ghi chú', 'secondary_price', '', 'textarea', '', 40),
-                ),
-                'Thêm dòng phụ phí'
-            ),
-            thanh_hung_home_acf_text('field_th_home_pricing_notice', 'Lưu ý cuối bảng giá', 'home_pricing_notice', $defaults['home_pricing_notice'], 'textarea'),
-
-            thanh_hung_home_acf_tab('field_th_home_tab_capabilities', 'Năng lực'),
-            thanh_hung_home_acf_true_false('field_th_home_capabilities_enable', 'Hiển thị section', 'home_capabilities_enable'),
-            thanh_hung_home_acf_text('field_th_home_capabilities_eyebrow', 'Nhãn section', 'home_capabilities_eyebrow', $defaults['home_capabilities_eyebrow']),
-            thanh_hung_home_acf_text('field_th_home_capabilities_subtitle', 'Dòng tiêu đề nhỏ', 'home_capabilities_subtitle', $defaults['home_capabilities_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_capabilities_title', 'Tiêu đề đỏ', 'home_capabilities_title', $defaults['home_capabilities_title']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_capabilities_cards',
-                'Danh sách năng lực',
-                'home_capabilities_cards',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_capabilities_icon', 'FontAwesome class', 'icon_class', 'fa-solid fa-user-tie'),
-                    thanh_hung_home_acf_text('field_th_home_capabilities_card_title', 'Tiêu đề', 'title'),
-                    thanh_hung_home_acf_text('field_th_home_capabilities_card_description', 'Mô tả', 'description', '', 'textarea'),
-                ),
-                'Thêm năng lực',
-                4
+            quoc_phuong_home_acf_text(
+                'field_qp_home_featured_products_eyebrow',
+                'Text nhỏ',
+                'home_featured_products_eyebrow',
+                $defaults['home_featured_products_eyebrow']
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_commitments', 'Cam kết'),
-            thanh_hung_home_acf_true_false('field_th_home_commitments_enable', 'Hiển thị section', 'home_commitments_enable'),
-            thanh_hung_home_acf_text('field_th_home_commitments_eyebrow', 'Nhãn section', 'home_commitments_eyebrow', $defaults['home_commitments_eyebrow']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_commitments_cards',
-                'Danh sách cam kết',
-                'home_commitments_cards',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_commitments_icon', 'FontAwesome class', 'icon_class', 'fa-regular fa-clipboard'),
-                    thanh_hung_home_acf_text('field_th_home_commitments_card_title', 'Tiêu đề', 'title'),
-                    thanh_hung_home_acf_text('field_th_home_commitments_card_description', 'Mô tả', 'description', '', 'textarea'),
-                ),
-                'Thêm cam kết',
-                4
+            quoc_phuong_home_acf_text(
+                'field_qp_home_featured_products_title',
+                'Tiêu đề đen',
+                'home_featured_products_title',
+                $defaults['home_featured_products_title']
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_process', 'Quy trình'),
-            thanh_hung_home_acf_true_false('field_th_home_process_enable', 'Hiển thị section', 'home_process_enable'),
-            thanh_hung_home_acf_text('field_th_home_process_title', 'Tiêu đề trước phần đỏ', 'home_process_title', $defaults['home_process_title']),
-            thanh_hung_home_acf_text('field_th_home_process_highlight', 'Phần tiêu đề màu đỏ', 'home_process_highlight', $defaults['home_process_highlight']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_process_steps',
-                'Danh sách bước',
-                'home_process_steps',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_process_icon', 'FontAwesome class', 'icon_class', 'fa-solid fa-phone'),
-                    thanh_hung_home_acf_text('field_th_home_process_step_label', 'Nhãn bước', 'step_label', 'Bước 1'),
-                    thanh_hung_home_acf_text('field_th_home_process_step_title', 'Tiêu đề', 'title'),
-                    thanh_hung_home_acf_text('field_th_home_process_step_description', 'Mô tả', 'description', '', 'textarea'),
-                    thanh_hung_home_acf_text('field_th_home_process_step_badge', 'Nhãn đỏ phía trên', 'badge'),
-                ),
-                'Thêm bước',
-                6
+            quoc_phuong_home_acf_text(
+                'field_qp_home_featured_products_title_red',
+                'Tiêu đề đỏ',
+                'home_featured_products_title_red',
+                $defaults['home_featured_products_title_red']
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_faq', 'FAQ'),
-            thanh_hung_home_acf_true_false('field_th_home_faq_enable', 'Hiển thị section', 'home_faq_enable'),
-            thanh_hung_home_acf_text('field_th_home_faq_subtitle', 'Dòng tiêu đề nhỏ', 'home_faq_subtitle', $defaults['home_faq_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_faq_title', 'Tiêu đề đỏ', 'home_faq_title', $defaults['home_faq_title']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_faq_items',
-                'Danh sách câu hỏi',
-                'home_faq_items',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_faq_question', 'Câu hỏi', 'question'),
-                    thanh_hung_home_acf_text('field_th_home_faq_answer', 'Câu trả lời', 'answer', '', 'textarea'),
-                ),
-                'Thêm câu hỏi'
+            quoc_phuong_home_acf_image(
+                'field_qp_home_featured_products_background_image',
+                'Ảnh nền section',
+                'home_featured_products_background_image',
+                'Ảnh nền vân đá nhẹ.',
+                100,
+                'large'
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_press', 'Báo chí'),
-            thanh_hung_home_acf_true_false('field_th_home_press_enable', 'Hiển thị section', 'home_press_enable'),
-            thanh_hung_home_acf_text('field_th_home_press_subtitle', 'Dòng tiêu đề nhỏ', 'home_press_subtitle', $defaults['home_press_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_press_title', 'Tiêu đề đỏ', 'home_press_title', $defaults['home_press_title']),
-            thanh_hung_home_acf_text('field_th_home_press_description', 'Mô tả', 'home_press_description', $defaults['home_press_description'], 'textarea', 'Có thể dùng thẻ <strong> để in đậm.'),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_press_logos',
-                'Logo báo chí',
-                'home_press_logos',
-                array(
-                    thanh_hung_home_acf_image('field_th_home_press_logo_image', 'Logo', 'logo'),
-                ),
-                'Thêm logo'
-            ),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_press_articles',
-                'Bài báo nổi bật',
-                'home_press_articles',
-                array(
-                    thanh_hung_home_acf_image('field_th_home_press_article_image', 'Ảnh bài báo', 'image', '', 35, 'thumbnail'),
-                    thanh_hung_home_acf_text('field_th_home_press_article_url', 'Link bài viết', 'url', '#', 'text', '', 65),
-                ),
-                'Thêm bài báo'
+            quoc_phuong_home_acf_relationship(
+                'field_qp_home_featured_products',
+                'Chọn sản phẩm WooCommerce',
+                'home_featured_products',
+                'product',
+                100
             ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_news', 'Tin mới nhất'),
-            thanh_hung_home_acf_true_false('field_th_home_news_enable', 'Hiển thị section', 'home_news_enable'),
-            thanh_hung_home_acf_text('field_th_home_news_subtitle', 'Dòng tiêu đề nhỏ', 'home_news_subtitle', $defaults['home_news_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_news_title', 'Tiêu đề chính', 'home_news_title', $defaults['home_news_title']),
-            thanh_hung_home_acf_taxonomy('field_th_home_news_category', 'Danh mục bài viết', 'home_news_category'),
-            thanh_hung_home_acf_number('field_th_home_news_count', 'Số bài hiển thị', 'home_news_count', $defaults['home_news_count'], 1, 3),
-            thanh_hung_home_acf_text('field_th_home_news_button_text', 'Text nút xem tất cả', 'home_news_button_text', $defaults['home_news_button_text']),
-            thanh_hung_home_acf_text('field_th_home_news_button_url', 'Link nút xem tất cả', 'home_news_button_url', $defaults['home_news_button_url']),
+            quoc_phuong_home_acf_text(
+                'field_qp_home_featured_products_button_text',
+                'Text nút xem tất cả',
+                'home_featured_products_button_text',
+                $defaults['home_featured_products_button_text'],
+                'text',
+                '',
+                50
+            ),
 
-            thanh_hung_home_acf_tab('field_th_home_tab_video', 'Video'),
-            thanh_hung_home_acf_true_false('field_th_home_video_enable', 'Hiển thị section', 'home_video_enable'),
-            thanh_hung_home_acf_text('field_th_home_video_subtitle', 'Dòng tiêu đề nhỏ', 'home_video_subtitle', $defaults['home_video_subtitle']),
-            thanh_hung_home_acf_text('field_th_home_video_title', 'Tiêu đề đỏ', 'home_video_title', $defaults['home_video_title']),
-            thanh_hung_home_acf_repeater(
-                'field_th_home_video_items',
-                'Danh sách video',
-                'home_video_items',
-                array(
-                    thanh_hung_home_acf_text('field_th_home_video_item_url', 'Link YouTube / video', 'video_url'),
-                    thanh_hung_home_acf_image('field_th_home_video_item_thumbnail', 'Ảnh thumbnail', 'thumbnail'),
-                ),
-                'Thêm video',
-                4
+            quoc_phuong_home_acf_text(
+                'field_qp_home_featured_products_button_url',
+                'Link nút xem tất cả',
+                'home_featured_products_button_url',
+                $defaults['home_featured_products_button_url'],
+                'text',
+                '',
+                50
             ),
         ),
+
         'location' => array(
             array(
                 array(
@@ -884,62 +579,4 @@ add_action('acf/init', function () {
         'instruction_placement' => 'label',
         'active' => true,
     ));
-});
-
-add_action('acf/input/admin_footer', function () {
-    ?>
-    <style>
-        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_article_image"] .image-wrap img,
-        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_logo_image"] .image-wrap img {
-            max-height: 150px;
-            width: auto;
-        }
-
-        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_article_image"] .acf-image-uploader,
-        #acf-group_thanh_hung_home_sections .acf-field[data-key="field_th_home_press_logo_image"] .acf-image-uploader {
-            max-width: 260px;
-        }
-    </style>
-    <script>
-        (function ($) {
-            function thanhHungHomeIsPressTab($box) {
-                var $pressAnchor = $box.find('.acf-tab-group a[data-key="field_th_home_tab_press"]');
-                var $activeTab = $box.find('.acf-tab-group li.active a, .acf-tab-group a.active, .acf-tab-group a[aria-selected="true"]').first();
-
-                if ($pressAnchor.parent().hasClass('active') || $pressAnchor.hasClass('active') || $pressAnchor.attr('aria-selected') === 'true') {
-                    return true;
-                }
-
-                if ($activeTab.length) {
-                    return $activeTab.data('key') === 'field_th_home_tab_press' || $.trim($activeTab.text()) === 'Báo chí';
-                }
-
-                return $box.find('.acf-field[data-key="field_th_home_press_enable"], .acf-field[data-key="field_th_home_press_subtitle"], .acf-field[data-key="field_th_home_press_title"]').filter(function () {
-                    return $(this).is(':visible');
-                }).length > 0;
-            }
-
-            function thanhHungHomeSyncPressFields() {
-                var $box = $('#acf-group_thanh_hung_home_sections');
-
-                if (!$box.length) {
-                    return;
-                }
-
-                $box.find('.acf-field[data-key="field_th_home_press_logos"], .acf-field[data-key="field_th_home_press_articles"]').toggle(thanhHungHomeIsPressTab($box));
-            }
-
-            if (window.acf) {
-                acf.addAction('ready append show_field', thanhHungHomeSyncPressFields);
-            }
-
-            $(document).on('click', '#acf-group_thanh_hung_home_sections .acf-tab-group li a', function () {
-                setTimeout(thanhHungHomeSyncPressFields, 0);
-                setTimeout(thanhHungHomeSyncPressFields, 50);
-            });
-
-            $(thanhHungHomeSyncPressFields);
-        })(jQuery);
-    </script>
-    <?php
 });
