@@ -1,6 +1,6 @@
 <?php
 /**
- * Customer processing order email (initial block version)
+ * Customer processing order email (inital block version)
  *
  * This template can be overridden by editing it in the WooCommerce email editor.
  *
@@ -12,7 +12,7 @@
  *
  * @see https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates\Emails\Block
- * @version 10.7.0
+ * @version 10.1.0
  */
 
 use Automattic\WooCommerce\Internal\EmailEditor\BlockEmailRenderer;
@@ -42,13 +42,13 @@ defined( 'ABSPATH' ) || exit;
 <p> <?php echo esc_html__( 'Here’s a reminder of what you’ve ordered:', 'woocommerce' ); ?> </p>
 <!-- /wp:paragraph -->
 
-<!-- wp:woocommerce/email-content {"lock":{"move":false,"remove":true}} -->
-<div class="wp-block-woocommerce-email-content"> <?php echo esc_html( BlockEmailRenderer::WOO_EMAIL_CONTENT_PLACEHOLDER ); ?> </div>
-<!-- /wp:woocommerce/email-content -->
+<!-- wp:woo/email-content {"lock":{"move":false,"remove":true}} -->
+<div class="wp-block-woo-email-content"> <?php echo esc_html( BlockEmailRenderer::WOO_EMAIL_CONTENT_PLACEHOLDER ); ?> </div>
+<!-- /wp:woo/email-content -->
 
-<!-- wp:paragraph {"align":"center"} -->
-<p class="has-text-align-center"><?php
+<!-- wp:paragraph -->
+<p><?php
 /* translators: %s: Store admin email */
-printf( esc_html__( 'Thanks again! If you need any help with your order, please contact us at %s.', 'woocommerce' ), '<!--[woocommerce/store-email]-->' );
+	printf( esc_html__( 'Thanks again! If you need any help with your order, please contact us at %s,', 'woocommerce' ), '<!--[woocommerce/store-email]-->' );
 ?></p>
 <!-- /wp:paragraph -->

@@ -9,8 +9,7 @@
 	"textdomain": "woocommerce",
 	"attributes": {
 		"label": {
-			"type": "string",
-			"role": "content"
+			"type": "string"
 		}
 	},
 	"usesContext": [ "postId", "reviews/paginationArrow" ],

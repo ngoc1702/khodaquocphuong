@@ -12,7 +12,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Automattic\WooCommerce\Internal\RestApiParameterUtil;
 use Automattic\WooCommerce\Internal\CostOfGoodsSold\CogsAwareTrait;
-use Automattic\WooCommerce\Utilities\MetaDataUtil;
 
 /**
  * REST API Order Refunds controller class.
@@ -71,8 +70,10 @@ class WC_REST_Order_Refunds_Controller extends WC_REST_Order_Refunds_V2_Controll
 			return new WP_Error( 'woocommerce_rest_cannot_create_order_refund', __( 'Cannot create order refund, please try again.', 'woocommerce' ), 500 );
 		}
 
-		if ( ! empty( $request['meta_data'] ) ) {
-			MetaDataUtil::update( $request['meta_data'], $refund );
+		if ( ! empty( $request['meta_data'] ) && is_array( $request['meta_data'] ) ) {
+			foreach ( $request['meta_data'] as $meta ) {
+				$refund->update_meta_data( $meta['key'], $meta['value'], isset( $meta['id'] ) ? $meta['id'] : '' );
+			}
 			$refund->save_meta_data();
 		}
 

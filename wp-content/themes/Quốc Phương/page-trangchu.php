@@ -264,8 +264,215 @@ if (!function_exists('quoc_phuong_render_home_acf')) {
                     </a>
                 </div>
             <?php endif; ?>
+
         </div>
     </section>
+<?php endif; ?>
+
+
+ <!-- Form tư vấn -->
+<?php if (quoc_phuong_home_field('home_consult_form_enable')): ?>
+    <?php
+    $consult_bg = quoc_phuong_home_field('home_consult_form_background_image');
+    $consult_bg_url = $consult_bg ? quoc_phuong_home_image_url($consult_bg) : '';
+    $consult_shortcode = quoc_phuong_home_field('home_consult_form_shortcode');
+    ?>
+
+    <section class="home-consult-form-section" <?php if ($consult_bg_url): ?>
+        style="background-image: url('<?php echo esc_url($consult_bg_url); ?>');"
+    <?php endif; ?>>
+        <div class="home-consult-form-overlay">
+            <div class="home-consult-form-box">
+                <?php if (quoc_phuong_home_field('home_consult_form_eyebrow')): ?>
+                    <div class="home-consult-form-eyebrow">
+                        <?php echo esc_html(quoc_phuong_home_field('home_consult_form_eyebrow')); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (quoc_phuong_home_field('home_consult_form_title')): ?>
+                    <h2><?php echo esc_html(quoc_phuong_home_field('home_consult_form_title')); ?></h2>
+                <?php endif; ?>
+
+                <div class="home-consult-form-line"></div>
+
+                <?php if ($consult_shortcode): ?>
+                    <div class="home-consult-form-content">
+                        <?php echo do_shortcode($consult_shortcode); ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
+
+
+
+<!-- Tin tức + Video nổi bật -->
+<?php if (quoc_phuong_home_field('home_news_video_enable')): ?>
+    <?php
+    $news_video_bg = quoc_phuong_home_field('home_news_video_bg');
+    $news_video_bg_url = $news_video_bg ? quoc_phuong_home_image_url($news_video_bg) : '';
+    $news_posts = quoc_phuong_home_field('home_news_video_posts');
+    $main_video_url = quoc_phuong_home_field('home_news_video_main_url');
+
+    $video_thumbs = array(
+        array(
+            'image' => quoc_phuong_home_field('home_news_video_thumb_1'),
+            'url' => quoc_phuong_home_field('home_news_video_url_1'),
+        ),
+        array(
+            'image' => quoc_phuong_home_field('home_news_video_thumb_2'),
+            'url' => quoc_phuong_home_field('home_news_video_url_2'),
+        ),
+        array(
+            'image' => quoc_phuong_home_field('home_news_video_thumb_3'),
+            'url' => quoc_phuong_home_field('home_news_video_url_3'),
+        ),
+    );
+    ?>
+
+    <section class="home-news-video-section" <?php if ($news_video_bg_url): ?>
+        style="background-image: url('<?php echo esc_url($news_video_bg_url); ?>');"
+    <?php endif; ?>>
+        <div class="home-news-video-inner">
+            <div class="home-news-column">
+                <div class="home-news-video-heading">
+                    <h2>
+                        <?php echo esc_html(quoc_phuong_home_field('home_news_video_news_eyebrow')); ?>
+                        <span><?php echo esc_html(quoc_phuong_home_field('home_news_video_news_highlight')); ?></span>
+                    </h2>
+                    <p><?php echo esc_html(quoc_phuong_home_field('home_news_video_news_desc')); ?></p>
+                </div>
+
+                <?php if (!empty($news_posts)): ?>
+                    <div class="home-news-list">
+                        <?php $i = 1; ?>
+                        <?php foreach (array_slice($news_posts, 0, 3) as $post_item): ?>
+                            <?php
+                            $post_id = is_object($post_item) ? $post_item->ID : (int) $post_item;
+                            $post_title = get_the_title($post_id);
+                            $post_link = get_permalink($post_id);
+                            $post_img = get_the_post_thumbnail_url($post_id, 'medium_large');
+                            $post_excerpt = get_the_excerpt($post_id);
+                            ?>
+
+                            <article class="home-news-item">
+                                <a class="home-news-img" href="<?php echo esc_url($post_link); ?>">
+                                    <?php if ($post_img): ?>
+                                        <img src="<?php echo esc_url($post_img); ?>" alt="<?php echo esc_attr($post_title); ?>">
+                                    <?php endif; ?>
+                                </a>
+
+                                <div class="home-news-index"><?php echo esc_html($i); ?></div>
+
+                                <div class="home-news-content">
+                                    <h3>
+                                        <a href="<?php echo esc_url($post_link); ?>">
+                                            <?php echo esc_html($post_title); ?>
+                                        </a>
+                                    </h3>
+
+                                    <?php if ($post_excerpt): ?>
+                                        <p><?php echo esc_html(wp_trim_words($post_excerpt, 28)); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            </article>
+
+                            <?php $i++; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="home-video-column">
+                <div class="home-news-video-heading">
+                    <h2>
+                        <?php echo esc_html(quoc_phuong_home_field('home_news_video_video_eyebrow')); ?>
+                        <span><?php echo esc_html(quoc_phuong_home_field('home_news_video_video_highlight')); ?></span>
+                    </h2>
+                    <p><?php echo esc_html(quoc_phuong_home_field('home_news_video_video_desc')); ?></p>
+                </div>
+
+                <?php if ($main_video_url): ?>
+                    <a class="home-main-video" href="<?php echo esc_url($main_video_url); ?>" target="_blank" rel="noopener">
+                        <?php
+                        $main_video_thumb = quoc_phuong_home_field('home_news_video_thumb_1');
+                        $main_video_thumb_url = $main_video_thumb ? quoc_phuong_home_image_url($main_video_thumb, 'large') : '';
+                        ?>
+
+                        <?php if ($main_video_thumb_url): ?>
+                            <img src="<?php echo esc_url($main_video_thumb_url); ?>" alt="">
+                        <?php endif; ?>
+
+                        <span><i class="fa-solid fa-play"></i></span>
+                    </a>
+                <?php endif; ?>
+
+                <div class="home-video-thumbs">
+                    <?php foreach ($video_thumbs as $video): ?>
+                        <?php
+                        $thumb_url = !empty($video['image']) ? quoc_phuong_home_image_url($video['image'], 'medium') : '';
+                        $url = !empty($video['url']) ? $video['url'] : '#';
+                        ?>
+
+                        <?php if ($thumb_url): ?>
+                            <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener">
+                                <img src="<?php echo esc_url($thumb_url); ?>" alt="">
+                                <span><i class="fa-solid fa-play"></i></span>
+                            </a>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="home-youtube-box">
+                    <div class="home-youtube-icon">
+                        <i class="fa-brands fa-youtube"></i>
+                    </div>
+
+                    <div>
+                        <strong>CẬP NHẬT VIDEO MỚI NHẤT</strong>
+                        <p>Đăng ký kênh Youtube để không bỏ lỡ những video mới nhất.</p>
+                    </div>
+
+                    <?php if (quoc_phuong_home_field('home_news_video_youtube_url')): ?>
+                        <a href="<?php echo esc_url(quoc_phuong_home_field('home_news_video_youtube_url')); ?>" target="_blank" rel="noopener">
+                            Đăng ký
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
+
+
+<!-- Map -->
+<?php if (quoc_phuong_home_field('home_map_enable')): ?>
+    <?php
+    $map_iframe = quoc_phuong_home_field('home_map_iframe');
+    $map_height = quoc_phuong_home_field('home_map_height') ?: 360;
+    ?>
+
+    <?php if ($map_iframe): ?>
+        <section class="home-map-section" style="--home-map-height: <?php echo esc_attr((int) $map_height); ?>px;">
+            <div class="home-map-wrap">
+                <?php
+                echo wp_kses($map_iframe, array(
+                    'iframe' => array(
+                        'src' => true,
+                        'width' => true,
+                        'height' => true,
+                        'style' => true,
+                        'allowfullscreen' => true,
+                        'loading' => true,
+                        'referrerpolicy' => true,
+                        'title' => true,
+                    ),
+                ));
+                ?>
+            </div>
+        </section>
+    <?php endif; ?>
 <?php endif; ?>
 <?php endif; ?>
             <?php endif; ?>

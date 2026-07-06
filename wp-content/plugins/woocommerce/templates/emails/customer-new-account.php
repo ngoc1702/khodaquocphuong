@@ -1,8 +1,8 @@
 <?php
 /**
- * Customer new account email (initial block content).
+ * Customer new account email
  *
- * This template can be overridden by editing it in the WooCommerce email editor.
+ * This template can be overridden by copying it to yourtheme/woocommerce/emails/customer-new-account.php.
  *
  * HOWEVER, on occasion WooCommerce will need to update template files and you
  * (the theme developer) will need to copy the new files to your theme to
@@ -11,71 +11,66 @@
  * the readme will list any important changes.
  *
  * @see https://woocommerce.com/document/template-structure/
- * @package WooCommerce\Templates\Emails\Block
- * @version 10.6.0
+ * @package WooCommerce\Templates\Emails
+ * @version 10.0.0
  */
 
-use Automattic\WooCommerce\Internal\EmailEditor\BlockEmailRenderer;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 defined( 'ABSPATH' ) || exit;
 
-// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen -- removed to prevent empty new lines.
-// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentAfterEnd -- removed to prevent empty new lines.
-?>
+$email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improvements' );
 
-<!-- wp:heading -->
-<h2 class="wp-block-heading"><?php
-/* translators: %s: Site title*/
-printf( esc_html__( 'Welcome to %s', 'woocommerce' ), '<!--[woocommerce/site-title]-->' );
-?></h2>
-<!-- /wp:heading -->
+/**
+ * Fires to output the email header.
+ *
+ * @hooked WC_Emails::email_header()
+ *
+ * @since 3.7.0
+ */
+do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<!-- wp:paragraph -->
-<p><?php
-	/* translators: %s: Customer first name */
-	printf( esc_html__( 'Hi %s,', 'woocommerce' ), '<!--[woocommerce/customer-first-name]-->' );
-?></p>
-<!-- /wp:paragraph -->
+<?php echo $email_improvements_enabled ? '<div class="email-introduction">' : ''; ?>
+<?php /* translators: %s: Customer username */ ?>
+<p><?php printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $user_login ) ); ?></p>
+<?php if ( $email_improvements_enabled ) : ?>
+	<?php /* translators: %s: Site title */ ?>
+	<p><?php printf( esc_html__( 'Thanks for creating an account on %s. Here’s a copy of your user details.', 'woocommerce' ), esc_html( $blogname ) ); ?></p>
+	<div class="hr hr-top"></div>
+	<?php /* translators: %s: Username */ ?>
+	<p><?php echo wp_kses( sprintf( __( 'Username: <b>%s</b>', 'woocommerce' ), esc_html( $user_login ) ), array( 'b' => array() ) ); ?></p>
+	<?php if ( $password_generated && $set_password_url ) : ?>
+		<?php // If the password has not been set by the user during the sign up process, send them a link to set a new password. ?>
+		<p><a href="<?php echo esc_attr( $set_password_url ); ?>"><?php printf( esc_html__( 'Set your new password.', 'woocommerce' ) ); ?></a></p>
+	<?php endif; ?>
+	<div class="hr hr-bottom"></div>
+	<p><?php echo esc_html__( 'You can access your account area to view orders, change your password, and more via the link below:', 'woocommerce' ); ?></p>
+	<p><a href="<?php echo esc_attr( wc_get_page_permalink( 'myaccount' ) ); ?>"><?php printf( esc_html__( 'My account', 'woocommerce' ) ); ?></a></p>
+<?php else : ?>
+	<?php /* translators: %1$s: Site title, %2$s: Username, %3$s: My account link */ ?>
+	<p><?php printf( esc_html__( 'Thanks for creating an account on %1$s. Your username is %2$s. You can access your account area to view orders, change your password, and more at: %3$s', 'woocommerce' ), esc_html( $blogname ), '<strong>' . esc_html( $user_login ) . '</strong>', make_clickable( esc_url( wc_get_page_permalink( 'myaccount' ) ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+	<?php if ( $password_generated && $set_password_url ) : ?>
+		<?php // If the password has not been set by the user during the sign up process, send them a link to set a new password. ?>
+		<p><a href="<?php echo esc_attr( $set_password_url ); ?>"><?php printf( esc_html__( 'Click here to set your new password.', 'woocommerce' ) ); ?></a></p>
+	<?php endif; ?>
+<?php endif; ?>
+<?php echo $email_improvements_enabled ? '</div>' : ''; ?>
 
-<!-- wp:paragraph -->
-<p><?php
-	/* translators: %s: Site title */
-	printf( esc_html__( 'Thanks for creating an account on %s. Here’s a copy of your user details.', 'woocommerce' ), '<!--[woocommerce/site-title]-->' );
-?></p>
-<!-- /wp:paragraph -->
+<?php
+/**
+ * Show user-defined additional content - this is set in each email's settings.
+ */
+if ( $additional_content ) {
+	echo $email_improvements_enabled ? '<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="email-additional-content email-additional-content-aligned">' : '';
+	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
+	echo $email_improvements_enabled ? '</td></tr></table>' : '';
+}
 
-<!-- wp:paragraph -->
-<p><?php
-/* translators: %s: Username */
-echo wp_kses( sprintf( __( 'Username: <b>%s</b>', 'woocommerce' ), '<!--[woocommerce/customer-username]-->' ), array( 'b' => array() ) );
-?></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:woocommerce/email-content {"lock":{"move":false,"remove":true}} -->
-<div class="wp-block-woocommerce-email-content"> <?php echo esc_html( BlockEmailRenderer::WOO_EMAIL_CONTENT_PLACEHOLDER ); ?> </div>
-<!-- /wp:woocommerce/email-content -->
-
-<!-- wp:paragraph -->
-<p><?php echo esc_html__( 'You can access your account area to view orders, change your password, and more via the link below:', 'woocommerce' ); ?></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p><?php
-	$link_template = '<a data-link-href="%1$s" contenteditable="false" style="text-decoration: underline;">%2$s</a>';
-	printf(
-		'%s',
-		wp_kses_post(
-			sprintf(
-				$link_template,
-				esc_attr( '[woocommerce/my-account-url]' ),
-				esc_html__( 'My account', 'woocommerce' )
-			)
-		)
-	);
-	?></p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph {"align":"center"} -->
-<p class="has-text-align-center"> <?php echo esc_html__( 'We look forward to seeing you soon.', 'woocommerce' ); ?> </p>
-<!-- /wp:paragraph -->
-
+/**
+ * Fires to output the email footer.
+ *
+ * @hooked WC_Emails::email_footer()
+ *
+ * @since 3.7.0
+ */
+do_action( 'woocommerce_email_footer', $email );

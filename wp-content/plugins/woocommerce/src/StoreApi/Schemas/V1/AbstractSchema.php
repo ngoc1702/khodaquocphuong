@@ -90,9 +90,6 @@ abstract class AbstractSchema {
 	protected function remove_arg_options( $properties ) {
 		return array_map(
 			function( $property ) {
-				if ( ! is_array( $property ) ) {
-					return $property;
-				}
 				if ( isset( $property['properties'] ) ) {
 					$property['properties'] = $this->remove_arg_options( $property['properties'] );
 				} elseif ( isset( $property['items']['properties'] ) ) {
@@ -251,7 +248,7 @@ abstract class AbstractSchema {
 	/**
 	 * Returns extended schema for a specific endpoint.
 	 *
-	 * @param string $endpoint The endpoint identifier.
+	 * @param string $endpoint The endpoint identifer.
 	 * @param array  ...$passed_args An array of arguments to be passed to callbacks.
 	 * @return array the data that will get added.
 	 */
@@ -261,7 +258,7 @@ abstract class AbstractSchema {
 
 		return [
 			'type'        => 'object',
-			'context'     => [ 'view', 'edit', 'embed' ],
+			'context'     => [ 'view', 'edit' ],
 			'arg_options' => [
 				'default'           => $defaults,
 				'validate_callback' => $this->get_recursive_validate_callback( $extended_schema ),
@@ -332,43 +329,43 @@ abstract class AbstractSchema {
 			'currency_code'               => [
 				'description' => __( 'Currency code (in ISO format) for returned prices.', 'woocommerce' ),
 				'type'        => 'string',
-				'context'     => [ 'view', 'edit', 'embed' ],
+				'context'     => [ 'view', 'edit' ],
 				'readonly'    => true,
 			],
 			'currency_symbol'             => [
 				'description' => __( 'Currency symbol for the currency which can be used to format returned prices.', 'woocommerce' ),
 				'type'        => 'string',
-				'context'     => [ 'view', 'edit', 'embed' ],
+				'context'     => [ 'view', 'edit' ],
 				'readonly'    => true,
 			],
 			'currency_minor_unit'         => [
 				'description' => __( 'Currency minor unit (number of digits after the decimal separator) for returned prices.', 'woocommerce' ),
 				'type'        => 'integer',
-				'context'     => [ 'view', 'edit', 'embed' ],
+				'context'     => [ 'view', 'edit' ],
 				'readonly'    => true,
 			],
 			'currency_decimal_separator'  => array(
 				'description' => __( 'Decimal separator for the currency which can be used to format returned prices.', 'woocommerce' ),
 				'type'        => 'string',
-				'context'     => array( 'view', 'edit', 'embed' ),
+				'context'     => array( 'view', 'edit' ),
 				'readonly'    => true,
 			),
 			'currency_thousand_separator' => array(
 				'description' => __( 'Thousand separator for the currency which can be used to format returned prices.', 'woocommerce' ),
 				'type'        => 'string',
-				'context'     => array( 'view', 'edit', 'embed' ),
+				'context'     => array( 'view', 'edit' ),
 				'readonly'    => true,
 			),
 			'currency_prefix'             => array(
 				'description' => __( 'Price prefix for the currency which can be used to format returned prices.', 'woocommerce' ),
 				'type'        => 'string',
-				'context'     => array( 'view', 'edit', 'embed' ),
+				'context'     => array( 'view', 'edit' ),
 				'readonly'    => true,
 			),
 			'currency_suffix'             => array(
 				'description' => __( 'Price prefix for the currency which can be used to format returned prices.', 'woocommerce' ),
 				'type'        => 'string',
-				'context'     => array( 'view', 'edit', 'embed' ),
+				'context'     => array( 'view', 'edit' ),
 				'readonly'    => true,
 			),
 		];

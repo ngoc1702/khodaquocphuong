@@ -48,6 +48,7 @@ class VariationSelectorAttributeName extends AbstractBlock {
 		$wrapper_attributes = get_block_wrapper_attributes(
 			array(
 				'class' => esc_attr( $classes_and_styles['classes'] ),
+				'for'   => esc_attr( $attribute_id ),
 				'id'    => esc_attr( $attribute_id . '_label' ),
 				'style' => esc_attr( $classes_and_styles['styles'] ),
 			)
@@ -56,7 +57,7 @@ class VariationSelectorAttributeName extends AbstractBlock {
 		$label_text = esc_html( wc_attribute_label( $attribute_name ) );
 
 		return sprintf(
-			'<span %s>%s</span>',
+			'<label %s>%s</label>',
 			$wrapper_attributes,
 			$label_text
 		);

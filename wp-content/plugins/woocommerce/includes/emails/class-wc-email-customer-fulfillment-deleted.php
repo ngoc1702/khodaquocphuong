@@ -5,7 +5,7 @@
  * @package WooCommerce\Emails
  */
 
-use Automattic\WooCommerce\Admin\Features\Fulfillments\Fulfillment;
+use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -38,7 +38,6 @@ if ( ! class_exists( 'WC_Email_Customer_Fulfillment_Deleted', false ) ) :
 			$this->id             = 'customer_fulfillment_deleted';
 			$this->customer_email = true;
 			$this->title          = __( 'Fulfillment deleted', 'woocommerce' );
-			$this->email_group    = 'order-updates';
 			$this->template_html  = 'emails/customer-fulfillment-deleted.php';
 			$this->template_plain = 'emails/plain/customer-fulfillment-deleted.php';
 			$this->placeholders   = array(
@@ -53,8 +52,6 @@ if ( ! class_exists( 'WC_Email_Customer_Fulfillment_Deleted', false ) ) :
 			parent::__construct();
 
 			$this->description = __( 'Fulfillment deleted emails are sent to the customer when the merchant cancels an already fulfilled fulfillment. The notification isn’t sent for draft fulfillments.', 'woocommerce' );
-
-			$this->template_block_content = 'emails/block/general-block-content-for-fulfillment-emails.php';
 		}
 
 		/**
@@ -79,7 +76,9 @@ if ( ! class_exists( 'WC_Email_Customer_Fulfillment_Deleted', false ) ) :
 				$this->placeholders['{order_number}'] = $this->object->get_order_number();
 			}
 
-			$this->send_notification();
+			if ( $this->is_enabled() && $this->get_recipient() ) {
+				$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+			}
 
 			$this->restore_locale();
 		}
@@ -142,25 +141,6 @@ if ( ! class_exists( 'WC_Email_Customer_Fulfillment_Deleted', false ) ) :
 					'sent_to_admin'      => false,
 					'plain_text'         => true,
 					'email'              => $this,
-				)
-			);
-		}
-
-		/**
-		 * Get block editor email template content.
-		 *
-		 * @return string
-		 */
-		public function get_block_editor_email_template_content() {
-			$this->maybe_init_fulfillment_for_preview( $this->object );
-			return wc_get_template_html(
-				$this->template_block_content,
-				array(
-					'order'         => $this->object,
-					'fulfillment'   => $this->fulfillment,
-					'sent_to_admin' => false,
-					'plain_text'    => false,
-					'email'         => $this,
 				)
 			);
 		}

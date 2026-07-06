@@ -8,8 +8,6 @@ use Automattic\WooCommerce\Internal\RegisterHooksInterface;
 defined( 'ABSPATH' ) || exit;
 /**
  * Hooks into WordPress filters to handle product filters for the main query.
- *
- * @internal For exclusive usage of WooCommerce core, backwards compatibility not guaranteed.
  */
 class MainQueryController implements RegisterHooksInterface {
 
@@ -21,44 +19,50 @@ class MainQueryController implements RegisterHooksInterface {
 	private $query_clauses;
 
 	/**
-	 * Hold the filter params.
-	 *
-	 * @var Params
-	 */
-	private $params;
-
-	/**
 	 * Initialize dependencies.
 	 *
 	 * @internal For exclusive usage of WooCommerce core, backwards compatibility not guaranteed.
+	 *
 	 * @param QueryClauses $query_clauses Instance of QueryClauses.
-	 * @param Params       $params        Instance of Params.
 	 *
 	 * @return void
 	 */
-	final public function init( QueryClauses $query_clauses, Params $params ): void {
+	final public function init( QueryClauses $query_clauses ): void {
 		$this->query_clauses = $query_clauses;
-		$this->params        = $params;
 	}
 
 	/**
 	 * Hook into actions and filters.
-	 *
-	 * @return void
 	 */
-	public function register(): void {
-		add_filter( 'posts_clauses', array( $this->query_clauses, 'add_query_clauses_for_main_query' ), 10, 2 );
-		add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
+	public function register() {
+		add_filter( 'posts_clauses', array( $this, 'main_query_filter' ), 10, 2 );
 	}
 
 	/**
-	 * Register custom query vars for our filters. Price, stock status, and attribute query vars are
-	 * already registered at WC_Query.
+	 * Filter the posts clauses of the main query to suport global filters.
 	 *
-	 * @param array $query_vars Query vars.
+	 * @internal For exclusive usage of WooCommerce core, backwards compatibility not guaranteed.
+	 *
+	 * @param array     $args     Query args.
+	 * @param \WP_Query $wp_query WP_Query object.
 	 * @return array
 	 */
-	public function add_query_vars( array $query_vars ): array {
-		return array_merge( $query_vars, $this->params->get_param_keys() );
+	public function main_query_filter( $args, $wp_query ) {
+		if (
+			! $wp_query->is_main_query() ||
+			'product_query' !== $wp_query->get( 'wc_query' )
+		) {
+			return $args;
+		}
+
+		if ( $wp_query->get( 'filter_stock_status' ) ) {
+			$stock_statuses = trim( $wp_query->get( 'filter_stock_status' ) );
+			$stock_statuses = explode( ',', $stock_statuses );
+			$stock_statuses = array_filter( $stock_statuses );
+
+			$args = $this->query_clauses->add_stock_clauses( $args, $stock_statuses );
+		}
+
+		return $args;
 	}
 }

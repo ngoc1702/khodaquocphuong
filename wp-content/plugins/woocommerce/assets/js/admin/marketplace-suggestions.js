@@ -318,6 +318,7 @@
 			// Streamline onboarding UI if we're in 'empty state' welcome mode.
 			if ( showingEmptyStateSuggestions ) {
 				$( '#screen-meta-links' ).hide();
+				$( '#wpfooter' ).hide();
 			}
 
 			// Hide the header & footer, they don't make sense without specific promotion content

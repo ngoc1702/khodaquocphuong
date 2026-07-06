@@ -6,6 +6,7 @@
  * @version 2.5.0
  */
 
+use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Internal\Admin\Marketplace;
 use Automattic\WooCommerce\Internal\Admin\Orders\COTRedirectionController;
 use Automattic\WooCommerce\Internal\Admin\Orders\PageController as Custom_Orders_PageController;
@@ -55,10 +56,14 @@ class WC_Admin_Menus {
 		 * @param bool $show_addons_page If the addons page should be included.
 		 */
 		if ( apply_filters( 'woocommerce_show_addons_page', true ) ) {
-			$container = wc_get_container();
-			$container->get( Marketplace::class );
+			if ( FeaturesUtil::feature_is_enabled( 'marketplace' ) ) {
+				$container = wc_get_container();
+				$container->get( Marketplace::class );
 
-			add_action( 'admin_menu', array( $this, 'addons_my_subscriptions' ), 70 );
+				add_action( 'admin_menu', array( $this, 'addons_my_subscriptions' ), 70 );
+			} else {
+				add_action( 'admin_menu', array( $this, 'addons_menu' ), 70 );
+			}
 		}
 
 		add_filter( 'menu_order', array( $this, 'menu_order' ) );
@@ -79,8 +84,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Add menu items.
-	 *
-	 * @return void
 	 */
 	public function admin_menu() {
 		global $menu, $admin_page_hooks;
@@ -102,8 +105,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Add menu item.
-	 *
-	 * @return void
 	 */
 	public function reports_menu() {
 		if ( self::can_view_woocommerce_menu_item() ) {
@@ -115,8 +116,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Add menu item.
-	 *
-	 * @return void
 	 */
 	public function settings_menu() {
 		$settings_page = add_submenu_page(
@@ -133,8 +132,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Check if the user can access the top-level WooCommerce item.
-	 *
-	 * @return bool
 	 */
 	public static function can_view_woocommerce_menu_item() {
 		return current_user_can( 'edit_others_shop_orders' );
@@ -142,8 +139,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Loads gateways and shipping methods into memory for use within settings.
-	 *
-	 * @return void
 	 */
 	public function settings_page_init() {
 		WC()->payment_gateways();
@@ -194,8 +189,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Add menu item.
-	 *
-	 * @return void
 	 */
 	public function status_menu() {
 		$status_page = add_submenu_page( 'woocommerce', __( 'WooCommerce status', 'woocommerce' ), __( 'Status', 'woocommerce' ), 'manage_woocommerce', 'wc-status', array( $this, 'status_page' ) );
@@ -214,14 +207,8 @@ class WC_Admin_Menus {
 
 	/**
 	 * Addons menu item.
-	 *
-	 * @deprecated 10.5.0 The marketplace feature is now always enabled. Use the Extensions menu instead.
-	 *
-	 * @return void
 	 */
 	public function addons_menu() {
-		wc_deprecated_function( __METHOD__, '10.5.0' );
-
 		$count_html = WC_Helper_Updater::get_updates_count_html();
 		/* translators: %s: extensions count */
 		$menu_title = sprintf( __( 'Extensions %s', 'woocommerce' ), $count_html );
@@ -242,8 +229,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Highlights the correct top level admin menu item for post type add screens.
-	 *
-	 * @return void
 	 */
 	public function menu_highlight() {
 		global $parent_file, $submenu_file, $post_type;
@@ -265,8 +250,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Adds the order processing count to the menu.
-	 *
-	 * @return void
 	 */
 	public function menu_order_count() {
 		global $submenu;
@@ -282,7 +265,7 @@ class WC_Admin_Menus {
 				if ( $order_count ) {
 					foreach ( $submenu['woocommerce'] as $key => $menu_item ) {
 						if ( 0 === strpos( $menu_item[0], _x( 'Orders', 'Admin menu name', 'woocommerce' ) ) ) {
-							$submenu['woocommerce'][ $key ][0] .= ' <span class="menu-counter count-' . esc_attr( $order_count ) . '"><span class="processing-count">' . number_format_i18n( $order_count ) . '</span></span>'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+							$submenu['woocommerce'][ $key ][0] .= ' <span class="awaiting-mod update-plugins count-' . esc_attr( $order_count ) . '"><span class="processing-count">' . number_format_i18n( $order_count ) . '</span></span>'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 							break;
 						}
 					}
@@ -341,7 +324,6 @@ class WC_Admin_Menus {
 	 * @param bool|int $status Screen option value. Default false to skip.
 	 * @param string   $option The option name.
 	 * @param int      $value  The number of rows to use.
-	 * @return bool|int
 	 */
 	public function set_screen_option( $status, $option, $value ) {
 		$screen_options = array(
@@ -361,8 +343,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Init the reports page.
-	 *
-	 * @return void
 	 */
 	public function reports_page() {
 		WC_Admin_Reports::output();
@@ -370,17 +350,17 @@ class WC_Admin_Menus {
 
 	/**
 	 * Init the settings page.
-	 *
-	 * @return void
 	 */
 	public function settings_page() {
-		WC_Admin_Settings::output();
+		if ( Features::is_enabled( 'settings' ) ) {
+			echo '<div id="wc-settings-page"/>';
+		} else {
+			WC_Admin_Settings::output();
+		}
 	}
 
 	/**
 	 * Init the attributes page.
-	 *
-	 * @return void
 	 */
 	public function attributes_page() {
 		WC_Admin_Attributes::output();
@@ -388,8 +368,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Init the status page.
-	 *
-	 * @return void
 	 */
 	public function status_page() {
 		WC_Admin_Status::output();
@@ -397,8 +375,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Init the addons page.
-	 *
-	 * @return void
 	 */
 	public function addons_page() {
 		WC_Admin_Addons::handle_legacy_marketplace_redirects();
@@ -421,8 +397,6 @@ class WC_Admin_Menus {
 	 * Add custom nav meta box.
 	 *
 	 * Adapted from http://www.johnmorrisonline.com/how-to-add-a-fully-functional-custom-meta-box-to-wordpress-navigation-menus/.
-	 *
-	 * @return void
 	 */
 	public function add_nav_menu_meta_boxes() {
 		add_meta_box( 'woocommerce_endpoints_nav_link', __( 'WooCommerce endpoints', 'woocommerce' ), array( $this, 'nav_menu_links' ), 'nav-menus', 'side', 'low' );
@@ -430,8 +404,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Output menu links.
-	 *
-	 * @return void
 	 */
 	public function nav_menu_links() {
 		// Get items from account menu.
@@ -442,10 +414,8 @@ class WC_Admin_Menus {
 			unset( $endpoints['dashboard'] );
 		}
 
-		// Include missing lost password endpoint, if set in WooCommerce > Settings > Advanced > Account endpoints.
-		if ( ! empty( get_option( 'woocommerce_myaccount_lost_password_endpoint' ) ) ) {
-			$endpoints['lost-password'] = __( 'Lost password', 'woocommerce' );
-		}
+		// Include missing lost password.
+		$endpoints['lost-password'] = __( 'Lost password', 'woocommerce' );
 
 		$endpoints = apply_filters( 'woocommerce_custom_nav_menu_items', $endpoints );
 
@@ -493,7 +463,6 @@ class WC_Admin_Menus {
 	 *
 	 * @since 2.4.0
 	 * @param WP_Admin_Bar $wp_admin_bar Admin bar instance.
-	 * @return void
 	 */
 	public function admin_bar_menus( $wp_admin_bar ) {
 		if ( ! is_admin() || ! is_admin_bar_showing() ) {
@@ -523,8 +492,6 @@ class WC_Admin_Menus {
 
 	/**
 	 * Maybe add new management product experience.
-	 *
-	 * @return void
 	 */
 	public function maybe_add_new_product_management_experience() {
 		if ( FeaturesUtil::feature_is_enabled( 'product_block_editor' ) ) {
@@ -581,7 +548,6 @@ class WC_Admin_Menus {
 	 * @param int    $index The position of a submenu item in the submenu array.
 	 * @param string $parent_slug The parent slug.
 	 * @param array  $item The submenu item.
-	 * @return void
 	 */
 	public function hide_submenu_element( $index, $parent_slug, $item ) {
 		global $submenu;

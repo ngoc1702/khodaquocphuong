@@ -22,9 +22,9 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 	use OrderAttributionMeta;
 
 	/**
-	 * The cache key for order statuses.
+	 * The transient name.
 	 */
-	const ORDERS_STATUSES_ALL_CACHE_KEY = 'woocommerce_analytics_orders_statuses_all';
+	const ORDERS_STATUSES_ALL_TRANSIENT = 'woocommerce_analytics_orders_statuses_all';
 
 	/**
 	 * Dynamically sets the date column name based on configuration
@@ -42,7 +42,7 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 	 * @internal
 	 */
 	final public static function init() {
-		add_action( 'woocommerce_analytics_update_order_stats', array( __CLASS__, 'maybe_update_order_statuses_cache' ) );
+		add_action( 'woocommerce_analytics_update_order_stats', array( __CLASS__, 'maybe_update_order_statuses_transient' ) );
 	}
 
 	/**
@@ -502,8 +502,8 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 						ELSE product_id
 					END
 				)
-			WHERE order_id IN ({$included_order_ids})
-				AND product_qty > 0
+			WHERE
+				order_id IN ({$included_order_ids})
 			",
 			ARRAY_A
 		);
@@ -620,16 +620,21 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 	/**
 	 * Get all statuses that have been synced.
 	 *
-	 * @return string[] Unique order statuses.
+	 * @return array Unique order statuses.
 	 */
 	public static function get_all_statuses() {
 		global $wpdb;
 
-		$statuses = wp_cache_get( self::ORDERS_STATUSES_ALL_CACHE_KEY, 'woocommerce_analytics' );
+		$statuses = get_transient( self::ORDERS_STATUSES_ALL_TRANSIENT );
 		if ( false === $statuses ) {
+			/* phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
 			$table_name = self::get_db_table_name();
-			$statuses   = $wpdb->get_col( $wpdb->prepare( 'SELECT DISTINCT status FROM %i', $table_name ) );
-			wp_cache_set( self::ORDERS_STATUSES_ALL_CACHE_KEY, $statuses, 'woocommerce_analytics', YEAR_IN_SECONDS );
+			$statuses   = $wpdb->get_col(
+				"SELECT DISTINCT status FROM {$table_name}"
+			);
+			/* phpcs:enable */
+
+			set_transient( self::ORDERS_STATUSES_ALL_TRANSIENT, $statuses, YEAR_IN_SECONDS );
 		}
 
 		return $statuses;
@@ -640,30 +645,17 @@ class DataStore extends ReportsDataStore implements DataStoreInterface {
 	 *
 	 * @internal
 	 * @param int $order_id Order ID.
-	 * @return void
 	 */
-	public static function maybe_update_order_statuses_cache( $order_id ) {
+	public static function maybe_update_order_statuses_transient( $order_id ) {
 		$order = wc_get_order( $order_id );
 		if ( $order ) {
 			$status   = self::normalize_order_status( $order->get_status() );
 			$statuses = self::get_all_statuses();
 			if ( ! in_array( $status, $statuses, true ) ) {
 				$statuses[] = $status;
-				wp_cache_set( self::ORDERS_STATUSES_ALL_CACHE_KEY, $statuses, 'woocommerce_analytics', YEAR_IN_SECONDS );
+				set_transient( self::ORDERS_STATUSES_ALL_TRANSIENT, $statuses, YEAR_IN_SECONDS );
 			}
 		}
-	}
-
-	/**
-	 * Ensure the order status will present in `get_all_statuses` call result.
-	 *
-	 * @deprecated 10.3.0 Use maybe_update_order_statuses_cache().
-	 * @param int $order_id Order ID.
-	 * @return void
-	 */
-	public static function maybe_update_order_statuses_transient( $order_id ) {
-		wc_deprecated_function( __METHOD__, '10.3.0', __CLASS__ . '::maybe_update_order_statuses_cache()' );
-		self::maybe_update_order_statuses_cache( $order_id );
 	}
 
 	/**

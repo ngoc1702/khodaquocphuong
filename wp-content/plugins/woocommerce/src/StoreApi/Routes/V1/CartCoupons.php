@@ -129,6 +129,7 @@ class CartCoupons extends AbstractCartRoute {
 		$cart = $this->cart_controller->get_cart_instance();
 
 		$cart->remove_coupons();
+		$cart->calculate_totals();
 
 		return new \WP_REST_Response( [], 200 );
 	}

@@ -29,11 +29,4 @@ abstract class WC_Address_Provider {
 	 * @var string
 	 */
 	public $name;
-
-	/**
-	 * Optional HTML element to display for branding purposes (e.g. "powered by ...").
-	 *
-	 * @var string
-	 */
-	public $branding_html = '';
 }

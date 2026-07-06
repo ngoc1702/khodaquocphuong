@@ -57,29 +57,11 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 		add_filter( 'views_edit-product', array( $this, 'product_views' ) );
 		add_filter( 'get_search_query', array( $this, 'search_label' ) );
 		add_filter( 'posts_clauses', array( $this, 'posts_clauses' ), 10, 2 );
-		add_filter( 'the_posts', array( $this, 'prime_thumbnail_caches' ), 10, 2 );
 		add_action( 'manage_product_posts_custom_column', array( $this, 'add_sample_product_badge' ), 9, 2 );
 
 		$cogs_controller              = wc_get_container()->get( CostOfGoodsSoldController::class );
 		$this->cogs_is_enabled        = $cogs_controller->feature_is_enabled();
 		$this->use_cogs_lookup_column = $this->cogs_is_enabled && $cogs_controller->product_meta_lookup_table_cogs_value_columns_exist();
-	}
-
-	/**
-	 * Prime featured image caches for product queries to avoid individual queries during rendering.
-	 *
-	 * @since 10.9.0
-	 *
-	 * @param \WP_Post[] $posts Posts from WP Query.
-	 * @param \WP_Query  $query Current query.
-	 * @return array
-	 */
-	public function prime_thumbnail_caches( $posts, $query ) {
-		if ( $query instanceof \WP_Query && 'product' === $query->get( 'post_type' ) ) {
-			update_post_thumbnail_cache( $query );
-		}
-
-		return $posts;
 	}
 
 	/**
@@ -129,10 +111,9 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 	 */
 	public function define_sortable_columns( $columns ) {
 		$custom = array(
-			'price'            => 'price',
-			'sku'              => 'sku',
-			'name'             => 'title',
-			'global_unique_id' => 'global_unique_id',
+			'price' => 'price',
+			'sku'   => 'sku',
+			'name'  => 'title',
 		);
 
 		if ( $this->use_cogs_lookup_column ) {
@@ -163,8 +144,6 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 		if ( wc_product_sku_enabled() ) {
 			$show_columns['sku'] = __( 'SKU', 'woocommerce' );
 		}
-
-		$show_columns['global_unique_id'] = __( 'GTIN, UPC, EAN, or ISBN', 'woocommerce' );
 
 		if ( 'yes' === get_option( 'woocommerce_manage_stock' ) ) {
 			$show_columns['is_in_stock'] = __( 'Stock', 'woocommerce' );
@@ -234,7 +213,6 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 			<div class="hidden" id="woocommerce_inline_' . absint( $this->object->get_id() ) . '">
 				<div class="menu_order">' . esc_html( $this->object->get_menu_order() ) . '</div>
 				<div class="sku">' . esc_html( $this->object->get_sku() ) . '</div>
-				<div class="global_unique_id">' . esc_html( $this->object->get_global_unique_id() ) . '</div>
 				<div class="regular_price">' . esc_html( $this->object->get_regular_price() ) . '</div>
 				<div class="sale_price">' . esc_html( $this->object->get_sale_price() ) . '</div>
 				<div class="weight">' . esc_html( $this->object->get_weight() ) . '</div>
@@ -263,13 +241,6 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 	 */
 	protected function render_sku_column() {
 		echo $this->object->get_sku() ? esc_html( $this->object->get_sku() ) : '<span class="na">&ndash;</span>';
-	}
-
-	/**
-	 * Render column: global_unique_id.
-	 */
-	protected function render_global_unique_id_column() {
-		echo $this->object->get_global_unique_id() ? esc_html( $this->object->get_global_unique_id() ) : '<span class="na">&ndash;</span>';
 	}
 
 	/**
@@ -543,11 +514,6 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 				$callback = 'DESC' === $order ? 'order_by_cogs_value_desc_post_clauses' : 'order_by_cogs_value_asc_post_clauses';
 				add_filter( 'posts_clauses', array( $this, $callback ) );
 			}
-
-			if ( 'global_unique_id' === $orderby ) {
-				$callback = 'DESC' === $order ? 'order_by_global_unique_id_desc_post_clauses' : 'order_by_global_unique_id_asc_post_clauses';
-				add_filter( 'posts_clauses', array( $this, $callback ) );
-			}
 		}
 
 		// Type filtering.
@@ -611,8 +577,6 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 		remove_filter( 'posts_clauses', array( $this, 'order_by_price_desc_post_clauses' ) );
 		remove_filter( 'posts_clauses', array( $this, 'order_by_sku_asc_post_clauses' ) );
 		remove_filter( 'posts_clauses', array( $this, 'order_by_sku_desc_post_clauses' ) );
-		remove_filter( 'posts_clauses', array( $this, 'order_by_global_unique_id_asc_post_clauses' ) );
-		remove_filter( 'posts_clauses', array( $this, 'order_by_global_unique_id_desc_post_clauses' ) );
 		remove_filter( 'posts_clauses', array( $this, 'filter_downloadable_post_clauses' ) );
 		remove_filter( 'posts_clauses', array( $this, 'filter_virtual_post_clauses' ) );
 		remove_filter( 'posts_clauses', array( $this, 'filter_stock_status_post_clauses' ) );
@@ -692,30 +656,6 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 	public function order_by_cogs_value_desc_post_clauses( $args ) {
 		$args['join']    = $this->append_product_sorting_table_join( $args['join'] );
 		$args['orderby'] = ' wc_product_meta_lookup.cogs_total_value DESC, wc_product_meta_lookup.product_id DESC ';
-		return $args;
-	}
-
-	/**
-	 * Handle global unique ID sorting.
-	 *
-	 * @param array $args Query args.
-	 * @return array
-	 */
-	public function order_by_global_unique_id_asc_post_clauses( $args ) {
-		$args['join']    = $this->append_product_sorting_table_join( $args['join'] );
-		$args['orderby'] = ' wc_product_meta_lookup.global_unique_id ASC, wc_product_meta_lookup.product_id ASC ';
-		return $args;
-	}
-
-	/**
-	 * Handle global unique ID sorting.
-	 *
-	 * @param array $args Query args.
-	 * @return array
-	 */
-	public function order_by_global_unique_id_desc_post_clauses( $args ) {
-		$args['join']    = $this->append_product_sorting_table_join( $args['join'] );
-		$args['orderby'] = ' wc_product_meta_lookup.global_unique_id DESC, wc_product_meta_lookup.product_id DESC ';
 		return $args;
 	}
 
@@ -808,16 +748,5 @@ class WC_Admin_List_Table_Products extends WC_Admin_List_Table {
 		if ( $is_sample_product && 'name' === $column_name ) {
 			echo '<span class="sample-product-badge" style="margin-right: 6px;border-radius: 4px; background: #F6F7F7; padding: 4px; color: #3C434A;font-size: 12px;font-style: normal;font-weight: 400;line-height: 16px; height: 24px;">' . esc_html__( 'Sample', 'woocommerce' ) . '</span>';
 		}
-	}
-
-	/**
-	 * Define which columns are hidden by default.
-	 *
-	 * @return array
-	 */
-	protected function define_hidden_columns() {
-		return array(
-			'global_unique_id',
-		);
 	}
 }

@@ -131,7 +131,6 @@ return array(
 	'KZ' => __( 'Kazakhstan', 'woocommerce' ),
 	'KE' => __( 'Kenya', 'woocommerce' ),
 	'KI' => __( 'Kiribati', 'woocommerce' ),
-	'XK' => __( 'Kosovo', 'woocommerce' ),
 	'KW' => __( 'Kuwait', 'woocommerce' ),
 	'KG' => __( 'Kyrgyzstan', 'woocommerce' ),
 	'LA' => __( 'Laos', 'woocommerce' ),

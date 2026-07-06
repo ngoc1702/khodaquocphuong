@@ -117,8 +117,7 @@ class Batch extends AbstractRoute implements RouteInterface {
 	public function get_response( WP_REST_Request $request ) {
 		try {
 			foreach ( $request['requests'] as $args ) {
-				$parsed_path = wp_parse_url( $args['path'], PHP_URL_PATH );
-				if ( ! $parsed_path || strpos( $parsed_path, '/wc/store' ) !== 0 ) {
+				if ( ! stristr( $args['path'], 'wc/store' ) ) {
 					throw new RouteException( 'woocommerce_rest_invalid_path', __( 'Invalid path provided.', 'woocommerce' ), 400 );
 				}
 			}

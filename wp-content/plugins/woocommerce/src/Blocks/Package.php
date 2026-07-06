@@ -1,129 +1,114 @@
 <?php
-namespace Automattic\WooCommerce\Blocks\Domain;
 
-use Automattic\WooCommerce\Blocks\Options;
+namespace Automattic\WooCommerce\Blocks;
+
+use Automattic\WooCommerce\Blocks\Domain\Package as NewPackage;
+use Automattic\WooCommerce\Blocks\Domain\Bootstrap;
+use Automattic\WooCommerce\Blocks\Registry\Container;
 use Automattic\WooCommerce\Blocks\Domain\Services\FeatureGating;
-
 
 /**
  * Main package class.
  *
  * Returns information about the package and handles init.
  *
+ * In the context of this plugin, it handles init and is called from the main
+ * plugin file (woocommerce-gutenberg-products-block.php).
+ *
+ * In the context of WooCommerce core, it handles init and is called from
+ * WooCommerce's package loader. The main plugin file is _not_ loaded.
+ *
  * @since 2.5.0
  */
 class Package {
 
-	/**
-	 * Holds the current version of the blocks plugin.
-	 *
-	 * @var string
-	 */
-	private $version;
 
 	/**
-	 * Holds the main path to the blocks plugin directory.
+	 * For back compat this is provided. Ideally, you should register your
+	 * class with Automattic\Woocommerce\Blocks\Container and make Package a
+	 * dependency.
 	 *
-	 * @var string
+	 * @since 2.5.0
+	 * @return Package  The Package instance class
 	 */
-	private $path;
-
-	/**
-	 * Holds locally the plugin_dir_url to avoid recomputing it.
-	 *
-	 * @var string
-	 */
-	private $plugin_dir_url;
-
-	/**
-	 * Holds the feature gating class instance.
-	 *
-	 * @var FeatureGating
-	 */
-	private $feature_gating;
-
-	/**
-	 * Constructor
-	 *
-	 * @param string        $version        Version of the plugin.
-	 * @param string        $plugin_path    Path to the main plugin file.
-	 * @param FeatureGating $deprecated     Deprecated Feature gating class.
-	 */
-	public function __construct( $version, $plugin_path, $deprecated = null ) {
-		if ( null !== $deprecated ) {
-			wc_deprecated_argument( 'FeatureGating', '9.6', 'FeatureGating class is deprecated, please use wp_get_environment_type() instead.' );
-			$this->feature_gating = new FeatureGating();
-		}
-		$this->version = $version;
-		$this->path    = $plugin_path;
+	protected static function get_package() {
+		return self::container()->get( NewPackage::class );
 	}
 
 	/**
-	 * Returns the version of WooCommerce Blocks.
+	 * Init the package - load the blocks library and define constants.
 	 *
-	 * Note: since Blocks was merged into WooCommerce Core, the version of
-	 * WC Blocks doesn't update anymore. Use
-	 * `Constants::get_constant( 'WC_VERSION' )` when possible to get the
-	 * WooCommerce Core version.
+	 * @since 2.5.0 Handled by new NewPackage.
+	 */
+	public static function init() {
+		self::container()->get( Bootstrap::class );
+	}
+
+	/**
+	 * Return the version of the package.
 	 *
 	 * @return string
 	 */
-	public function get_version() {
-		return $this->version;
+	public static function get_version() {
+		return self::get_package()->get_version();
 	}
 
 	/**
-	 * Returns the version of WooCommerce Blocks stored in the database.
+	 * Return the path to the package.
 	 *
 	 * @return string
 	 */
-	public function get_version_stored_on_db() {
-		return get_option( Options::WC_BLOCK_VERSION, '' );
-	}
-
-	/**
-	 * Sets the version of WooCommerce Blocks in the database.
-	 * This is useful during the first installation or after the upgrade process.
-	 */
-	public function set_version_stored_on_db() {
-		update_option( Options::WC_BLOCK_VERSION, $this->get_version() );
-	}
-
-	/**
-	 * Returns the path to the plugin directory.
-	 *
-	 * @param string $relative_path  If provided, the relative path will be
-	 *                               appended to the plugin path.
-	 *
-	 * @return string
-	 */
-	public function get_path( $relative_path = '' ) {
-		return trailingslashit( $this->path ) . $relative_path;
-	}
-
-	/**
-	 * Returns the url to the blocks plugin directory.
-	 *
-	 * @param string $relative_url If provided, the relative url will be
-	 *                             appended to the plugin url.
-	 *
-	 * @return string
-	 */
-	public function get_url( $relative_url = '' ) {
-		if ( ! $this->plugin_dir_url ) {
-			// Append index.php so WP does not return the parent directory.
-			$this->plugin_dir_url = plugin_dir_url( $this->path . '/index.php' );
-		}
-
-		return $this->plugin_dir_url . $relative_url;
+	public static function get_path() {
+		return self::get_package()->get_path();
 	}
 
 	/**
 	 * Returns an instance of the FeatureGating class.
 	 *
 	 * @return FeatureGating
+	 * @deprecated since 9.6, use wp_get_environment_type() instead.
 	 */
-	public function feature() {
-		return $this->feature_gating;
+	public static function feature() {
+		wc_deprecated_function( 'Package::feature', '9.6', 'wp_get_environment_type' );
+		return new FeatureGating();
+	}
+
+	/**
+	 * Loads the dependency injection container for woocommerce blocks.
+	 *
+	 * @param boolean $reset Used to reset the container to a fresh instance.
+	 *                       Note: this means all dependencies will be
+	 *                       reconstructed.
+	 */
+	public static function container( $reset = false ) {
+		static $container;
+		if (
+			! $container instanceof Container
+			|| $reset
+		) {
+			$container = new Container();
+			// register Package.
+			$container->register(
+				NewPackage::class,
+				function ( $container ) {
+					// leave for automated version bumping.
+					$version = '11.8.0-dev';
+					return new NewPackage(
+						$version,
+						dirname( __DIR__, 2 )
+					);
+				}
+			);
+			// register Bootstrap.
+			$container->register(
+				Bootstrap::class,
+				function ( $container ) {
+					return new Bootstrap(
+						$container
+					);
+				}
+			);
+		}
+		return $container;
 	}
 }

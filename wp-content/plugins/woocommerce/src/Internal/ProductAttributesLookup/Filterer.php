@@ -166,6 +166,8 @@ class Filterer {
 	public function get_filtered_term_product_counts( $term_ids, $taxonomy, $query_type ) {
 		global $wpdb;
 
+		$use_lookup_table = $this->filtering_via_lookup_table_is_active();
+
 		$tax_query  = \WC_Query::get_main_tax_query();
 		$meta_query = \WC_Query::get_main_meta_query();
 		if ( 'or' === $query_type ) {
@@ -177,22 +179,14 @@ class Filterer {
 		}
 
 		$meta_query = new \WP_Meta_Query( $meta_query );
-		$tax_query  = new TaxQuery( $tax_query );
+		$tax_query  = new \WP_Tax_Query( $tax_query );
 
-		if ( $this->filtering_via_lookup_table_is_active() ) {
+		if ( $use_lookup_table ) {
 			$query = $this->get_product_counts_query_using_lookup_table( $tax_query, $meta_query, $taxonomy, $term_ids );
 		} else {
 			$query = $this->get_product_counts_query_not_using_lookup_table( $tax_query, $meta_query, $term_ids );
 		}
 
-		/**
-		 * Customizes the SQL query that populates product counts in layered navigation.
-		 *
-		 * @since 10.9.0 the query was optimized to remove the join on term_relationships in favor of a nested select from term_relationships.
-		 * @since 2.6.1
-		 *
-		 * @param array $query Query fragments (the available fragments are: select, from, join, where, group_by).
-		 */
 		$query     = apply_filters( 'woocommerce_get_filtered_term_product_counts_query', $query );
 		$query_sql = implode( ' ', $query );
 
@@ -312,6 +306,7 @@ class Filterer {
 			$query['where'] .= ' AND ' . $search_query_sql;
 		}
 
+		$query['group_by'] = 'GROUP BY terms.term_id';
 		$query['group_by'] = "GROUP BY {$this->lookup_table_name}.term_id";
 
 		return $query;

@@ -1,244 +1,181 @@
-=== Action Scheduler ===
-Contributors: Automattic, wpmuguru, claudiosanches, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski, royho, barryhughes-1
-Tags: scheduler, cron
-Stable tag: 3.9.3
-License: GPLv3
-Requires at least: 6.5
+=== WooCommerce ===
+Contributors: automattic, woocommerce, mikejolley, jameskoster, claudiosanches, rodrigosprimo, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski, wpmuguru, royho, barryhughes-1, claudiulodro, tiagonoronha, ryelle, levinmedia, aljullu, nerrad, joshuawold, assassinateur, haszari, mppfeiffer, nielslange, opr18, ralucastn, tjcafferkey, danielwrobert, patriciahillebrandt, albarin, dinhtungdu, imanish003, karolmanijak, sunyatasattva, alexandrelara, gigitux, danieldudzic, samueljseay, alexflorisca, opr18, tarunvijwani, pauloarromba, saadtarhi, bor0, kloon, coreymckrill, jorgeatorres, leifsinger, neosinner
+Tags: online store, ecommerce, shop, shopping cart, sell online
+Requires at least: 6.7
 Tested up to: 6.8
-Requires PHP: 7.2
+Requires PHP: 7.4
+Stable tag: 10.1.1
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Action Scheduler - Job Queue for WordPress
+Everything you need to launch an online store in days and keep it growing for years. From your first sale to millions in revenue, Woo is with you.
 
 == Description ==
 
-Action Scheduler is a scalable, traceable job queue for background processing large sets of actions in WordPress. It's specially designed to be distributed in WordPress plugins.
+[WooCommerce](https://woocommerce.com/woocommerce/) is the open-source ecommerce platform for WordPress.
 
-Action Scheduler works by triggering an action hook to run at some time in the future. Each hook can be scheduled with unique data, to allow callbacks to perform operations on that data. The hook can also be scheduled to run on one or more occasions.
+Our core platform is free, flexible, and amplified by a global community. The freedom of open-source means you retain full ownership of your store’s content and data forever.
 
-Think of it like an extension to `do_action()` which adds the ability to delay and repeat a hook.
+Whether you’re launching a business, taking brick-and-mortar retail online, or developing sites for clients, use WooCommerce for a store that powerfully blends content and commerce.
 
-## Battle-Tested Background Processing
+- **Create beautiful, enticing storefronts** with [themes](https://woocommerce.com/product-category/themes/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) suited to your brand and industry.
+- **Increase revenue** with an optimized [shopping cart experience](https://woocommerce.com/checkout-blocks/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) that converts.
+- **Customize product pages in minutes** using modular [product blocks](https://woocommerce.com/document/woocommerce-blocks/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+- Showcase physical and digital goods, product variations, custom configurations, instant downloads, and affiliate items.
+- Sell [subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [bookings](https://woocommerce.com/products/woocommerce-bookings/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), or [memberships](https://woocommerce.com/products/woocommerce-memberships/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), with our developer-vetted extensions.
+- **Rise to the top of search results** by leveraging [WordPress’ SEO advantage](https://www.searchenginejournal.com/wordpress-best-cms-seo/).
+- **Build on a platform that scales.** Get flexible ecommerce for [high-volume stores](https://woocommerce.com/high-volume-stores/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 
-Every month, Action Scheduler processes millions of payments for [Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/), webhooks for [WooCommerce](https://wordpress.org/plugins/woocommerce/), as well as emails and other events for a range of other plugins.
+= ALL THE TOOLS YOU NEED TO SELL =
 
-It's been seen on live sites processing queues in excess of 50,000 jobs and doing resource intensive operations, like processing payments and creating orders, at a sustained rate of over 10,000 / hour without negatively impacting normal site operations.
+Built-in tools and popular integrations help you efficiently manage your business operations. Many services are free to add with a single click via the optional [Setup Wizard](https://woocommerce.com/document/woocommerce-setup-wizard/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 
-This is all on infrastructure and WordPress sites outside the control of the plugin author.
+- **Choose how you want to get paid**. Conveniently manage payments from the comfort of your store with [WooPayments](https://woocommerce.com/payments/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (Available in the U.S., U.K., Ireland, Australia, New Zealand, Canada, Spain, France, Germany, and Italy). Securely accept credit cards, mobile wallets, bank transfers, and cash thanks to [100+ payment gateways](https://woocommerce.com/product-category/woocommerce-extensions/payment-gateways/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) – including [Stripe](https://woocommerce.com/products/stripe/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [PayPal](https://woocommerce.com/products/woocommerce-gateway-paypal-checkout/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [Square](https://woocommerce.com/products/square/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+- **Configure your shipping options**. Print USPS labels right from your dashboard and even schedule a pickup with [WooCommerce Shipping](https://woocommerce.com/products/shipping/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (U.S.-only). Connect with [well-known carriers](https://woocommerce.com/product-category/woocommerce-extensions/shipping-methods/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) such as UPS and FedEx – plus a wide variety of delivery, inventory, and fulfillment solutions for your locale.
+- **Simplify sales tax**. Add [WooCommerce Tax](https://woocommerce.com/products/tax/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) or [similar integrated services](https://woocommerce.com/product-category/woocommerce-extensions/tax?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) to make automated calculations a reality.
 
-If your plugin needs background processing, especially of large sets of tasks, Action Scheduler can help.
+= Grow your business, add features, and monitor your store on the go =
 
-## Learn More
+WooCommerce means business. Keep tabs on the performance metrics most important to you with a powerful and flexible central dashboard built into WooCommerce.
 
-To learn more about how Action Scheduler works, and how to use it in your plugin, check out the docs on [ActionScheduler.org](https://actionscheduler.org).
+Expand your audience across marketing and social channels with [Google Ads](https://woocommerce.com/products/google-ads/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [HubSpot](https://woocommerce.com/products/hubspot-for-woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [Mailchimp](https://woocommerce.com/products/mailchimp-for-woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [Facebook](https://woocommerce.com/products/facebook/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) integrations. You can always check out the in-dashboard [Marketing Hub](https://woocommerce.com/document/marketing-hub/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) for fresh ideas and tips to help you succeed.
 
-There you will find:
+Enhance store functionality with hundreds of free and paid extensions from the [WooCommerce Marketplace](https://woocommerce.com/products/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). Our developers [vet each new extension](https://woocommerce.com/document/marketplace-overview/#section-6?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) and regularly review existing extensions to maintain Marketplace quality standards. We are actively [looking for products that help store builders create successful stores](https://woocommerce.com/document/marketplace-overview/#section-2?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 
-* [Usage guide](https://actionscheduler.org/usage/): instructions on installing and using Action Scheduler
-* [WP CLI guide](https://actionscheduler.org/wp-cli/): instructions on running Action Scheduler at scale via WP CLI
-* [API Reference](https://actionscheduler.org/api/): complete reference guide for all API functions
-* [Administration Guide](https://actionscheduler.org/admin/): guide to managing scheduled actions via the administration screen
-* [Guide to Background Processing at Scale](https://actionscheduler.org/perf/): instructions for running Action Scheduler at scale via the default WP Cron queue runner
+Manage your store from anywhere with the free WooCommerce [mobile app](https://woocommerce.com/mobile/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (Android and iOS). Spoiler alert: Keep an ear out for the slightly addictive "cha-ching" notification sound each time you make a new sale!
 
-## Credits
+= Own and control your store data – forever =
 
-Action Scheduler is developed and maintained by [Automattic](http://automattic.com/) with significant early development completed by [Flightless](https://flightless.us/).
+With [WooCommerce](https://woocommerce.com/woocommerce/), your data belongs to you. Always.
 
-Collaboration is cool. We'd love to work with you to improve Action Scheduler. [Pull Requests](https://github.com/woocommerce/action-scheduler/pulls) welcome.
+If you opt to share [usage data](https://woocommerce.com/usage-tracking/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) with us, you can feel confident knowing that it’s anonymized and kept secure. Choose to opt-out at any time without impacting your store.
+
+Unlike hosted ecommerce solutions, WooCommerce store data is future-proof; you’re free to export all your content and take your site to any platform you choose. No restrictions.
+
+= Why developers choose (and love) WooCommerce =
+
+Developers can use [WooCommerce](https://woocommerce.com/woocommerce/) to create, customize, and scale a store to meet a client’s exact specifications, making enhancements through extensions or custom solutions.
+
+- Leverage [hooks and filters](https://woocommerce.com/document/introduction-to-hooks-actions-and-filters/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) to modify or create functionality.
+- Integrate virtually any service using a robust [REST API](https://developer.woocommerce.com/docs/getting-started-with-the-woocommerce-rest-api/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) and webhooks.
+- Design and build custom content blocks with React.
+- [Inspect and modify](https://developer.woocommerce.com/docs/category/extension-development/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) any aspect of the core plugin code.
+- Speed up development with a lightning-fast [CLI](https://developer.woocommerce.com/docs/category/wc-cli/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+The core platform is tested rigorously and often, supported by a dedicated development team working across time zones. Comprehensive documentation is updated with each release, empowering you to build exactly the store required.
+
+= Be part of our growing international community =
+
+WooCommerce has a large, passionate community dedicated to helping merchants succeed – and it’s growing fast.
+
+There are [WooCommerce Meetups](https://woocommerce.com/meetups/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) in locations around the world that you can attend for free and even get involved in running. These events are a great way to learn from others, share your expertise, and connect with like-minded folks.
+
+WooCommerce also has a regular presence at WordCamps across the globe – we’d love to meet you.
+
+= Contribute and translate =
+
+WooCommerce is developed and supported by Automattic, the creators of WordPress.com and Jetpack. We also have hundreds of independent contributors, and there’s always room for more. Head to the [WooCommerce GitHub Repository](https://github.com/woocommerce/woocommerce?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) to find out how you can pitch in.
+
+WooCommerce is translated into multiple languages, including Danish, Ukrainian, and Persian. Help localize WooCommerce even further by adding your locale – visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+= Connection to WooCommerce.com =
+
+You can connect your store to [WooCommerce.com](https://woocommerce.com/) to manage your subscriptions on WooCommerce Marketplace and receive product updates without leaving WordPress admin. Connection also enables installation of purchased products right from WooCommerce.com and streamlines access to technical support. If you’d like to learn about what data is gathered and how it is used, please refer to our [Privacy Policy](https://automattic.com/privacy/).
+
+== Frequently Asked Questions ==
+
+= Where can I find WooCommerce documentation and user guides? =
+
+For help setting up and configuring WooCommerce, please refer to [Getting Started](https://woocommerce.com/documentation/plugins/woocommerce/getting-started/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) and the [New WooCommerce Store Owner Guide](https://woocommerce.com/guides/new-store/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+For extending or theming WooCommerce, see our [documentation](https://github.com/woocommerce/woocommerce/tree/trunk/docs), as well as the [Plugin Developer Best Practices](https://github.com/woocommerce/woocommerce/blob/trunk/docs/extension-development/extension-development-best-practices.md).
+
+= Where can I get help or talk to other users about WooCommerce Core? =
+
+If you get stuck, you can ask for help in the [WooCommerce Support Forum](https://wordpress.org/support/plugin/woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) by following [these guidelines](https://wordpress.org/support/topic/guide-to-the-woocommerce-forum/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), reach out via the [WooCommerce Community Slack](https://woocommerce.com/community-slack/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), or post in the [WooCommerce Community group](https://www.facebook.com/groups/advanced.woocommerce?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) on Facebook.
+
+= Where can I get help for extensions I have purchased from the WooCommerce Marketplace? =
+
+For assistance with paid extensions from the WooCommerce Marketplace: first, review our [self-service troubleshooting guide](https://woocommerce.com/document/woocommerce-self-service-guide/). If the problem persists, kindly log a support ticket via [our helpdesk](https://woocommerce.com/my-account/create-a-ticket/). Our dedicated Happiness Engineers aim to respond within 24 hours.
+
+= I’m having trouble logging in to WooCommerce.com – what now? =
+
+First, troubleshoot common login issues using this helpful [step-by-step guide](https://woocommerce.com/document/log-into-woocommerce-com-with-wordpress-com/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). Still not working? [Get in touch with us](https://woocommerce.com/contact-us/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+= Will WooCommerce work with my theme? =
+
+Yes! WooCommerce will work with any theme but may require some additional styling. If you’re looking for a theme featuring deep WooCommerce integration, we recommend [Storefront](https://woocommerce.com/storefront/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+= How do I update WooCommerce? =
+
+We have a detailed guide on [How To Update WooCommerce](https://woocommerce.com/document/how-to-update-woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+= My site broke – what do I do? =
+
+Start by diagnosing the issue using our helpful [troubleshooting guide](https://woocommerce.com/documentation/get-help/troubleshooting-get-help/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+If you noticed the error after updating a theme or plugin, there might be compatibility issues between it and WooCommerce. If the issue appeared after updating WooCommerce, there could be a conflict between WooCommerce and an outdated theme or plugin.
+
+In both instances, we recommend running a conflict test using [Health Check](https://woocommerce.com/document/troubleshooting-using-health-check/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (which allows you to disable themes and plugins without affecting your visitors) or troubleshooting the issue using a [staging site](https://woocommerce.com/document/how-to-test-for-conflicts/#section-3?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+
+= Where can I report bugs? =
+
+Report bugs on the [WooCommerce GitHub repository](https://github.com/woocommerce/woocommerce/issues?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). You can also notify us via our support forum – be sure to search the forums to confirm that the error has not already been reported.
+
+= Where can I request new features, themes, and extensions? =
+
+Request new features and extensions and vote on existing suggestions on our official [feature request board](https://woocommerce.com/feature-requests/woocommerce?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing). Our Product teams regularly review requests and consider them valuable for product planning.
+
+= WooCommerce is awesome! Can I contribute? =
+
+Yes, you can! Join in on our [GitHub repository](https://github.com/woocommerce/woocommerce/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) and follow the [development blog](https://woocommerce.wordpress.com/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) to stay up-to-date with everything happening in the project.
+
+= Where can I find REST API documentation? =
+
+Extensive [WooCommerce REST API Documentation](https://woocommerce.github.io/woocommerce-rest-api-docs/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) is available on GitHub.
+
+= My question is not listed here. Where can I find more answers? =
+
+Check out [Frequently Asked Questions](https://woocommerce.com/document/frequently-asked-questions/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) for more.
+
+== Installation ==
+
+= Minimum Requirements =
+
+* PHP 7.4 or greater is required (PHP 8.0 or greater is recommended)
+* MySQL 5.5.5 or greater, OR MariaDB version 10.1 or greater, is required
+* WordPress 6.7 or greater
+* (Recommended) WordPress [memory limit](https://woocommerce.com/document/increasing-the-wordpress-memory-limit/) of 256 MB or greater.
+* (Recommended) [HTTPS](https://woocommerce.com/document/ssl-and-https/) support.
+
+= Automatic installation =
+
+Automatic installation is the easiest option -- WordPress will handle the file transfer, and you won’t need to leave your web browser. To do an automatic install of WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu, and click “Add New.”
+
+In the search field type “WooCommerce,” then click “Search Plugins.” Once you’ve found us,  you can view details about it such as the point release, rating, and description. Most importantly of course, you can install it by! Click “Install Now,” and WordPress will take it from there.
+
+= Manual installation =
+
+Manual installation method requires downloading the WooCommerce plugin and uploading it to your web server via your favorite FTP application. The WordPress codex contains [instructions on how to do this here](https://wordpress.org/support/article/managing-plugins/#manual-plugin-installation).
+
+= Updating =
+
+Automatic updates should work smoothly, but we still recommend you back up your site.
+
+If you encounter issues with the shop/category pages after an update, flush the permalinks by going to WordPress > Settings > Permalinks and hitting “Save.” That should return things to normal.
+
+= Sample data =
+
+WooCommerce comes with some sample data you can use to see how products look; import sample_products.xml via the [WordPress importer](https://wordpress.org/plugins/wordpress-importer/). You can also use the core [CSV importer](https://woocommerce.com/document/product-csv-importer-exporter/?utm_source=wp%20org%20repo%20listing&utm_content=3.6) or our [CSV Import Suite extension](https://woocommerce.com/products/product-csv-import-suite/?utm_source=wp%20org%20repo%20listing&utm_content=3.6) to import sample_products.csv
 
 == Changelog ==
 
-= 3.9.3 - 2025-07-15 =
-* Add hook 'action_scheduler_ensure_recurring_actions' specifically for scheduling recurring actions.
-* Assume an action is valid until proven otherwise.
-* Implement SKIP LOCKED during action claiming.
-* Import `get_flag_value()` from `WP_CLI\Utils` before using.
-* Make `$unique` available to all pre-creation/short-circuit hooks.
-* Make version/source information available via new class.
-* Only release claims on pending actions.
-* Tweak - WP 6.8 compatibility.
-* Update minimum supported php and phpunit versions.
-* Update readme.txt.
-* WP CLI get action command: correct parentheses/nesting of conditional checks.
+= 10.1.2 2025-08-27 =
 
-= 3.9.2 - 2025-02-03 =
-* Fixed fatal errors by moving version info methods to a new class and deprecating conflicting ones in ActionScheduler_Versions
+**WooCommerce**
 
-= 3.9.1 - 2025-01-21 =
-* A number of new WP CLI commands have been added, making it easier to manage actions in the terminal and from scripts.
-* New wp action-scheduler source command to help determine how Action Scheduler is being loaded.
-* Additional information about the active instance of Action Scheduler is now available in the Help pull-down drawer.
-* Make some other nullable parameters explicitly nullable.
-* Set option value to `no` rather than deleting.
+* Fix - Prevent woocommerce_cancel_unpaid_orders being queued as unique so it recurs after the stock hold limit [#60626](https://github.com/woocommerce/woocommerce/pull/60626)
+* Fix - Revert to using usermeta to store persistent carts [#60605](https://github.com/woocommerce/woocommerce/pull/60605)
 
-= 3.9.0 - 2024-11-14 =  
-* Minimum required version of PHP is now 7.1.  
-* Performance improvements for the `as_pending_actions_due()` function.  
-* Existing filter hook `action_scheduler_claim_actions_order_by` enhanced to provide callbacks with additional information.  
-* Improved compatibility with PHP 8.4, specifically by making implicitly nullable parameters explicitly nullable.  
-* A large number of coding standards-enhancements, to help reduce friction when submitting plugins to marketplaces and plugin directories. Special props @crstauf for this effort.  
-* Minor documentation tweaks and improvements.
 
-= 3.8.2 - 2024-09-12 =
-* Add missing parameter to the `pre_as_enqueue_async_action` hook.
-* Bump minimum PHP version to 7.0.
-* Bump minimum WordPress version to 6.4.
-* Make the batch size adjustable during processing.
-
-= 3.8.1 - 2024-06-20 =
-* Fix typos.
-* Improve the messaging in our unidentified action exceptions.
-
-= 3.8.0 - 2024-05-22 =
-* Documentation - Fixed typos in perf.md.
-* Update - We now require WordPress 6.3 or higher.
-* Update - We now require PHP 7.0 or higher.
-
-= 3.7.4 - 2024-04-05 =
-* Give a clear description of how the $unique parameter works.
-* Preserve the tab field if set.
-* Tweak - WP 6.5 compatibility.
-
-= 3.7.3 - 2024-03-20 =
-* Do not iterate over all of GET when building form in list table.
-* Fix a few issues reported by PCP (Plugin Check Plugin).
-* Try to save actions as unique even when the store doesn't support it.
-* Tweak - WP 6.4 compatibility.
-* Update "Tested up to" tag to WordPress 6.5.
-* update version in package-lock.json.
-
-= 3.7.2 - 2024-02-14 =
-* No longer user variables in `_n()` translation function.
-
-= 3.7.1 - 2023-12-13 =
-* update semver to 5.7.2 because of a security vulnerability in 5.7.1.
-
-= 3.7.0 - 2023-11-20 =
-* Important: starting with this release, Action Scheduler follows an L-2 version policy (WordPress, and consequently PHP).
-* Add extended indexes for hook_status_scheduled_date_gmt and status_scheduled_date_gmt.
-* Catch and log exceptions thrown when actions can't be created, e.g. under a corrupt database schema.
-* Tweak - WP 6.4 compatibility.
-* Update unit tests for upcoming dependency version policy.
-* make sure hook action_scheduler_failed_execution can access original exception object.
-* mention dependency version policy in usage.md.
-
-= 3.6.4 - 2023-10-11 =
-* Performance improvements when bulk cancelling actions.
-* Dev-related fixes.
-
-= 3.6.3 - 2023-09-13 =
-* Use `_doing_it_wrong` in initialization check.
-
-= 3.6.2 - 2023-08-09 =
-* Add guidance about passing arguments.
-* Atomic option locking.
-* Improve bulk delete handling.
-* Include database error in the exception message.
-* Tweak - WP 6.3 compatibility.
-
-= 3.6.1 - 2023-06-14 =
-* Document new optional `$priority` arg for various API functions.
-* Document the new `--exclude-groups` WP CLI option.
-* Document the new `action_scheduler_init` hook.
-* Ensure actions within each claim are executed in the expected order.
-* Fix incorrect text domain.
-* Remove SHOW TABLES usage when checking if tables exist.
-
-= 3.6.0 - 2023-05-10 =
-* Add $unique parameter to function signatures.
-* Add a cast-to-int for extra safety before forming new DateTime object.
-* Add a hook allowing exceptions for consistently failing recurring actions.
-* Add action priorities.
-* Add init hook.
-* Always raise the time limit.
-* Bump minimatch from 3.0.4 to 3.0.8.
-* Bump yaml from 2.2.1 to 2.2.2.
-* Defensive coding relating to gaps in declared schedule types.
-* Do not process an action if it cannot be set to `in-progress`.
-* Filter view labels (status names) should be translatable | #919.
-* Fix WPCLI progress messages.
-* Improve data-store initialization flow.
-* Improve error handling across all supported PHP versions.
-* Improve logic for flushing the runtime cache.
-* Support exclusion of multiple groups.
-* Update lint-staged and Node/NPM requirements.
-* add CLI clean command.
-* add CLI exclude-group filter.
-* exclude past-due from list table all filter count.
-* throwing an exception if as_schedule_recurring_action interval param is not of type integer.
-
-= 3.5.4 - 2023-01-17 =
-* Add pre filters during action registration.
-* Async scheduling.
-* Calculate timeouts based on total actions.
-* Correctly order the parameters for `ActionScheduler_ActionFactory`'s calls to `single_unique`.
-* Fetch action in memory first before releasing claim to avoid deadlock.
-* PHP 8.2: declare property to fix creation of dynamic property warning.
-* PHP 8.2: fix "Using ${var} in strings is deprecated, use {$var} instead".
-* Prevent `undefined variable` warning for `$num_pastdue_actions`.
-
-= 3.5.3 - 2022-11-09 =
-* Query actions with partial match.
-
-= 3.5.2 - 2022-09-16 =
-* Fix - erroneous 3.5.1 release.
-
-= 3.5.1 - 2022-09-13 =
-* Maintenance on A/S docs.
-* fix: PHP 8.2 deprecated notice.
-
-= 3.5.0 - 2022-08-25 =
-* Add - The active view link within the "Tools > Scheduled Actions" screen is now clickable.
-* Add - A warning when there are past-due actions.
-* Enhancement - Added the ability to schedule unique actions via an atomic operation.
-* Enhancement - Improvements to cache invalidation when processing batches (when running on WordPress 6.0+).
-* Enhancement - If a recurring action is found to be consistently failing, it will stop being rescheduled.
-* Enhancement - Adds a new "Past Due" view to the scheduled actions list table.
-
-= 3.4.2 - 2022-06-08 =
-* Fix - Change the include for better linting.
-* Fix - update: Added Action scheduler completed action hook.
-
-= 3.4.1 - 2022-05-24 =
-* Fix - Change the include for better linting.
-* Fix - Fix the documented return type.
-
-= 3.4.0 - 2021-10-29 =
-* Enhancement - Number of items per page can now be set for the Scheduled Actions view (props @ovidiul). #771
-* Fix - Do not lower the max_execution_time if it is already set to 0 (unlimited) (props @barryhughes). #755
-* Fix - Avoid triggering autoloaders during the version resolution process (props @olegabr). #731 & #776
-* Dev - ActionScheduler_wcSystemStatus PHPCS fixes (props @ovidiul). #761
-* Dev - ActionScheduler_DBLogger.php PHPCS fixes (props @ovidiul). #768
-* Dev - Fixed phpcs for ActionScheduler_Schedule_Deprecated (props @ovidiul). #762
-* Dev - Improve actions table indices (props @glagonikas). #774 & #777
-* Dev - PHPCS fixes for ActionScheduler_DBStore.php (props @ovidiul). #769 & #778
-* Dev - PHPCS Fixes for ActionScheduler_Abstract_ListTable (props @ovidiul). #763 & #779
-* Dev - Adds new filter action_scheduler_claim_actions_order_by to allow tuning of the claim query (props @glagonikas). #773
-* Dev - PHPCS fixes for ActionScheduler_WpPostStore class (props @ovidiul). #780
-
-= 3.3.0 - 2021-09-15 =
-* Enhancement - Adds as_has_scheduled_action() to provide a performant way to test for existing actions. #645
-* Fix - Improves compatibility with environments where NO_ZERO_DATE is enabled. #519
-* Fix - Adds safety checks to guard against errors when our database tables cannot be created. #645
-* Dev - Now supports queries that use multiple statuses. #649
-* Dev - Minimum requirements for WordPress and PHP bumped (to 5.2 and 5.6 respectively). #723
-
-= 3.2.1 - 2021-06-21 =
-* Fix - Add extra safety/account for different versions of AS and different loading patterns. #714
-* Fix - Handle hidden columns (Tools → Scheduled Actions) | #600.
-
-= 3.2.0 - 2021-06-03 =
-* Fix - Add "no ordering" option to as_next_scheduled_action().
-* Fix - Add secondary scheduled date checks when claiming actions (DBStore) | #634.
-* Fix - Add secondary scheduled date checks when claiming actions (wpPostStore) | #634.
-* Fix - Adds a new index to the action table, reducing the potential for deadlocks (props: @glagonikas).
-* Fix - Fix unit tests infrastructure and adapt tests to PHP 8.
-* Fix - Identify in-use data store.
-* Fix - Improve test_migration_is_scheduled.
-* Fix - PHP notice on list table.
-* Fix - Speed up clean up and batch selects.
-* Fix - Update pending dependencies.
-* Fix - [PHP 8.0] Only pass action arg values through to do_action_ref_array().
-* Fix - [PHP 8] Set the PHP version to 7.1 in composer.json for PHP 8 compatibility.
-* Fix - add is_initialized() to docs.
-* Fix - fix file permissions.
-* Fix - fixes #664 by replacing __ with esc_html__.
+[See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).

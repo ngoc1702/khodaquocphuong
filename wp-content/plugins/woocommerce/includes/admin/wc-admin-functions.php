@@ -7,7 +7,6 @@
  */
 
 use Automattic\WooCommerce\Enums\OrderStatus;
-use Automattic\WooCommerce\Internal\Orders\OrderNoteGroup;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +15,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Get all WooCommerce screen ids.
- * Note, among other things, this is used to conditionally load some assets. See class-wc-admin-assets.php.
  *
  * @return array
  */
@@ -41,7 +39,6 @@ function wc_get_screen_ids() {
 		'shop_coupon',
 		'edit-product_cat',
 		'edit-product_tag',
-		'edit-product-brand',
 		'profile',
 		'user-edit',
 	);
@@ -78,7 +75,7 @@ function wc_get_page_screen_id( $for ) {
 
 	if ( in_array( $for, wc_get_order_types( 'admin-menu' ), true ) ) {
 		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
-			$screen_id = ( \WC_Admin_Menus::can_view_woocommerce_menu_item() ? 'woocommerce_page_wc-orders' : 'admin_page_wc-orders' ) . ( 'shop_order' === $for ? '' : '--' . $for );
+			$screen_id = 'woocommerce_page_wc-orders' . ( 'shop_order' === $for ? '' : '--' . $for );
 		} else {
 			$screen_id = $for;
 		}
@@ -183,7 +180,7 @@ function wc_create_page( $slug, $option = '', $page_title = '', $page_content = 
 function woocommerce_admin_fields( $options ) {
 
 	if ( ! class_exists( 'WC_Admin_Settings', false ) ) {
-		include __DIR__ . '/class-wc-admin-settings.php';
+		include dirname( __FILE__ ) . '/class-wc-admin-settings.php';
 	}
 
 	WC_Admin_Settings::output_fields( $options );
@@ -198,7 +195,7 @@ function woocommerce_admin_fields( $options ) {
 function woocommerce_update_options( $options, $data = null ) {
 
 	if ( ! class_exists( 'WC_Admin_Settings', false ) ) {
-		include __DIR__ . '/class-wc-admin-settings.php';
+		include dirname( __FILE__ ) . '/class-wc-admin-settings.php';
 	}
 
 	WC_Admin_Settings::save_fields( $options, $data );
@@ -214,7 +211,7 @@ function woocommerce_update_options( $options, $data = null ) {
 function woocommerce_settings_get_option( $option_name, $default = '' ) {
 
 	if ( ! class_exists( 'WC_Admin_Settings', false ) ) {
-		include __DIR__ . '/class-wc-admin-settings.php';
+		include dirname( __FILE__ ) . '/class-wc-admin-settings.php';
 	}
 
 	return WC_Admin_Settings::get_option( $option_name, $default );
@@ -451,10 +448,18 @@ function wc_save_order_items( $order_id, $items ) {
 
 	if ( ! empty( $qty_change_order_notes ) ) {
 		/* translators: %s item name. */
-		$order->add_order_note( sprintf( __( 'Adjusted stock: %s', 'woocommerce' ), implode( ', ', $qty_change_order_notes ) ), false, true, array( 'note_group' => OrderNoteGroup::PRODUCT_STOCK ) );
+		$order->add_order_note( sprintf( __( 'Adjusted stock: %s', 'woocommerce' ), implode( ', ', $qty_change_order_notes ) ), false, true );
 	}
 
 	$order->update_taxes();
+
+	// Only recalculate when a coupon is applied.
+	// This allows manual discounts to be preserved when order items are saved.
+	$order_coupons = $order->get_coupons();
+	if ( ! empty( $order_coupons ) ) {
+		$order->recalculate_coupons();
+	}
+
 	$order->calculate_totals( false );
 
 	// Inform other plugins that the items have been saved.

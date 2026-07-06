@@ -4,7 +4,6 @@ declare( strict_types=1 );
 namespace Automattic\WooCommerce\Internal\Admin\Settings;
 
 use Automattic\WooCommerce\Internal\RestApiControllerBase;
-use Automattic\WooCommerce\Internal\Utilities\ArrayUtil;
 use Exception;
 use WP_Error;
 use WP_REST_Request;
@@ -496,17 +495,9 @@ class PaymentsRestController extends RestApiControllerBase {
 	 * @return mixed The prepared response item.
 	 */
 	private function prepare_payment_providers_response_recursive( $response_item, array $schema ) {
-		if ( is_null( $response_item ) ) {
-			return null;
-		}
-
-		if ( ! array_key_exists( 'properties', $schema ) ||
+		if ( is_null( $response_item ) ||
+			! array_key_exists( 'properties', $schema ) ||
 			! is_array( $schema['properties'] ) ) {
-
-			// Filter out null values for loosely defined schema types.
-			if ( is_array( $response_item ) ) {
-				return ArrayUtil::filter_null_values_recursive( $response_item );
-			}
 			return $response_item;
 		}
 
@@ -530,7 +521,9 @@ class PaymentsRestController extends RestApiControllerBase {
 		$prepared_response = array_merge( array_fill_keys( array_keys( $schema['properties'] ), null ), $prepared_response );
 
 		// Remove any null values from the response.
-		return ArrayUtil::filter_null_values_recursive( $prepared_response );
+		$prepared_response = array_filter( $prepared_response, fn( $value ) => ! is_null( $value ) );
+
+		return $prepared_response;
 	}
 
 	/**
@@ -882,23 +875,6 @@ class PaymentsRestController extends RestApiControllerBase {
 							'description' => esc_html__( 'The state of the onboarding process.', 'woocommerce' ),
 							'context'     => array( 'view', 'edit' ),
 						),
-						'messages'                    => array(
-							'type'                 => 'object',
-							'description'          => esc_html__( 'Various messages to possibly show the user.', 'woocommerce' ),
-							'context'              => array( 'view', 'edit' ),
-							'readonly'             => true,
-							'additionalProperties' => array(
-								'type'        => 'string',
-								'description' => esc_html__( 'Message to show the user.', 'woocommerce' ),
-								'readonly'    => true,
-							),
-						),
-						'steps'                       => array(
-							'type'        => 'array',
-							'description' => esc_html__( 'The onboarding steps in case this provider supports native in-context onboarding.', 'woocommerce' ),
-							'context'     => array( 'view', 'edit' ),
-							'readonly'    => true,
-						),
 						'_links'                      => array(
 							'type'       => 'object',
 							'context'    => array( 'view', 'edit' ),
@@ -1015,46 +991,8 @@ class PaymentsRestController extends RestApiControllerBase {
 										'context'     => array( 'view', 'edit' ),
 										'readonly'    => true,
 									),
-									'notice'      => array(
-										'type'        => 'object',
-										'description' => esc_html__( 'An optional notice to display for this payment method (e.g., verification requirements).', 'woocommerce' ),
-										'context'     => array( 'view', 'edit' ),
-										'readonly'    => true,
-										'properties'  => array(
-											'badge'     => array(
-												'type'     => 'string',
-												'description' => esc_html__( 'Short text for a badge/chip displayed next to the payment method title.', 'woocommerce' ),
-												'context'  => array( 'view', 'edit' ),
-												'readonly' => true,
-											),
-											'message'   => array(
-												'type'     => 'string',
-												'description' => esc_html__( 'Warning message displayed when the payment method is enabled. Plain text only.', 'woocommerce' ),
-												'context'  => array( 'view', 'edit' ),
-												'readonly' => true,
-											),
-											'link_text' => array(
-												'type'     => 'string',
-												'description' => esc_html__( 'Text for the call-to-action link in the notice.', 'woocommerce' ),
-												'context'  => array( 'view', 'edit' ),
-												'readonly' => true,
-											),
-											'link_url'  => array(
-												'type'     => 'string',
-												'description' => esc_html__( 'URL for the call-to-action link in the notice.', 'woocommerce' ),
-												'context'  => array( 'view', 'edit' ),
-												'readonly' => true,
-											),
-										),
-									),
 								),
 							),
-						),
-						'context'                     => array(
-							'type'        => 'object',
-							'description' => esc_html__( 'Various contextual data for the onboarding process to use.', 'woocommerce' ),
-							'context'     => array( 'view', 'edit' ),
-							'readonly'    => true,
 						),
 					),
 				),

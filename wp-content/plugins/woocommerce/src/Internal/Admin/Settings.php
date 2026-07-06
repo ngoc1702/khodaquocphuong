@@ -1,532 +1,376 @@
 <?php
-declare( strict_types=1 );
+/**
+ * WooCommerce Settings.
+ */
 
-namespace Automattic\WooCommerce\Internal\Admin\Logging;
+namespace Automattic\WooCommerce\Internal\Admin;
 
-use Automattic\Jetpack\Constants;
-use Automattic\WooCommerce\Internal\Admin\Logging\FileV2\File;
-use Automattic\WooCommerce\Internal\Admin\Logging\LogHandlerFileV2;
-use Automattic\WooCommerce\Internal\Admin\Logging\FileV2\FileController;
-use Automattic\WooCommerce\Internal\Utilities\FilesystemUtil;
-use Automattic\WooCommerce\Proxies\LegacyProxy;
-use Exception;
-use WC_Admin_Settings;
-use WC_Log_Handler_DB, WC_Log_Handler_File, WC_Log_Levels;
-use WP_Filesystem_Direct;
+use Automattic\WooCommerce\Admin\API\Plugins;
+use Automattic\WooCommerce\Admin\API\Reports\Orders\DataStore as OrdersDataStore;
+use Automattic\WooCommerce\Admin\Features\Features;
+use Automattic\WooCommerce\Admin\PageController;
+use Automattic\WooCommerce\Admin\PluginsHelper;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use WC_Marketplace_Suggestions;
 
 /**
- * Settings class.
+ * Contains logic in regards to WooCommerce Admin Settings.
  */
 class Settings {
 
 	/**
-	 * Default values for logging settings.
+	 * Class instance.
 	 *
-	 * @const array
+	 * @var Settings instance
 	 */
-	private const DEFAULTS = array(
-		'logging_enabled'       => true,
-		'default_handler'       => LogHandlerFileV2::class,
-		'retention_period_days' => 30,
-		'level_threshold'       => 'none',
-	);
+	protected static $instance = null;
 
 	/**
-	 * The prefix for settings keys used in the options table.
-	 *
-	 * @const string
+	 * Get class instance.
 	 */
-	private const PREFIX = 'woocommerce_logs_';
-
-	/**
-	 * Class Settings.
-	 */
-	public function __construct() {
-		add_action( 'wc_logs_load_tab', array( $this, 'save_settings' ) );
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
 	}
 
 	/**
-	 * Get the directory for storing log files.
-	 *
-	 * The `wp_upload_dir` function takes into account the possibility of multisite, and handles changing
-	 * the directory if the context is switched to a different site in the network mid-request.
-	 *
-	 * @param bool $create_dir Optional. True to attempt to create the log directory if it doesn't exist. Default true.
-	 *
-	 * @return string The full directory path, with trailing slash.
+	 * Hook into WooCommerce.
 	 */
-	public static function get_log_directory( bool $create_dir = true ): string {
-		if ( true === Constants::get_constant( 'WC_LOG_DIR_CUSTOM' ) ) {
-			$dir = Constants::get_constant( 'WC_LOG_DIR' );
-		} else {
-			$upload_dir = wc_get_container()->get( LegacyProxy::class )->call_function( 'wp_upload_dir', null, $create_dir );
+	public function __construct() {
+		// Old settings injection.
+		add_filter( 'woocommerce_components_settings', array( $this, 'add_component_settings' ) );
+		// New settings injection.
+		add_filter( 'woocommerce_admin_shared_settings', array( $this, 'add_component_settings' ) );
+		add_filter( 'woocommerce_settings_groups', array( $this, 'add_settings_group' ) );
+		add_filter( 'woocommerce_settings-wc_admin', array( $this, 'add_settings' ) );
+	}
 
-			/**
-			 * Filter to change the directory for storing WooCommerce's log files.
-			 *
-			 * @param string $dir The full directory path, with trailing slash.
-			 *
-			 * @since 8.8.0
-			 */
-			$dir = apply_filters( 'woocommerce_log_directory', $upload_dir['basedir'] . '/wc-logs/' );
+	/**
+	 * Format order statuses by removing a leading 'wc-' if present.
+	 *
+	 * @param array $statuses Order statuses.
+	 * @return array formatted statuses.
+	 */
+	public static function get_order_statuses( $statuses ) {
+		$formatted_statuses = array();
+		foreach ( $statuses as $key => $value ) {
+			$formatted_key                        = preg_replace( '/^wc-/', '', $key );
+			$formatted_statuses[ $formatted_key ] = $value;
+		}
+		return $formatted_statuses;
+	}
+
+	/**
+	 * Get all order statuses present in analytics tables that aren't registered.
+	 *
+	 * @return array Unregistered order statuses.
+	 */
+	private function get_unregistered_order_statuses() {
+		$registered_statuses   = wc_get_order_statuses();
+		$all_synced_statuses   = OrdersDataStore::get_all_statuses();
+		$unregistered_statuses = array_diff( $all_synced_statuses, array_keys( $registered_statuses ) );
+		$formatted_status_keys = self::get_order_statuses( array_fill_keys( $unregistered_statuses, '' ) );
+		$formatted_statuses    = array_keys( $formatted_status_keys );
+
+		return array_combine( $formatted_statuses, $formatted_statuses );
+	}
+
+	/**
+	 * Return an object defining the currency options for the site's current currency
+	 *
+	 * @return  array  Settings for the current currency {
+	 *     Array of settings.
+	 *
+	 *     @type string $code       Currency code.
+	 *     @type string $precision  Number of decimals.
+	 *     @type string $symbol     Symbol for currency.
+	 * }
+	 */
+	public static function get_currency_settings() {
+		$code = get_woocommerce_currency();
+
+		/**
+		 * The wc_currency_settings hook
+		 *
+		 * @since 6.5.0
+		 */
+		return apply_filters(
+			'wc_currency_settings',
+			array(
+				'code'              => $code,
+				'precision'         => wc_get_price_decimals(),
+				'symbol'            => html_entity_decode( get_woocommerce_currency_symbol( $code ) ),
+				'symbolPosition'    => get_option( 'woocommerce_currency_pos' ),
+				'decimalSeparator'  => wc_get_price_decimal_separator(),
+				'thousandSeparator' => wc_get_price_thousand_separator(),
+				'priceFormat'       => html_entity_decode( get_woocommerce_price_format() ),
+			)
+		);
+	}
+
+	/**
+	 * Hooks extra necessary data into the component settings array already set in WooCommerce core.
+	 *
+	 * @param array $settings Array of component settings.
+	 * @return array Array of component settings.
+	 */
+	public function add_component_settings( $settings ) {
+		if ( ! is_admin() ) {
+			return $settings;
 		}
 
-		$dir = trailingslashit( $dir );
+		if ( ! function_exists( 'wc_blocks_container' ) ) {
+			global $wp_locale;
+			// inject data not available via older versions of wc_blocks/woo.
+			$settings['orderStatuses'] = self::get_order_statuses( wc_get_order_statuses() );
+			$settings['stockStatuses'] = self::get_order_statuses( wc_get_product_stock_status_options() );
+			$settings['currency']      = self::get_currency_settings();
+			$settings['locale']        = array(
+				'siteLocale'    => isset( $settings['siteLocale'] )
+					? $settings['siteLocale']
+					: get_locale(),
+				'userLocale'    => isset( $settings['l10n']['userLocale'] )
+					? $settings['l10n']['userLocale']
+					: get_user_locale(),
+				'weekdaysShort' => isset( $settings['l10n']['weekdaysShort'] )
+					? $settings['l10n']['weekdaysShort']
+					: array_values( $wp_locale->weekday_abbrev ),
+			);
+		}
 
-		if ( true === $create_dir ) {
-			$realpath = realpath( $dir );
-			if ( false === $realpath ) {
-				$result = wp_mkdir_p( $dir );
+		//phpcs:ignore
+		$preload_data_endpoints = apply_filters( 'woocommerce_component_settings_preload_endpoints', array() );
+		$preload_data_endpoints['jetpackStatus'] = '/jetpack/v4/connection';
+		if ( ! empty( $preload_data_endpoints ) ) {
+			$preload_data = array_reduce(
+				array_values( $preload_data_endpoints ),
+				'rest_preload_api_request'
+			);
+		}
 
-				if ( true === $result ) {
-					// Create infrastructure to prevent listing contents of the logs directory.
-					try {
-						$filesystem = FilesystemUtil::get_wp_filesystem();
-						$filesystem->put_contents( $dir . '.htaccess', 'deny from all' );
-						$filesystem->put_contents( $dir . 'index.html', '' );
-					} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-						// Creation failed.
+		//phpcs:ignore
+		$preload_options = apply_filters( 'woocommerce_admin_preload_options', array() );
+		if ( ! empty( $preload_options ) ) {
+			foreach ( $preload_options as $option ) {
+				$settings['preloadOptions'][ $option ] = get_option( $option );
+			}
+		}
+
+		//phpcs:ignore
+		$preload_settings = apply_filters( 'woocommerce_admin_preload_settings', array() );
+		if ( ! empty( $preload_settings ) ) {
+			$setting_options = new \WC_REST_Setting_Options_V2_Controller();
+			foreach ( $preload_settings as $group ) {
+				$group_settings   = $setting_options->get_group_settings( $group );
+				$preload_settings = array();
+				foreach ( $group_settings as $option ) {
+					if ( array_key_exists( 'id', $option ) && array_key_exists( 'value', $option ) ) {
+						$preload_settings[ $option['id'] ] = $option['value'];
 					}
+				}
+				$settings['preloadSettings'][ $group ] = $preload_settings;
+			}
+		}
+
+		$user_controller = new \WP_REST_Users_Controller();
+		$request         = new \WP_REST_Request();
+		$request->set_query_params( array( 'context' => 'edit' ) );
+		$user_response     = $user_controller->get_current_item( $request );
+		$current_user_data = is_wp_error( $user_response ) ? (object) array() : $user_response->get_data();
+
+		$settings['currentUserData']      = $current_user_data;
+		$settings['reviewsEnabled']       = get_option( 'woocommerce_enable_reviews' );
+		$settings['manageStock']          = get_option( 'woocommerce_manage_stock' );
+		$settings['commentModeration']    = get_option( 'comment_moderation' );
+		$settings['notifyLowStockAmount'] = get_option( 'woocommerce_notify_low_stock_amount' );
+
+		/**
+		 * Deprecate wcAdminAssetUrl as we no longer need it after The Merge.
+		 * Use wcAssetUrl instead.
+		 *
+		 * @deprecated 6.7.0
+		 * @var string
+		 */
+		$settings['wcAdminAssetUrl'] = WC_ADMIN_IMAGES_FOLDER_URL;
+		$settings['wcVersion']       = WC_VERSION;
+		$settings['siteUrl']         = site_url();
+		$settings['shopUrl']         = get_permalink( wc_get_page_id( 'shop' ) );
+		$settings['homeUrl']         = home_url();
+		$settings['dateFormat']      = get_option( 'date_format' );
+		$settings['timeZone']        = wc_timezone_string();
+		$settings['plugins']         = array(
+			'installedPlugins' => PluginsHelper::get_installed_plugin_slugs(),
+			'activePlugins'    => Plugins::get_active_plugins(),
+		);
+
+		// DO NOT use outside of core, these can be removed without deprecation.
+		$settings['__experimentalFlags'] = array();
+
+		// Plugins that depend on changing the translation work on the server but not the client -
+		// WooCommerce Branding is an example of this - so pass through the translation of
+		// 'WooCommerce' to wcSettings.
+		$settings['woocommerceTranslation'] = __( 'WooCommerce', 'woocommerce' );
+
+		if ( PageController::is_admin_page() && Features::is_enabled( 'analytics' ) ) {
+			// We may have synced orders with a now-unregistered status.
+			// E.g. an extension that added statuses is now inactive or removed.
+			$settings['unregisteredOrderStatuses'] = $this->get_unregistered_order_statuses();
+		}
+
+		// The separator used for attributes found in Variation titles.
+		//phpcs:ignore
+		$settings['variationTitleAttributesSeparator'] = apply_filters( 'woocommerce_product_variation_title_attributes_separator', ' - ', new \WC_Product() );
+
+		if ( ! empty( $preload_data_endpoints ) ) {
+			$settings['dataEndpoints'] = isset( $settings['dataEndpoints'] )
+				? $settings['dataEndpoints']
+				: array();
+			foreach ( $preload_data_endpoints as $key => $endpoint ) {
+				// Handle error case: rest_do_request() doesn't guarantee success.
+				if ( empty( $preload_data[ $endpoint ] ) ) {
+					$settings['dataEndpoints'][ $key ] = array();
+				} else {
+					$settings['dataEndpoints'][ $key ] = $preload_data[ $endpoint ]['body'];
 				}
 			}
 		}
+		$settings = $this->get_custom_settings( $settings );
+		if ( PageController::is_embed_page() ) {
+			$settings['embedBreadcrumbs'] = wc_admin_get_breadcrumbs();
+		}
 
-		return $dir;
-	}
-
-	/**
-	 * The definitions used by WC_Admin_Settings to render and save settings controls.
-	 *
-	 * @return array
-	 */
-	private function get_settings_definitions(): array {
-		$settings = array(
-			'start'                 => array(
-				'title' => __( 'Logs settings', 'woocommerce' ),
-				'id'    => self::PREFIX . 'settings',
-				'type'  => 'title',
-			),
-			'logging_enabled'       => array(
-				'title'    => __( 'Logger', 'woocommerce' ),
-				'desc'     => __( 'Enable logging', 'woocommerce' ),
-				'id'       => self::PREFIX . 'logging_enabled',
-				'type'     => 'checkbox',
-				'value'    => $this->logging_is_enabled() ? 'yes' : 'no',
-				'default'  => self::DEFAULTS['logging_enabled'] ? 'yes' : 'no',
-				'autoload' => false,
-			),
-			'default_handler'       => array(),
-			'retention_period_days' => array(),
-			'level_threshold'       => array(),
-			'end'                   => array(
-				'id'   => self::PREFIX . 'settings',
-				'type' => 'sectionend',
-			),
+		$settings['allowMarketplaceSuggestions']      = WC_Marketplace_Suggestions::allow_suggestions();
+		$settings['connectNonce']                     = wp_create_nonce( 'connect' );
+		$settings['wcpay_welcome_page_connect_nonce'] = wp_create_nonce( 'wcpay-connect' );
+		$settings['email_preview_nonce']              = wp_create_nonce( 'email-preview-nonce' );
+		$settings['email_listing_nonce']              = wp_create_nonce( 'email-listing-nonce' );
+		$settings['wc_helper_nonces']                 = array(
+			'refresh' => wp_create_nonce( 'refresh' ),
 		);
 
-		if ( true === $this->logging_is_enabled() ) {
-			$settings['default_handler']       = $this->get_default_handler_setting_definition();
-			$settings['retention_period_days'] = $this->get_retention_period_days_setting_definition();
-			$settings['level_threshold']       = $this->get_level_threshold_setting_definition();
+		$settings['features'] = $this->get_features();
 
-			$default_handler = $this->get_default_handler();
-			if ( in_array( $default_handler, array( LogHandlerFileV2::class, WC_Log_Handler_File::class ), true ) ) {
-				$settings += $this->get_filesystem_settings_definitions();
-			} elseif ( WC_Log_Handler_DB::class === $default_handler ) {
-				$settings += $this->get_database_settings_definitions();
+		$has_gutenberg     = is_plugin_active( 'gutenberg/gutenberg.php' );
+		$gutenberg_version = '';
+		if ( $has_gutenberg ) {
+			if ( defined( 'GUTENBERG_VERSION' ) ) {
+				$gutenberg_version = GUTENBERG_VERSION;
+			}
+
+			if ( ! $gutenberg_version ) {
+				$gutenberg_data    = get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php' );
+				$gutenberg_version = $gutenberg_data['Version'];
 			}
 		}
+		$settings['gutenberg_version'] = $has_gutenberg ? $gutenberg_version : 0;
 
 		return $settings;
 	}
 
 	/**
-	 * The definition for the default_handler setting.
+	 * Removes non-necessary feature properties for the client side.
 	 *
 	 * @return array
 	 */
-	private function get_default_handler_setting_definition(): array {
-		$handler_options = array(
-			LogHandlerFileV2::class  => __( 'File system (default)', 'woocommerce' ),
-			WC_Log_Handler_DB::class => __( 'Database (not recommended on live sites)', 'woocommerce' ),
-		);
+	public function get_features() {
+		$features     = FeaturesUtil::get_features( true, true );
+		$new_features = array();
 
-		/**
-		 * Filter the list of logging handlers that can be set as the default handler.
-		 *
-		 * @param array $handler_options An associative array of class_name => description.
-		 *
-		 * @since 8.6.0
-		 */
-		$handler_options = apply_filters( 'woocommerce_logger_handler_options', $handler_options );
-
-		$current_value = $this->get_default_handler();
-		if ( ! array_key_exists( $current_value, $handler_options ) ) {
-			$handler_options[ $current_value ] = $current_value;
-		}
-
-		$desc = array();
-
-		$desc[] = __( 'Note that if this setting is changed, any log entries that have already been recorded will remain stored in their current location, but will not migrate.', 'woocommerce' );
-
-		$hardcoded = ! is_null( Constants::get_constant( 'WC_LOG_HANDLER' ) );
-		if ( $hardcoded ) {
-			$desc[] = sprintf(
-				// translators: %s is the name of a code variable.
-				__( 'This setting cannot be changed here because it is defined in the %s constant.', 'woocommerce' ),
-				'<code>WC_LOG_HANDLER</code>'
+		foreach ( array_keys( $features ) as $feature_id ) {
+			$new_features[ $feature_id ] = array(
+				'is_enabled'      => $features[ $feature_id ]['is_enabled'],
+				'is_experimental' => $features[ $feature_id ]['is_experimental'] ?? false,
 			);
 		}
 
-		return array(
-			'title'       => __( 'Log storage', 'woocommerce' ),
-			'desc_tip'    => __( 'This determines where log entries are saved.', 'woocommerce' ),
-			'id'          => self::PREFIX . 'default_handler',
-			'type'        => 'radio',
-			'value'       => $current_value,
-			'default'     => self::DEFAULTS['default_handler'],
-			'autoload'    => false,
-			'options'     => $handler_options,
-			'disabled'    => $hardcoded ? array_keys( $handler_options ) : array(),
-			'desc'        => implode( '<br><br>', $desc ),
-			'desc_at_end' => true,
-		);
+		return $new_features;
 	}
 
 	/**
-	 * The definition for the retention_period_days setting.
+	 * Register the admin settings for use in the WC REST API
 	 *
+	 * @param array $groups Array of setting groups.
 	 * @return array
 	 */
-	private function get_retention_period_days_setting_definition(): array {
-		$custom_attributes = array(
-			'min'  => 1,
-			'step' => 1,
+	public function add_settings_group( $groups ) {
+		$groups[] = array(
+			'id'          => 'wc_admin',
+			'label'       => __( 'WooCommerce Admin', 'woocommerce' ),
+			'description' => __( 'Settings for WooCommerce admin reporting.', 'woocommerce' ),
 		);
+		return $groups;
+	}
 
-		$desc = array();
+	/**
+	 * Add WC Admin specific settings
+	 *
+	 * @param array $settings Array of settings in wc admin group.
+	 * @return array
+	 */
+	public function add_settings( $settings ) {
+		$unregistered_statuses = $this->get_unregistered_order_statuses();
+		$registered_statuses   = self::get_order_statuses( wc_get_order_statuses() );
+		$all_statuses          = array_merge( $unregistered_statuses, $registered_statuses );
 
-		$hardcoded = has_filter( 'woocommerce_logger_days_to_retain_logs' );
-		if ( $hardcoded ) {
-			$custom_attributes['disabled'] = 'true';
-
-			$desc[] = sprintf(
-				// translators: %s is the name of a filter hook.
-				__( 'This setting cannot be changed here because it is being set by a filter on the %s hook.', 'woocommerce' ),
-				'<code>woocommerce_logger_days_to_retain_logs</code>'
-			);
-		}
-
-		$file_delete_has_filter = LogHandlerFileV2::class === $this->get_default_handler() && has_filter( 'woocommerce_logger_delete_expired_file' );
-		if ( $file_delete_has_filter ) {
-			$desc[] = sprintf(
-				// translators: %s is the name of a filter hook.
-				__( 'The %s hook has a filter set, so some log files may have different retention settings.', 'woocommerce' ),
-				'<code>woocommerce_logger_delete_expired_file</code>'
-			);
-		}
-
-		return array(
-			'title'             => __( 'Retention period', 'woocommerce' ),
-			'desc_tip'          => __( 'This sets how many days log entries will be kept before being auto-deleted.', 'woocommerce' ),
-			'id'                => self::PREFIX . 'retention_period_days',
-			'type'              => 'number',
-			'value'             => $this->get_retention_period(),
-			'default'           => self::DEFAULTS['retention_period_days'],
-			'autoload'          => false,
-			'custom_attributes' => $custom_attributes,
-			'css'               => 'width:70px;',
-			'row_class'         => 'logs-retention-period-days',
-			'suffix'            => sprintf(
-				' %s',
-				__( 'days', 'woocommerce' ),
+		$settings[] = array(
+			'id'          => 'woocommerce_excluded_report_order_statuses',
+			'option_key'  => 'woocommerce_excluded_report_order_statuses',
+			'label'       => __( 'Excluded report order statuses', 'woocommerce' ),
+			'description' => __( 'Statuses that should not be included when calculating report totals.', 'woocommerce' ),
+			'default'     => array( 'pending', 'cancelled', 'failed' ),
+			'type'        => 'multiselect',
+			'options'     => $all_statuses,
+		);
+		$settings[] = array(
+			'id'          => 'woocommerce_actionable_order_statuses',
+			'option_key'  => 'woocommerce_actionable_order_statuses',
+			'label'       => __( 'Actionable order statuses', 'woocommerce' ),
+			'description' => __( 'Statuses that require extra action on behalf of the store admin.', 'woocommerce' ),
+			'default'     => array( 'processing', 'on-hold' ),
+			'type'        => 'multiselect',
+			'options'     => $all_statuses,
+		);
+		$settings[] = array(
+			'id'          => 'woocommerce_default_date_range',
+			'option_key'  => 'woocommerce_default_date_range',
+			'label'       => __( 'Default Date Range', 'woocommerce' ),
+			'description' => __( 'Default Date Range', 'woocommerce' ),
+			'default'     => 'period=month&compare=previous_year',
+			'type'        => 'text',
+		);
+		$settings[] = array(
+			'id'          => 'woocommerce_date_type',
+			'option_key'  => 'woocommerce_date_type',
+			'label'       => __( 'Date Type', 'woocommerce' ),
+			'description' => __( 'Database date field considered for Revenue and Orders reports', 'woocommerce' ),
+			'type'        => 'select',
+			'options'     => array(
+				'date_created'   => 'date_created',
+				'date_paid'      => 'date_paid',
+				'date_completed' => 'date_completed',
 			),
-			'desc'              => implode( '<br><br>', $desc ),
 		);
+		return $settings;
 	}
 
 	/**
-	 * The definition for the level_threshold setting.
+	 * Gets custom settings used for WC Admin.
 	 *
+	 * @param array $settings Array of settings to merge into.
 	 * @return array
 	 */
-	private function get_level_threshold_setting_definition(): array {
-		$hardcoded = ! is_null( Constants::get_constant( 'WC_LOG_THRESHOLD' ) );
-		$desc      = '';
-		if ( $hardcoded ) {
-			$desc = sprintf(
-				// translators: %1$s is the name of a code variable. %2$s is the name of a file.
-				__( 'This setting cannot be changed here because it is defined in the %1$s constant, probably in your %2$s file.', 'woocommerce' ),
-				'<code>WC_LOG_THRESHOLD</code>',
-				'<b>wp-config.php</b>'
-			);
-		}
+	private function get_custom_settings( $settings ) {
+		$wc_rest_settings_options_controller = new \WC_REST_Setting_Options_Controller();
+		$wc_admin_group_settings             = $wc_rest_settings_options_controller->get_group_settings( 'wc_admin' );
+		$settings['wcAdminSettings']         = array();
 
-		$labels         = WC_Log_Levels::get_all_level_labels();
-		$labels['none'] = __( 'None', 'woocommerce' );
-
-		$custom_attributes = array();
-		if ( $hardcoded ) {
-			$custom_attributes['disabled'] = 'true';
-		}
-
-		return array(
-			'title'             => __( 'Level threshold', 'woocommerce' ),
-			'desc_tip'          => __( 'This sets the minimum severity level of logs that will be stored. Lower severity levels will be ignored. "None" means all logs will be stored.', 'woocommerce' ),
-			'id'                => self::PREFIX . 'level_threshold',
-			'type'              => 'select',
-			'value'             => $this->get_level_threshold(),
-			'default'           => self::DEFAULTS['level_threshold'],
-			'autoload'          => false,
-			'options'           => $labels,
-			'custom_attributes' => $custom_attributes,
-			'css'               => 'width:auto;',
-			'desc'              => $desc,
-		);
-	}
-
-	/**
-	 * The definitions used by WC_Admin_Settings to render settings related to filesystem log handlers.
-	 *
-	 * @return array
-	 */
-	private function get_filesystem_settings_definitions(): array {
-		$location_info = array();
-		$directory     = self::get_log_directory();
-
-		$status_info = array();
-		try {
-			$filesystem = FilesystemUtil::get_wp_filesystem();
-			if ( $filesystem instanceof WP_Filesystem_Direct ) {
-				$status_info[] = __( '✅ Ready', 'woocommerce' );
-			} else {
-				$status_info[] = __( '⚠️ The file system is not configured for direct writes. This could cause problems for the logger.', 'woocommerce' );
-				$status_info[] = __( 'You may want to switch to the database for log storage.', 'woocommerce' );
+		foreach ( $wc_admin_group_settings as $setting ) {
+			if ( ! empty( $setting['id'] ) ) {
+				$settings['wcAdminSettings'][ $setting['id'] ] = $setting['value'];
 			}
-		} catch ( Exception $exception ) {
-			$status_info[] = __( '⚠️ The file system connection could not be initialized.', 'woocommerce' );
-			$status_info[] = __( 'You may want to switch to the database for log storage.', 'woocommerce' );
 		}
-
-		$location_info[] = sprintf(
-			// translators: %s is a location in the filesystem.
-			__( 'Log files are stored in this directory: %s', 'woocommerce' ),
-			sprintf(
-				'<code>%s</code>',
-				esc_html( $directory )
-			)
-		);
-
-		if ( ! wp_is_writable( $directory ) ) {
-			$location_info[] = __( '⚠️ This directory does not appear to be writable.', 'woocommerce' );
-		}
-
-		$location_info[] = sprintf(
-			// translators: %s is an amount of computer disk space, e.g. 5 KB.
-			__( 'Directory size: %s', 'woocommerce' ),
-			size_format( wc_get_container()->get( FileController::class )->get_log_directory_size() )
-		);
-
-		return array(
-			'file_start'    => array(
-				'title' => __( 'File system settings', 'woocommerce' ),
-				'id'    => self::PREFIX . 'settings',
-				'type'  => 'title',
-			),
-			'file_status'   => array(
-				'title' => __( 'Status', 'woocommerce' ),
-				'type'  => 'info',
-				'text'  => implode( "\n\n", $status_info ),
-			),
-			'log_directory' => array(
-				'title' => __( 'Location', 'woocommerce' ),
-				'type'  => 'info',
-				'text'  => implode( "\n\n", $location_info ),
-			),
-			'entry_format'  => array(),
-			'file_end'      => array(
-				'id'   => self::PREFIX . 'settings',
-				'type' => 'sectionend',
-			),
-		);
-	}
-
-	/**
-	 * The definitions used by WC_Admin_Settings to render settings related to database log handlers.
-	 *
-	 * @return array
-	 */
-	private function get_database_settings_definitions(): array {
-		global $wpdb;
-		$table = "{$wpdb->prefix}woocommerce_log";
-
-		$location_info = sprintf(
-			// translators: %s is the name of a table in the database.
-			__( 'Log entries are stored in this database table: %s', 'woocommerce' ),
-			"<code>$table</code>"
-		);
-
-		return array(
-			'file_start'     => array(
-				'title' => __( 'Database settings', 'woocommerce' ),
-				'id'    => self::PREFIX . 'settings',
-				'type'  => 'title',
-			),
-			'database_table' => array(
-				'title' => __( 'Location', 'woocommerce' ),
-				'type'  => 'info',
-				'text'  => $location_info,
-			),
-			'file_end'       => array(
-				'id'   => self::PREFIX . 'settings',
-				'type' => 'sectionend',
-			),
-		);
-	}
-
-	/**
-	 * Handle the submission of the settings form and update the settings values.
-	 *
-	 * @param string $view The current view within the Logs tab.
-	 *
-	 * @return void
-	 *
-	 * @internal For exclusive usage of WooCommerce core, backwards compatibility not guaranteed.
-	 */
-	public function save_settings( string $view ): void {
-		$is_saving = 'settings' === $view && isset( $_POST['save_settings'] );
-
-		if ( $is_saving ) {
-			check_admin_referer( self::PREFIX . 'settings' );
-
-			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				wp_die( esc_html__( 'You do not have permission to manage logging settings.', 'woocommerce' ) );
-			}
-
-			$settings = $this->get_settings_definitions();
-
-			WC_Admin_Settings::save_fields( $settings );
-		}
-	}
-
-	/**
-	 * Render the settings page.
-	 *
-	 * @return void
-	 */
-	public function render_form(): void {
-		$settings = $this->get_settings_definitions();
-
-		?>
-		<form id="mainform" class="wc-logs-settings" method="post">
-			<?php WC_Admin_Settings::output_fields( $settings ); ?>
-			<?php
-			/**
-			 * Action fires after the built-in logging settings controls have been rendered.
-			 *
-			 * This is intended as a way to allow other logging settings controls to be added by extensions.
-			 *
-			 * @param bool $enabled True if logging is currently enabled.
-			 *
-			 * @since 8.6.0
-			 */
-			do_action( 'wc_logs_settings_form_fields', $this->logging_is_enabled() );
-			?>
-			<?php wp_nonce_field( self::PREFIX . 'settings' ); ?>
-			<?php submit_button( __( 'Save changes', 'woocommerce' ), 'primary', 'save_settings' ); ?>
-		</form>
-		<?php
-	}
-
-	/**
-	 * Determine the current value of the logging_enabled setting.
-	 *
-	 * @return bool
-	 */
-	public function logging_is_enabled(): bool {
-		$key = self::PREFIX . 'logging_enabled';
-
-		$enabled = WC_Admin_Settings::get_option( $key, self::DEFAULTS['logging_enabled'] );
-		$enabled = filter_var( $enabled, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
-
-		if ( is_null( $enabled ) ) {
-			$enabled = self::DEFAULTS['logging_enabled'];
-		}
-
-		return $enabled;
-	}
-
-	/**
-	 * Determine the current value of the default_handler setting.
-	 *
-	 * @return string
-	 */
-	public function get_default_handler(): string {
-		$key = self::PREFIX . 'default_handler';
-
-		$handler = Constants::get_constant( 'WC_LOG_HANDLER' );
-
-		if ( is_null( $handler ) ) {
-			$handler = WC_Admin_Settings::get_option( $key );
-		}
-
-		if ( ! class_exists( $handler ) || ! is_a( $handler, 'WC_Log_Handler_Interface', true ) ) {
-			$handler = self::DEFAULTS['default_handler'];
-		}
-
-		return $handler;
-	}
-
-	/**
-	 * Determine the current value of the retention_period_days setting.
-	 *
-	 * @return int
-	 */
-	public function get_retention_period(): int {
-		$key = self::PREFIX . 'retention_period_days';
-
-		$retention_period = self::DEFAULTS['retention_period_days'];
-
-		if ( has_filter( 'woocommerce_logger_days_to_retain_logs' ) ) {
-			/**
-			 * Filter the retention period of log entries.
-			 *
-			 * @param int $days The number of days to retain log entries.
-			 *
-			 * @since 3.4.0
-			 */
-			$retention_period = apply_filters( 'woocommerce_logger_days_to_retain_logs', $retention_period );
-		} else {
-			$retention_period = WC_Admin_Settings::get_option( $key );
-		}
-
-		$retention_period = absint( $retention_period );
-
-		if ( $retention_period < 1 ) {
-			$retention_period = self::DEFAULTS['retention_period_days'];
-		}
-
-		return $retention_period;
-	}
-
-	/**
-	 * Determine the current value of the level_threshold setting.
-	 *
-	 * @return string
-	 */
-	public function get_level_threshold(): string {
-		$key = self::PREFIX . 'level_threshold';
-
-		$threshold = Constants::get_constant( 'WC_LOG_THRESHOLD' );
-
-		if ( is_null( $threshold ) ) {
-			$threshold = WC_Admin_Settings::get_option( $key );
-		}
-
-		if ( ! WC_Log_Levels::is_valid_level( $threshold ) ) {
-			$threshold = self::DEFAULTS['level_threshold'];
-		}
-
-		return $threshold;
+		return $settings;
 	}
 }

@@ -1,7 +1,6 @@
 <?php
 namespace Automattic\WooCommerce\StoreApi\Schemas\V1;
 
-use Automattic\WooCommerce\Enums\OrderItemType;
 use Automattic\WooCommerce\StoreApi\SchemaController;
 use Automattic\WooCommerce\StoreApi\Schemas\ExtendSchema;
 use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
@@ -318,8 +317,8 @@ class OrderSchema extends AbstractSchema {
 			'id'                   => $order_id,
 			'status'               => $order->get_status(),
 			'items'                => $this->get_item_responses_from_schema( $this->item_schema, $order->get_items() ),
-			'coupons'              => $this->get_item_responses_from_schema( $this->coupon_schema, $order->get_items( OrderItemType::COUPON ) ),
-			'fees'                 => $this->get_item_responses_from_schema( $this->fee_schema, $order->get_items( OrderItemType::FEE ) ),
+			'coupons'              => $this->get_item_responses_from_schema( $this->coupon_schema, $order->get_items( 'coupon' ) ),
+			'fees'                 => $this->get_item_responses_from_schema( $this->fee_schema, $order->get_items( 'fee' ) ),
 			'totals'               => (object) $this->prepare_currency_response( $this->get_totals( $order ) ),
 			'shipping_address'     => (object) $this->shipping_address_schema->get_item_response( $order ),
 			'billing_address'      => (object) $this->billing_address_schema->get_item_response( $order ),
@@ -351,7 +350,7 @@ class OrderSchema extends AbstractSchema {
 						function( $item ) {
 							return $item->get_total();
 						},
-						array_values( $order->get_items( OrderItemType::LINE_ITEM ) )
+						array_values( $order->get_items( 'line_item' ) )
 					)
 				)
 			),
@@ -361,7 +360,7 @@ class OrderSchema extends AbstractSchema {
 						function( $item ) {
 							return $item->get_tax_total();
 						},
-						array_values( $order->get_items( OrderItemType::TAX ) )
+						array_values( $order->get_items( 'tax' ) )
 					)
 				)
 			),
@@ -371,7 +370,7 @@ class OrderSchema extends AbstractSchema {
 						function( $item ) {
 							return $item->get_total_tax();
 						},
-						array_values( $order->get_items( OrderItemType::FEE ) )
+						array_values( $order->get_items( 'fee' ) )
 					)
 				)
 			),
@@ -385,7 +384,7 @@ class OrderSchema extends AbstractSchema {
 						'rate'  => strval( $item->get_rate_percent() ),
 					];
 				},
-				array_values( $order->get_items( OrderItemType::TAX ) )
+				array_values( $order->get_items( 'tax' ) )
 			),
 		];
 	}

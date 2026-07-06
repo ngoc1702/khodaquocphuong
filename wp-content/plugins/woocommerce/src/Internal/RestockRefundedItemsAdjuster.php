@@ -5,7 +5,6 @@
 
 namespace Automattic\WooCommerce\Internal;
 
-use Automattic\WooCommerce\Enums\OrderItemType;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 
 defined( 'ABSPATH' ) || exit;
@@ -60,7 +59,7 @@ class RestockRefundedItemsAdjuster {
 					continue;
 				}
 
-				if ( OrderItemType::LINE_ITEM !== $item->get_type() ) {
+				if ( 'line_item' !== $item->get_type() ) {
 					continue;
 				}
 

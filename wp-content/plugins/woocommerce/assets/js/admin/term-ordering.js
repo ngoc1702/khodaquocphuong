@@ -119,7 +119,6 @@ jQuery( function( $ ) {
 				ajaxurl,
 				{
 					action: 'woocommerce_term_ordering',
-					security: woocommerce_term_ordering_params.nonce,
 					id: termid,
 					nextid: nexttermid,
 					thetaxonomy: woocommerce_term_ordering_params.taxonomy

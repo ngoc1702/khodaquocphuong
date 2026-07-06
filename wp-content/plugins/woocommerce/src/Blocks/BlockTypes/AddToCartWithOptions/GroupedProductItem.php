@@ -95,7 +95,6 @@ class GroupedProductItem extends AbstractBlock {
 
 		$content = '';
 
-		// No need to prime post caches here, children are already cached at this point.
 		$children = array_filter( array_map( 'wc_get_product', $product->get_children() ), 'wc_products_array_filter_visible_grouped' );
 
 		foreach ( $children as $child ) {

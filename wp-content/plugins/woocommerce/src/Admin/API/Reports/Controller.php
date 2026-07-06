@@ -1,84 +1,177 @@
 <?php
 /**
- * REST API Reports categories controller
- *
- * Handles requests to the /reports/categories endpoint.
+ * REST API Reports controller extended to handle requests to the reports endpoint.
  */
 
-namespace Automattic\WooCommerce\Admin\API\Reports\Categories;
+namespace Automattic\WooCommerce\Admin\API\Reports;
 
 defined( 'ABSPATH' ) || exit;
 
-use Automattic\WooCommerce\Admin\API\Reports\ExportableInterface;
 use Automattic\WooCommerce\Admin\API\Reports\GenericController;
-use Automattic\WooCommerce\Admin\API\Reports\GenericQuery;
 use Automattic\WooCommerce\Admin\API\Reports\OrderAwareControllerTrait;
 
 /**
- * REST API Reports categories controller class.
+ * Reports controller class.
+ *
+ * Controller that handles the endpoint that returns all available analytics endpoints.
  *
  * @internal
- * @extends \Automattic\WooCommerce\Admin\API\Reports\GenericController
+ * @extends GenericController
  */
-class Controller extends GenericController implements ExportableInterface {
+class Controller extends GenericController {
 
 	use OrderAwareControllerTrait;
 
 	/**
-	 * Route base.
+	 * Get all reports.
 	 *
-	 * @var string
+	 * @param WP_REST_Request $request Request data.
+	 * @return array|WP_Error
 	 */
-	protected $rest_base = 'reports/categories';
+	public function get_items( $request ) {
+		$data    = array();
+		$reports = array(
+			array(
+				'slug'        => 'performance-indicators',
+				'description' => __( 'Batch endpoint for getting specific performance indicators from `stats` endpoints.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'revenue/stats',
+				'description' => __( 'Stats about revenue.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'orders/stats',
+				'description' => __( 'Stats about orders.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'products',
+				'description' => __( 'Products detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'products/stats',
+				'description' => __( 'Stats about products.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'variations',
+				'description' => __( 'Variations detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'variations/stats',
+				'description' => __( 'Stats about variations.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'categories',
+				'description' => __( 'Product categories detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'categories/stats',
+				'description' => __( 'Stats about product categories.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'coupons',
+				'description' => __( 'Coupons detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'coupons/stats',
+				'description' => __( 'Stats about coupons.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'taxes',
+				'description' => __( 'Taxes detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'taxes/stats',
+				'description' => __( 'Stats about taxes.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'downloads',
+				'description' => __( 'Product downloads detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'downloads/files',
+				'description' => __( 'Product download files detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'downloads/stats',
+				'description' => __( 'Stats about product downloads.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'customers',
+				'description' => __( 'Customers detailed reports.', 'woocommerce' ),
+			),
+			array(
+				'slug'        => 'customers/stats',
+				'description' => __( 'Stats about groups of customers.', 'woocommerce' ),
+			),
+		);
 
-	/**
-	 * Get data from `'categories'` GenericQuery.
-	 *
-	 * @override GenericController::get_datastore_data()
-	 *
-	 * @param array $query_args Query arguments.
-	 * @return mixed Results from the data store.
-	 */
-	protected function get_datastore_data( $query_args = array() ) {
-		$query = new GenericQuery( $query_args, 'categories' );
-		return $query->get_data();
+		/**
+		 * Filter the list of allowed reports, so that data can be loaded from third party extensions in addition to WooCommerce core.
+		 * Array items should be in format of array( 'slug' => 'downloads/stats', 'description' =>  '',
+		 * 'url' => '', and 'path' => '/wc-ext/v1/...'.
+		 *
+		 * @param array $endpoints The list of allowed reports..
+		 */
+		$reports = apply_filters( 'woocommerce_admin_reports', $reports );
+
+		foreach ( $reports as $report ) {
+			// Silently skip non-compliant reports. Like the ones for WC_Admin_Reports::get_reports().
+			if ( empty( $report['slug'] ) ) {
+				continue;
+			}
+
+			if ( empty( $report['path'] ) ) {
+				$report['path'] = '/' . $this->namespace . '/reports/' . $report['slug'];
+			}
+
+			// Allows a different admin page to be loaded here,
+			// or allows an empty url if no report exists for a set of performance indicators.
+			if ( ! isset( $report['url'] ) ) {
+				if ( '/stats' === substr( $report['slug'], -6 ) ) {
+					$url_slug = substr( $report['slug'], 0, -6 );
+				} else {
+					$url_slug = $report['slug'];
+				}
+
+				$report['url'] = '/analytics/' . $url_slug;
+			}
+
+			$item   = $this->prepare_item_for_response( (object) $report, $request );
+			$data[] = $this->prepare_response_for_collection( $item );
+		}
+
+		return rest_ensure_response( $data );
 	}
 
 	/**
-	 * Maps query arguments from the REST request.
+	 * Prepare a report object for serialization.
 	 *
-	 * @param array $request Request array.
-	 * @return array
-	 */
-	protected function prepare_reports_query( $request ) {
-		$args                        = array();
-		$args['before']              = $request['before'];
-		$args['after']               = $request['after'];
-		$args['interval']            = $request['interval'];
-		$args['page']                = $request['page'];
-		$args['per_page']            = $request['per_page'];
-		$args['orderby']             = $request['orderby'];
-		$args['order']               = $request['order'];
-		$args['extended_info']       = $request['extended_info'];
-		$args['category_includes']   = (array) $request['categories'];
-		$args['status_is']           = (array) $request['status_is'];
-		$args['status_is_not']       = (array) $request['status_is_not'];
-		$args['force_cache_refresh'] = $request['force_cache_refresh'];
-
-		return $args;
-	}
-
-	/**
-	 * Prepare a report data item for serialization.
-	 *
-	 * @param mixed            $report  Report data item as returned from Data Store.
-	 * @param \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Response
+	 * @param stdClass        $report  Report data.
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response
 	 */
 	public function prepare_item_for_response( $report, $request ) {
+		$data = array(
+			'slug'        => $report->slug,
+			'description' => $report->description,
+			'path'        => $report->path,
+		);
+
 		// Wrap the data in a response object.
-		$response = parent::prepare_item_for_response( $report, $request );
-		$response->add_links( $this->prepare_links( $report ) );
+		$response = parent::prepare_item_for_response( $data, $request );
+		$response->add_links(
+			array(
+				'self'       => array(
+					'href' => rest_url( $report->path ),
+				),
+				'report'     => array(
+					'href' => $report->url,
+				),
+				'collection' => array(
+					'href' => rest_url( sprintf( '%s/%s', $this->namespace, $this->rest_base ) ),
+				),
+			)
+		);
 
 		/**
 		 * Filter a report returned from the API.
@@ -89,73 +182,39 @@ class Controller extends GenericController implements ExportableInterface {
 		 * @param object           $report   The original report object.
 		 * @param WP_REST_Request  $request  Request used to generate the response.
 		 */
-		return apply_filters( 'woocommerce_rest_prepare_report_categories', $response, $report, $request );
-	}
-
-	/**
-	 * Prepare links for the request.
-	 *
-	 * @param \Automattic\WooCommerce\Admin\API\Reports\GenericQuery $object Object data.
-	 * @return array
-	 */
-	protected function prepare_links( $object ) {
-		$links = array(
-			'category' => array(
-				'href' => rest_url( sprintf( '/%s/products/categories/%d', $this->namespace, $object['category_id'] ) ),
-			),
-		);
-
-		return $links;
+		return apply_filters( 'woocommerce_rest_prepare_report', $response, $report, $request );
 	}
 
 	/**
 	 * Get the Report's schema, conforming to JSON Schema.
+	 *
+	 * @override WP_REST_Controller::get_item_schema()
 	 *
 	 * @return array
 	 */
 	public function get_item_schema() {
 		$schema = array(
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
-			'title'      => 'report_categories',
+			'title'      => 'report',
 			'type'       => 'object',
 			'properties' => array(
-				'category_id'    => array(
-					'description' => __( 'Category ID.', 'woocommerce' ),
-					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+				'slug'        => array(
+					'description' => __( 'An alphanumeric identifier for the resource.', 'woocommerce' ),
+					'type'        => 'string',
+					'context'     => array( 'view' ),
 					'readonly'    => true,
 				),
-				'items_sold'     => array(
-					'description' => __( 'Amount of items sold.', 'woocommerce' ),
-					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
+				'description' => array(
+					'description' => __( 'A human-readable description of the resource.', 'woocommerce' ),
+					'type'        => 'string',
+					'context'     => array( 'view' ),
 					'readonly'    => true,
 				),
-				'net_revenue'    => array(
-					'description' => __( 'Total sales.', 'woocommerce' ),
-					'type'        => 'number',
-					'context'     => array( 'view', 'edit' ),
+				'path'        => array(
+					'description' => __( 'API path.', 'woocommerce' ),
+					'type'        => 'string',
+					'context'     => array( 'view' ),
 					'readonly'    => true,
-				),
-				'orders_count'   => array(
-					'description' => __( 'Number of orders.', 'woocommerce' ),
-					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
-					'readonly'    => true,
-				),
-				'products_count' => array(
-					'description' => __( 'Amount of products.', 'woocommerce' ),
-					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
-					'readonly'    => true,
-				),
-				'extended_info'  => array(
-					'name' => array(
-						'type'        => 'string',
-						'readonly'    => true,
-						'context'     => array( 'view', 'edit' ),
-						'description' => __( 'Category name.', 'woocommerce' ),
-					),
 				),
 			),
 		);
@@ -169,123 +228,8 @@ class Controller extends GenericController implements ExportableInterface {
 	 * @return array
 	 */
 	public function get_collection_params() {
-		$params                       = parent::get_collection_params();
-		$params['orderby']['default'] = 'category_id';
-		$params['orderby']['enum']    = $this->apply_custom_orderby_filters(
-			array(
-				'category_id',
-				'items_sold',
-				'net_revenue',
-				'orders_count',
-				'products_count',
-				'category',
-			)
-		);
-		$params['interval']           = array(
-			'description'       => __( 'Time interval to use for buckets in the returned data.', 'woocommerce' ),
-			'type'              => 'string',
-			'default'           => 'week',
-			'enum'              => array(
-				'hour',
-				'day',
-				'week',
-				'month',
-				'quarter',
-				'year',
-			),
-			'validate_callback' => 'rest_validate_request_arg',
-		);
-		$params['status_is']          = array(
-			'description'       => __( 'Limit result set to items that have the specified order status.', 'woocommerce' ),
-			'type'              => 'array',
-			'sanitize_callback' => 'wp_parse_slug_list',
-			'validate_callback' => 'rest_validate_request_arg',
-			'items'             => array(
-				'enum' => self::get_order_statuses(),
-				'type' => 'string',
-			),
-		);
-		$params['status_is_not']      = array(
-			'description'       => __( 'Limit result set to items that don\'t have the specified order status.', 'woocommerce' ),
-			'type'              => 'array',
-			'sanitize_callback' => 'wp_parse_slug_list',
-			'validate_callback' => 'rest_validate_request_arg',
-			'items'             => array(
-				'enum' => self::get_order_statuses(),
-				'type' => 'string',
-			),
-		);
-		$params['categories']         = array(
-			'description'       => __( 'Limit result set to all items that have the specified term assigned in the categories taxonomy.', 'woocommerce' ),
-			'type'              => 'array',
-			'sanitize_callback' => 'wp_parse_id_list',
-			'validate_callback' => 'rest_validate_request_arg',
-			'items'             => array(
-				'type' => 'integer',
-			),
-		);
-		$params['extended_info']      = array(
-			'description'       => __( 'Add additional piece of info about each category to the report.', 'woocommerce' ),
-			'type'              => 'boolean',
-			'default'           => false,
-			'sanitize_callback' => 'wc_string_to_bool',
-			'validate_callback' => 'rest_validate_request_arg',
-		);
-
-		return $params;
-	}
-
-	/**
-	 * Get the column names for export.
-	 *
-	 * @return array Key value pair of Column ID => Label.
-	 */
-	public function get_export_columns() {
-		$export_columns = array(
-			'category'       => __( 'Category', 'woocommerce' ),
-			'items_sold'     => __( 'Items sold', 'woocommerce' ),
-			'net_revenue'    => __( 'Net Revenue', 'woocommerce' ),
-			'products_count' => __( 'Products', 'woocommerce' ),
-			'orders_count'   => __( 'Orders', 'woocommerce' ),
-		);
-
-		/**
-		 * Filter to add or remove column names from the categories report for
-		 * export.
-		 *
-		 * @since 1.6.0
-		 */
-		return apply_filters(
-			'woocommerce_report_categories_export_columns',
-			$export_columns
-		);
-	}
-
-	/**
-	 * Get the column values for export.
-	 *
-	 * @param array $item Single report item/row.
-	 * @return array Key value pair of Column ID => Row Value.
-	 */
-	public function prepare_item_for_export( $item ) {
-		$export_item = array(
-			'category'       => $item['extended_info']['name'],
-			'items_sold'     => $item['items_sold'],
-			'net_revenue'    => $item['net_revenue'],
-			'products_count' => $item['products_count'],
-			'orders_count'   => $item['orders_count'],
-		);
-
-		/**
-		 * Filter to prepare extra columns in the export item for the
-		 * categories export.
-		 *
-		 * @since 1.6.0
-		 */
-		return apply_filters(
-			'woocommerce_report_categories_prepare_export_item',
-			$export_item,
-			$item
+		return array(
+			'context' => $this->get_context_param( array( 'default' => 'view' ) ),
 		);
 	}
 }

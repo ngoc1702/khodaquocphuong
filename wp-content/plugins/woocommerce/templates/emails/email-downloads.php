@@ -12,7 +12,7 @@
  *
  * @see https://woocommerce.com/document/template-structure/
  * @package WooCommerce\Templates
- * @version 10.4.0
+ * @version 9.9.0
  */
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
@@ -43,14 +43,7 @@ $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improveme
 	<?php foreach ( $downloads as $download ) : ?>
 		<tr>
 			<?php foreach ( $columns as $column_id => $column_name ) : ?>
-				<?php
-				$column_alignment_class = $email_improvements_enabled && array_key_last( $columns ) === $column_id ? 'text-align-right' : 'text-align-left';
-				if ( 'download-product' === $column_id ) :
-					?>
-					<th class="td <?php echo esc_attr( $column_alignment_class ); ?>" scope="row">
-				<?php else : ?>
-					<td class="td <?php echo esc_attr( $column_alignment_class ); ?>">
-				<?php endif; ?>
+				<td class="td <?php echo $email_improvements_enabled && array_key_last( $columns ) === $column_id ? 'text-align-right' : 'text-align-left'; ?>">
 					<?php
 					if ( has_action( 'woocommerce_email_downloads_column_' . $column_id ) ) {
 						do_action( 'woocommerce_email_downloads_column_' . $column_id, $download, $plain_text );
@@ -78,11 +71,7 @@ $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improveme
 						}
 					}
 					?>
-					<?php if ( 'download-product' === $column_id ) : ?>
-						</th>
-					<?php else : ?>
-						</td>
-					<?php endif; ?>
+				</td>
 			<?php endforeach; ?>
 		</tr>
 	<?php endforeach; ?>

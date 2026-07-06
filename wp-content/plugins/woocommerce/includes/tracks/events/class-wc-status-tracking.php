@@ -35,24 +35,12 @@ class WC_Status_Tracking {
 			);
 
 			if ( 'status' === $tab ) {
-				$handle = 'wc-tracks-status-view';
-				wp_register_script( $handle, '', array(), WC_VERSION, array( 'in_footer' => true ) );
-				wp_enqueue_script( $handle );
-				wp_add_inline_script(
-					$handle,
+				wc_enqueue_js(
 					"
-			            (function() {
-			                'use strict';
-			                const debugReportLink = document.querySelector( 'a.debug-report' );
-			                if ( debugReportLink ) {
-			                    debugReportLink.addEventListener( 'click', function() {
-			                        if ( window.wcTracks && window.wcTracks.recordEvent ) {
-			                            window.wcTracks.recordEvent( 'status_view_reports' );
-			                        }
-			                    } );
-			                }
-			            })();
-                    "
+					$( 'a.debug-report' ).on( 'click', function() {
+						window.wcTracks.recordEvent( 'status_view_reports' );
+					} );
+				"
 				);
 			}
 		}

@@ -69,8 +69,7 @@ class Installer {
 				`stock_quantity` double NOT NULL DEFAULT 0,
 				`timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 				`expires` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-				PRIMARY KEY  (`order_id`, `product_id`),
-				KEY product_id_expires (product_id, expires)
+				PRIMARY KEY  (`order_id`, `product_id`)
 			) $collate;
 			"
 		);

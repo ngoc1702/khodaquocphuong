@@ -10,7 +10,6 @@
 
 use Automattic\WooCommerce\Enums\OrderStatus;
 use Automattic\WooCommerce\Internal\Admin\Orders\PageController;
-use Automattic\WooCommerce\Internal\Orders\OrderNoteGroup;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -146,7 +145,7 @@ class WC_Meta_Box_Order_Actions {
 				WC()->mailer()->customer_invoice( $order );
 
 				// Note the event.
-				$order->add_order_note( __( 'Order details manually sent to customer.', 'woocommerce' ), false, true, array( 'note_group' => OrderNoteGroup::EMAIL_NOTIFICATION ) );
+				$order->add_order_note( __( 'Order details manually sent to customer.', 'woocommerce' ), false, true );
 
 				/**
 				 * Fires after an order email has been resent.
@@ -179,9 +178,11 @@ class WC_Meta_Box_Order_Actions {
 				$data_store->delete_by_order_id( $post_id );
 				wc_downloadable_product_permissions( $post_id, true );
 
-			} elseif ( ! did_action( 'woocommerce_order_action_' . sanitize_title( $action ) ) ) {
+			} else {
 
+				if ( ! did_action( 'woocommerce_order_action_' . sanitize_title( $action ) ) ) {
 					do_action( 'woocommerce_order_action_' . sanitize_title( $action ), $order );
+				}
 			}
 		}
 	}

@@ -72,9 +72,9 @@ abstract class AbstractBlock {
 	}
 
 	/**
-	 * Get the full block name, including namespace.
-	 *
-	 * @return string
+	 * Get the interactivity namespace. Only used when utilizing the interactivity API.
+
+	 * @return string The interactivity namespace, used to namespace interactivity API actions and state.
 	 */
 	protected function get_full_block_name() {
 		return $this->namespace . '/' . $this->block_name;
@@ -226,14 +226,12 @@ abstract class AbstractBlock {
 		];
 
 		// Conditionally override these, otherwise rely on block.json metadata.
-		$block_type_style = $this->get_block_type_style();
-		if ( $block_type_style ) {
-			$block_settings['style'] = $block_type_style;
+		if ( $this->get_block_type_style() ) {
+			$block_settings['style'] = $this->get_block_type_style();
 		}
 
-		$block_type_editor_style = $this->get_block_type_editor_style();
-		if ( $block_type_editor_style ) {
-			$block_settings['editor_style'] = $block_type_editor_style;
+		if ( $this->get_block_type_editor_style() ) {
+			$block_settings['editor_style'] = $this->get_block_type_editor_style();
 		}
 
 		if ( isset( $this->api_version ) ) {
@@ -261,7 +259,7 @@ abstract class AbstractBlock {
 		$block_settings['uses_context'] = $this->get_block_type_uses_context();
 
 		register_block_type(
-			$this->get_full_block_name(),
+			$this->get_block_type(),
 			$block_settings
 		);
 	}
@@ -269,12 +267,10 @@ abstract class AbstractBlock {
 	/**
 	 * Get the block type.
 	 *
-	 * @deprecated 10.9.0 Use get_full_block_name() instead.
 	 * @return string
 	 */
 	protected function get_block_type() {
-		wc_deprecated_function( __METHOD__, '10.9.0', 'get_full_block_name' );
-		return $this->get_full_block_name();
+		return $this->namespace . '/' . $this->block_name;
 	}
 
 	/**

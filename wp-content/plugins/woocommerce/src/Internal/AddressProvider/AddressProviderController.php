@@ -20,16 +20,7 @@ class AddressProviderController {
 	 *
 	 * @var string ID of preferred address provider.
 	 */
-	private $preferred_provider_option = '';
-
-	/**
-	 * Constructor.
-	 *
-	 * @internal
-	 */
-	public function __construct() {
-		add_action( 'init', array( $this, 'init' ) );
-	}
+	private $preferred_provider_option;
 
 	/**
 	 * Init function runs after this provider was added to DI container.

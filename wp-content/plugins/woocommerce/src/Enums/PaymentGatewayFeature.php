@@ -140,9 +140,4 @@ final class PaymentGatewayFeature {
 	 * @var string
 	 */
 	public const TOKENIZATION = 'tokenization';
-
-	/**
-	 * Agentic Commerce feature.
-	 */
-	public const AGENTIC_COMMERCE = 'agentic_commerce';
 }

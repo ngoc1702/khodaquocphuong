@@ -72,7 +72,9 @@ class SpecRunner {
 		if ( isset( $spec->source ) ) {
 			$note->set_source( $spec->source );
 		}
-		// `$spec->layout` is intentionally ignored: inbox notes no longer support layout variants and the property is deprecated.
+		if ( isset( $spec->layout ) ) {
+			$note->set_layout( $spec->layout );
+		}
 
 		// Recreate actions.
 		$note->set_actions( self::get_actions( $spec ) );

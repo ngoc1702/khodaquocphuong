@@ -15,7 +15,6 @@ use Automattic\WooCommerce\Internal\Utilities\Users;
 use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Utilities\ArrayUtil;
 use Automattic\WooCommerce\Utilities\OrderUtil;
-use Automattic\WooCommerce\Utilities\MetaDataUtil;
 use Automattic\WooCommerce\Utilities\StringUtil;
 
 // phpcs:disable Squiz.Classes.ClassFileName.NoMatch, Squiz.Classes.ValidClassName.NotCamelCaps -- Legacy class name, can't change without breaking backward compat.
@@ -226,20 +225,21 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 
 		// Add SKU, PRICE, and IMAGE to products.
 		if ( is_callable( array( $item, 'get_product' ) ) ) {
-			$product = $item->get_product();
-
-			$data['sku']              = $product ? $product->get_sku() : null;
-			$data['global_unique_id'] = $product ? $product->get_global_unique_id() : null;
+			$data['sku']              = $item->get_product() ? $item->get_product()->get_sku() : null;
+			$data['global_unique_id'] = $item->get_product() ? $item->get_product()->get_global_unique_id() : null;
 			$data['price']            = $item->get_quantity() ? $item->get_total() / $item->get_quantity() : 0;
 
-			$image_id = $product ? $product->get_image_id() : 0;
-
+			$image_id      = $item->get_product() ? $item->get_product()->get_image_id() : 0;
 			$data['image'] = array(
 				'id'  => $image_id,
 				'src' => $image_id ? wp_get_attachment_image_url( $image_id, 'full' ) : '',
 			);
+		}
 
-			// Add parent_name if the product is a variation.
+		// Add parent_name if the product is a variation.
+		if ( is_callable( array( $item, 'get_product' ) ) ) {
+			$product = $item->get_product();
+
 			if ( is_callable( array( $product, 'get_parent_data' ) ) ) {
 				$data['parent_name'] = $product->get_title();
 			} else {
@@ -295,10 +295,21 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 
 		// Add additional applied coupon information.
 		if ( $item instanceof WC_Order_Item_Coupon ) {
-			$coupon                 = WC_Coupon::from_order_item( $item );
-			$data['discount_type']  = $coupon->get_discount_type();
-			$data['nominal_amount'] = (float) $coupon->get_amount();
-			$data['free_shipping']  = $coupon->get_free_shipping();
+			$temp_coupon = new WC_Coupon();
+			$coupon_info = $item->get_meta( 'coupon_info', true );
+			if ( $coupon_info ) {
+				$temp_coupon->set_short_info( $coupon_info );
+			} else {
+				$coupon_meta = $item->get_meta( 'coupon_data', true );
+				if ( $coupon_meta ) {
+					$temp_coupon->set_props( (array) $coupon_meta );
+
+				}
+			}
+
+			$data['discount_type']  = $temp_coupon->get_discount_type();
+			$data['nominal_amount'] = (float) $temp_coupon->get_amount();
+			$data['free_shipping']  = $temp_coupon->get_free_shipping();
 		}
 
 		$data['meta_data'] = array_map(
@@ -329,7 +340,7 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 			'display_value' => $meta_item->value, // Default to original value, in case a formatted value is not available.
 		);
 
-		if ( $meta_item->id && array_key_exists( $meta_item->id, $formatted_meta_data ) ) {
+		if ( array_key_exists( $meta_item->id, $formatted_meta_data ) ) {
 			$formatted_meta_item = $formatted_meta_data[ $meta_item->id ];
 
 			$result['display_key']   = wc_clean( $formatted_meta_item->display_key );
@@ -427,10 +438,9 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 					$data['refunds'] = array();
 					foreach ( $order->get_refunds() as $refund ) {
 						$data['refunds'][] = array(
-							'id'        => $refund->get_id(),
-							'reason'    => $refund->get_reason() ? $refund->get_reason() : '',
-							'total'     => '-' . wc_format_decimal( $refund->get_amount(), $this->request['dp'] ),
-							'total_tax' => wc_format_decimal( (float) $refund->get_total_tax(), $this->request['dp'] ),
+							'id'     => $refund->get_id(),
+							'reason' => $refund->get_reason() ? $refund->get_reason() : '',
+							'total'  => '-' . wc_format_decimal( $refund->get_amount(), $this->request['dp'] ),
 						);
 					}
 					break;
@@ -697,25 +707,6 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 	}
 
 	/**
-	 * Update a single order.
-	 *
-	 * Rejects IDs whose underlying type isn't shop_order (e.g. shop_subscription) to avoid
-	 * silently converting them on save. Mirrors the upfront type check already performed by
-	 * WC_REST_Orders_V1_Controller::update_item().
-	 *
-	 * @param WP_REST_Request<array<string, mixed>> $request Full details about the request.
-	 * @return WP_Error|WP_REST_Response
-	 */
-	public function update_item( $request ) {
-		$id = (int) $request['id'];
-		if ( empty( $id ) || OrderUtil::get_order_type( $id ) !== $this->post_type ) {
-			return new WP_Error( "woocommerce_rest_{$this->post_type}_invalid_id", __( 'ID is invalid.', 'woocommerce' ), array( 'status' => 400 ) );
-		}
-
-		return parent::update_item( $request );
-	}
-
-	/**
 	 * Prepare a single order for create or update.
 	 *
 	 * @param  WP_REST_Request $request Request object.
@@ -925,7 +916,14 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 	 * @param array         $posted Request data.
 	 */
 	protected function maybe_set_item_meta_data( $item, $posted ) {
-		MetaDataUtil::update( $posted['meta_data'] ?? null, $item );
+		if ( ! empty( $posted['meta_data'] ) && is_array( $posted['meta_data'] ) ) {
+			foreach ( $posted['meta_data'] as $meta ) {
+				if ( isset( $meta['key'] ) ) {
+					$value = isset( $meta['value'] ) ? $meta['value'] : null;
+					$item->update_meta_data( $meta['key'], $value, isset( $meta['id'] ) ? $meta['id'] : '' );
+				}
+			}
+		}
 	}
 
 	/**
@@ -1257,7 +1255,7 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 					'readonly'    => true,
 				),
 				'total'                => array(
-					'description' => __( 'Grand total, including tax.', 'woocommerce' ),
+					'description' => __( 'Grand total.', 'woocommerce' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
@@ -1269,7 +1267,7 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 					'readonly'    => true,
 				),
 				'prices_include_tax'   => array(
-					'description' => __( 'Whether prices included tax during checkout.', 'woocommerce' ),
+					'description' => __( 'True the prices included tax during checkout.', 'woocommerce' ),
 					'type'        => 'boolean',
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
@@ -1530,7 +1528,7 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 								'context'     => array( 'view', 'edit' ),
 							),
 							'subtotal'         => array(
-								'description' => __( 'Line subtotal, excluding tax (before discounts).', 'woocommerce' ),
+								'description' => __( 'Line subtotal (before discounts).', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 							),
@@ -1541,7 +1539,7 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 								'readonly'    => true,
 							),
 							'total'            => array(
-								'description' => __( 'Line total, excluding tax (after discounts).', 'woocommerce' ),
+								'description' => __( 'Line total (after discounts).', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 							),
@@ -1761,12 +1759,12 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 								'context'     => array( 'view', 'edit' ),
 							),
 							'total'        => array(
-								'description' => __( 'Shipping total, excluding tax.', 'woocommerce' ),
+								'description' => __( 'Line total (after discounts).', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 							),
 							'total_tax'    => array(
-								'description' => __( 'Shipping total tax.', 'woocommerce' ),
+								'description' => __( 'Line total tax (after discounts).', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 								'readonly'    => true,
@@ -1853,12 +1851,12 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 								'enum'        => array( 'taxable', 'none' ),
 							),
 							'total'      => array(
-								'description' => __( 'Fee total, excluding tax.', 'woocommerce' ),
+								'description' => __( 'Line total (after discounts).', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 							),
 							'total_tax'  => array(
-								'description' => __( 'Fee total tax.', 'woocommerce' ),
+								'description' => __( 'Line total tax (after discounts).', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 								'readonly'    => true,
@@ -2005,26 +2003,20 @@ class WC_REST_Orders_V2_Controller extends WC_REST_CRUD_Controller {
 					'items'       => array(
 						'type'       => 'object',
 						'properties' => array(
-							'id'        => array(
+							'id'     => array(
 								'description' => __( 'Refund ID.', 'woocommerce' ),
 								'type'        => 'integer',
 								'context'     => array( 'view', 'edit' ),
 								'readonly'    => true,
 							),
-							'reason'    => array(
+							'reason' => array(
 								'description' => __( 'Refund reason.', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 								'readonly'    => true,
 							),
-							'total'     => array(
-								'description' => __( 'Refund total, including tax.', 'woocommerce' ),
-								'type'        => 'string',
-								'context'     => array( 'view', 'edit' ),
-								'readonly'    => true,
-							),
-							'total_tax' => array(
-								'description' => __( 'Refund total tax.', 'woocommerce' ),
+							'total'  => array(
+								'description' => __( 'Refund total.', 'woocommerce' ),
 								'type'        => 'string',
 								'context'     => array( 'view', 'edit' ),
 								'readonly'    => true,

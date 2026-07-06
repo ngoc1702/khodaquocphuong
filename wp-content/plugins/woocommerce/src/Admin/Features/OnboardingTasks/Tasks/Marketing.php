@@ -26,18 +26,13 @@ class Marketing extends Task {
 	public function on_activated_plugin( $plugin ) {
 		$plugin_basename = basename( plugin_basename( $plugin ), '.php' );
 
-		// Example: How to mark the marketing task as complete when a specific plugin is activated.
-		/**
-		 * Example:
-		 * if (
-		 *     $plugin_basename === 'multichannel-by-cedcommerce' &&
-		 *     $this->task_list->visible &&
-		 *     ! $this->task_list->is_hidden() &&
-		 *     ! $this->is_complete()
-		 * ) {
-		 *     $this->mark_actioned();
-		 * }
-		 */
+		if ( $plugin_basename === 'multichannel-by-cedcommerce' &&
+			$this->task_list->visible &&
+			! $this->task_list->is_hidden() &&
+			! $this->is_complete()
+		) {
+			$this->mark_actioned();
+		}
 	}
 
 	/**

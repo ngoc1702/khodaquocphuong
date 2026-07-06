@@ -14,12 +14,9 @@
 		"woocommerce/product-filter-rating"
 	],
 	"supports": {
-		"interactivity": true,
-		"woocommerce": {
-			"innerBlockDisplayStyle": true
-		}
+		"interactivity": true
 	},
-	"usesContext": [ "woocommerce/selectableItems" ],
+	"usesContext": [ "filterData" ],
 	"attributes": {
 		"optionElementBorder": {
 			"type": "string",

@@ -42,8 +42,7 @@ class RemoteInboxNotificationsDataSourcePoller extends DataSourcePoller {
 				self::ID,
 				self::get_data_sources(),
 				array(
-					'spec_key'         => 'slug',
-					'transient_expiry' => DAY_IN_SECONDS,
+					'spec_key' => 'slug',
 				)
 			);
 		}

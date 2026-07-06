@@ -1,8 +1,8 @@
 <?php
 /**
- * Customer fulfillment created email (initial block version)
+ * Customer fulfillment created email
  *
- * This template can be overridden by editing it in the WooCommerce email editor.
+ * This template can be overridden by copying it to yourtheme/woocommerce/emails/customer-fulfillment-created.php.
  *
  * HOWEVER, on occasion WooCommerce will need to update template files and you
  * (the theme developer) will need to copy the new files to your theme to
@@ -11,35 +11,86 @@
  * the readme will list any important changes.
  *
  * @see https://woocommerce.com/document/template-structure/
- * @package WooCommerce\Templates\Emails\Block
- * @version 10.7.0
+ * @package WooCommerce\Templates\Emails\HTML
+ * @version 10.1.0
  */
-
-use Automattic\WooCommerce\Internal\EmailEditor\BlockEmailRenderer;
 
 defined( 'ABSPATH' ) || exit;
 
-// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen -- removed to prevent empty new lines.
-// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentAfterEnd -- removed to prevent empty new lines.
-?>
+/**
+ * Hook for the woocommerce_email_header.
+ *
+ * @param string $email_heading The email heading.
+ * @param WC_Email $email The email object.
+ * @since 2.5.0
+ *
+ * @hooked WC_Emails::email_header() Output the email header
+ */
+do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<!-- wp:heading -->
-<h2 class="wp-block-heading"> <?php echo esc_html__( 'Your item is on the way!', 'woocommerce' ); ?> </h2>
-<!-- /wp:heading -->
+<div class="email-introduction">
+	<p><?php echo esc_html__( 'Woo! Some items you purchased are being fulfilled. You can use the below information to track your shipment:', 'woocommerce' ); ?></p>
+</div>
 
-<!-- wp:paragraph -->
-<p><?php
-	echo esc_html__( 'Woo! Some items you purchased are being fulfilled. You can use the below information to track your shipment:', 'woocommerce' );
-?></p>
-<!-- /wp:paragraph -->
+<?php
 
-<!-- wp:woocommerce/email-content {"lock":{"move":false,"remove":true}} -->
-<div class="wp-block-woocommerce-email-content"> <?php echo esc_html( BlockEmailRenderer::WOO_EMAIL_CONTENT_PLACEHOLDER ); ?> </div>
-<!-- /wp:woocommerce/email-content -->
+/**
+ * Hook for the woocommerce_email_fulfillment_details.
+ *
+ * @since 10.1.0
+ * @param WC_Order $order The order object.
+ * @param Fulfillment $fulfillment The fulfillment object.
+ * @param bool $sent_to_admin Whether the email is sent to admin.
+ * @param bool $plain_text Whether the email is plain text.
+ * @param WC_Email $email The email object.
+ *
+ * @hooked WC_Emails::fulfillment_details() Shows the fulfillment details.
+ */
+do_action( 'woocommerce_email_fulfillment_details', $order, $fulfillment, $sent_to_admin, $plain_text, $email );
 
-<!-- wp:paragraph {"align":"center"} -->
-<p class="has-text-align-center"><?php
-/* translators: %s: Store admin email */
-printf( esc_html__( 'Thanks again! If you need any help with your order, please contact us at %s.', 'woocommerce' ), '<!--[woocommerce/store-email]-->' );
-?></p>
-<!-- /wp:paragraph -->
+/**
+ * Hook for the woocommerce_email_fulfillment_meta.
+ *
+ * @param WC_Order $order The order object.
+ * @param Fulfillment $fulfillment The fulfillment object.
+ * @param bool $sent_to_admin Whether the email is sent to admin.
+ * @param bool $plain_text Whether the email is plain text.
+ * @param WC_Email $email The email object.
+ * @since 10.1.0
+ *
+ * @hooked WC_Emails::order_meta() Shows fulfillment meta data.
+ */
+do_action( 'woocommerce_email_fulfillment_meta', $order, $fulfillment, $sent_to_admin, $plain_text, $email );
+
+/**
+ * Hook for woocommerce_email_customer_details.
+ *
+ * @param WC_Order $order The order object.
+ * @param bool $sent_to_admin Whether the email is sent to admin.
+ * @param bool $plain_text Whether the email is plain text.
+ * @param WC_Email $email The email object.
+ * @since 2.5.0
+ *
+ * @hooked WC_Emails::customer_details() Shows customer details
+ * @hooked WC_Emails::email_address() Shows email address
+ */
+do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
+
+/**
+ * Show user-defined additional content - this is set in each email's settings.
+ */
+if ( $additional_content ) {
+	echo '<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="email-additional-content">';
+	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
+	echo '</td></tr></table>';
+}
+
+/**
+ * Hook for the woocommerce_email_footer.
+ *
+ * @param WC_Email $email The email object.
+ * @since 2.5.0
+ *
+ * @hooked WC_Emails::email_footer() Output the email footer
+ */
+do_action( 'woocommerce_email_footer', $email );

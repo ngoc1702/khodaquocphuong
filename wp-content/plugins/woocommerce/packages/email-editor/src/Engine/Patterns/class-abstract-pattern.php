@@ -37,12 +37,6 @@ abstract class Abstract_Pattern {
 	 */
 	protected $template_types = array();
 	/**
-	 * List of supported post types.
-	 *
-	 * @var string[] $post_types
-	 */
-	protected $post_types = array();
-	/**
 	 * Flag to enable/disable inserter.
 	 *
 	 * @var bool $inserter
@@ -99,7 +93,6 @@ abstract class Abstract_Pattern {
 			'inserter'      => $this->inserter,
 			'blockTypes'    => $this->block_types,
 			'templateTypes' => $this->template_types,
-			'postTypes'     => $this->post_types,
 			'source'        => $this->source,
 			'viewportWidth' => $this->viewport_width,
 		);

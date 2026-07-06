@@ -174,10 +174,6 @@ abstract class DataSourcePoller {
 			$this->merge_specs( $specs_from_data_source, $specs, $url );
 		}
 
-		if ( count( $specs ) === 0 ) {
-			return false;
-		}
-
 		$specs_group            = get_transient( $this->args['transient_name'] );
 		$specs_group            = is_array( $specs_group ) ? $specs_group : array();
 		$locale                 = get_user_locale();
@@ -187,7 +183,7 @@ abstract class DataSourcePoller {
 			$specs_group,
 			$this->args['transient_expiry']
 		);
-		return true;
+		return count( $specs ) !== 0;
 	}
 
 	/**
@@ -230,13 +226,6 @@ abstract class DataSourcePoller {
 				$url
 			),
 			array(
-				/**
-				 * Filters the HTTP timeout (in seconds) used when fetching remote specs data sources.
-				 *
-				 * @since 10.8.0
-				 * @param int $timeout Timeout in seconds. Default 3.
-				 */
-				'timeout'    => max( 1, absint( apply_filters( 'woocommerce_data_source_poller_timeout', 3 ) ) ),
 				'user-agent' => 'WooCommerce/' . WC_VERSION . '; ' . home_url( '/' ),
 			)
 		);

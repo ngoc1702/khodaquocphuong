@@ -1,98 +1,80 @@
 <?php
-namespace Automattic\WooCommerce\Blocks\Registry;
+/**
+ * Container class file.
+ */
 
-use Closure;
-use Exception;
+declare( strict_types=1 );
+
+namespace Automattic\WooCommerce;
+
+use Automattic\WooCommerce\Internal\DependencyManagement\ContainerException;
+use Automattic\WooCommerce\Internal\DependencyManagement\RuntimeContainer;
 
 /**
- * A simple Dependency Injection Container
+ * PSR11 compliant dependency injection container for WooCommerce.
  *
- * This is used to manage dependencies used throughout the plugin.
+ * Classes in the `src` directory should specify dependencies from that directory via an 'init' method having arguments
+ * with type hints. If an instance of the container itself is needed, the type hint to use is \Psr\Container\ContainerInterface.
  *
- * @since 2.5.0
+ * Classes in the `src` directory should interact with anything outside (especially code in the `includes` directory
+ * and WordPress functions) by using the classes in the `Proxies` directory. The exception is idempotent
+ * functions (e.g. `wp_parse_url`), those can be used directly.
+ *
+ * Classes in the `includes` directory should use the `wc_get_container` function to get the instance of the container when
+ * they need to get an instance of a class from the `src` directory.
+ *
+ * Internally, an instance of RuntimeContainer will be used for the actual class resolution. This class uses reflection
+ * to instantiate classes and figure out dependencies, so there's no need for explicit class registration.
+ * When running the unit tests suite this will be replaced with an instance of TestingContainer,
+ * which provides additional functionality.
  */
-class Container {
+final class Container {
+	/**
+	 * The underlying container.
+	 *
+	 * @var RuntimeContainer
+	 */
+	private $container;
 
 	/**
-	 * A map of Dependency Type objects used to resolve dependencies.
-	 *
-	 * @var AbstractDependencyType[]
+	 * Class constructor.
 	 */
-	private $registry = [];
-
-	/**
-	 * Public api for adding a factory to the container.
-	 *
-	 * Factory dependencies will have the instantiation callback invoked
-	 * every time the dependency is requested.
-	 *
-	 * Typical Usage:
-	 *
-	 * ```
-	 * $container->register( MyClass::class, $container->factory( $mycallback ) );
-	 * ```
-	 *
-	 * @param Closure $instantiation_callback  This will be invoked when the
-	 *                                         dependency is required.  It will
-	 *                                         receive an instance of this
-	 *                                         container so the callback can
-	 *                                         retrieve dependencies from the
-	 *                                         container.
-	 *
-	 * @return FactoryType  An instance of the FactoryType dependency.
-	 */
-	public function factory( Closure $instantiation_callback ) {
-		return new FactoryType( $instantiation_callback );
+	public function __construct() {
+		// When the League container was in use we allowed to retrieve the container itself
+		// by using 'Psr\Container\ContainerInterface' as the class identifier,
+		// we continue allowing that for compatibility.
+		$this->container = new RuntimeContainer(
+			array(
+				__CLASS__                          => $this,
+				'Psr\Container\ContainerInterface' => $this,
+			)
+		);
 	}
 
 	/**
-	 * Interface for registering a new dependency with the container.
+	 * Returns an instance of the specified class.
+	 * See the comment about ContainerException in RuntimeContainer::get.
 	 *
-	 * By default, the $value will be added as a shared dependency.  This means
-	 * that it will be a single instance shared among any other classes having
-	 * that dependency.
+	 * @param string $id Class name.
 	 *
-	 * If you want a new instance every time it's required, then wrap the value
-	 * in a call to the factory method (@see Container::factory for example)
+	 * @return object Object instance.
 	 *
-	 * Note: Currently if the provided id already is registered in the container,
-	 * the provided value is ignored.
-	 *
-	 * @param string $id    A unique string identifier for the provided value.
-	 *                      Typically it's the fully qualified name for the
-	 *                      dependency.
-	 * @param mixed  $value The value for the dependency. Typically, this is a
-	 *                      closure that will create the class instance needed.
+	 * @throws ContainerException Error when resolving the class to an object instance, or class not found.
+	 * @throws \Exception Exception thrown in the constructor or in the 'init' method of one of the resolved classes.
 	 */
-	public function register( $id, $value ) {
-		if ( empty( $this->registry[ $id ] ) ) {
-			if ( ! $value instanceof FactoryType ) {
-				$value = new SharedType( $value );
-			}
-			$this->registry[ $id ] = $value;
-		}
+	public function get( string $id ) {
+		return $this->container->get( $id );
 	}
 
 	/**
-	 * Interface for retrieving the dependency stored in the container for the
-	 * given identifier.
+	 * Returns true if the container can return an instance of the given class or false otherwise.
+	 * See the comment in RuntimeContainer::has.
 	 *
-	 * @param string $id  The identifier for the dependency being retrieved.
-	 * @throws Exception  If there is no dependency for the given identifier in
-	 *                    the container.
+	 * @param class-string $id Class name.
 	 *
-	 * @return mixed  Typically a class instance.
+	 * @return bool
 	 */
-	public function get( $id ) {
-		if ( ! isset( $this->registry[ $id ] ) ) {
-			// this is a developer facing exception, hence it is not localized.
-			throw new Exception(
-				sprintf(
-					'Cannot construct an instance of %s because it has not been registered.',
-					$id
-				)
-			);
-		}
-		return $this->registry[ $id ]->get( $this );
+	public function has( string $id ): bool {
+		return $this->container->has( $id );
 	}
 }

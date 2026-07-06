@@ -299,9 +299,8 @@ abstract class WC_REST_CRUD_Controller extends WC_REST_Posts_Controller {
 		$args['s']                   = $request['search'];
 		$args['fields']              = $this->get_fields_for_response( $request );
 
-		// Add ID to orderby for consistency with pagination.
-		if ( in_array( $args['orderby'], array( 'date', 'modified' ), true ) ) {
-			$args['orderby'] = $args['orderby'] . ' ID';
+		if ( 'date' === $args['orderby'] ) {
+			$args['orderby'] = 'date ID';
 		}
 
 		$date_query = array();

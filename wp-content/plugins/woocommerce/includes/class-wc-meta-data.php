@@ -13,10 +13,6 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Meta data class.
- *
- * @property int|null $id    Meta ID.
- * @property string   $key   Meta key.
- * @property mixed    $value Meta value.
  */
 class WC_Meta_Data implements JsonSerializable {
 

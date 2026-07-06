@@ -37,7 +37,6 @@ if ( ! class_exists( 'WC_Email_Customer_Note', false ) ) :
 			$this->id             = 'customer_note';
 			$this->customer_email = true;
 			$this->title          = __( 'Customer note', 'woocommerce' );
-			$this->email_group    = 'order-changes';
 			$this->template_html  = 'emails/customer-note.php';
 			$this->template_plain = 'emails/plain/customer-note.php';
 			$this->placeholders   = array(
@@ -55,11 +54,6 @@ if ( ! class_exists( 'WC_Email_Customer_Note', false ) ) :
 			$this->description = $this->email_improvements_enabled
 				? __( 'Send an email to customers notifying them when you’ve added a note to their order', 'woocommerce' )
 				: __( 'Customer note emails are sent when you add a note to an order.', 'woocommerce' );
-
-			if ( $this->block_email_editor_enabled ) {
-				$this->title       = __( 'Customer note added', 'woocommerce' );
-				$this->description = __( 'Notifies customers when you’ve added a note to their order.', 'woocommerce' );
-			}
 		}
 
 		/**
@@ -115,7 +109,9 @@ if ( ! class_exists( 'WC_Email_Customer_Note', false ) ) :
 				}
 			}
 
-			$this->send_notification();
+			if ( $this->is_enabled() && $this->get_recipient() ) {
+				$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+			}
 
 			$this->restore_locale();
 		}

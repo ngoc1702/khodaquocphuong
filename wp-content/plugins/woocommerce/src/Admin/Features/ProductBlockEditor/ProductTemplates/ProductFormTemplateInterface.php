@@ -7,8 +7,6 @@ use Automattic\WooCommerce\Admin\BlockTemplates\BlockTemplateInterface;
 
 /**
  * Interface for block containers.
- *
- * @deprecated 10.9.0 Product editor extension APIs will be removed in WooCommerce 11.0.
  */
 interface ProductFormTemplateInterface extends BlockTemplateInterface {
 

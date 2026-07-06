@@ -286,7 +286,7 @@ class PluginsHelper {
 					'error_message'     => sprintf(
 						// translators: %s: plugin slug (example: woocommerce-services).
 						__(
-							'We couldn\'t install `%s`. Try again in a few minutes, or install it later from the Extensions page.',
+							'The requested plugin `%s` could not be installed. Plugin API call failed.',
 							'woocommerce'
 						),
 						$slug
@@ -308,7 +308,7 @@ class PluginsHelper {
 
 				$error_message = sprintf(
 				/* translators: %s: plugin slug (example: woocommerce-services) */
-					__( 'We couldn\'t install `%s`. Try again in a few minutes, or install it later from the Extensions page.', 'woocommerce' ),
+					__( 'The requested plugin `%s` could not be installed. Plugin API call failed.', 'woocommerce' ),
 					$slug
 				);
 
@@ -363,7 +363,7 @@ class PluginsHelper {
 
 				$install_error_message = sprintf(
 				/* translators: %s: plugin slug (example: woocommerce-services) */
-					__( 'We couldn\'t install `%s`. Try again, or install it manually. If it keeps failing, contact your host.', 'woocommerce' ),
+					__( 'The requested plugin `%s` could not be installed. Upgrader install failed.', 'woocommerce' ),
 					$slug
 				);
 				$errors->add(
@@ -818,18 +818,7 @@ class PluginsHelper {
 			)
 		);
 
-		$message_key = $has_multiple_subs_for_product ? 'multiple_manage' : 'single_manage';
-
-		/**
-		 * Even if there are multiple subscriptions for this product, if the store is covered by an active subscription,
-		 * show the 'site covered' message instead of the 'manage' message.
-		 */
-		if ( 'expired' === $type && $has_multiple_subs_for_product ) {
-			if ( self::has_active_usable_product_subscription( $product_id, $all_subs ) ) {
-				$message_key = 'multiple_manage_site_covered';
-			}
-		}
-
+		$message_key      = $has_multiple_subs_for_product ? 'multiple_manage' : 'single_manage';
 		$renew_string     = __( 'Renew', 'woocommerce' );
 		$subscribe_string = __( 'Subscribe', 'woocommerce' );
 		if ( isset( $subscription['product_regular_price'] ) ) {
@@ -875,39 +864,6 @@ class PluginsHelper {
 			'parsed_message' => '',
 			'product_id'     => '',
 		);
-	}
-
-	/**
-	 * Check whether the current store has an active usable subscription for a product.
-	 *
-	 * @param int   $product_id Product id.
-	 * @param array $subscriptions Subscription list data.
-	 * @return bool
-	 */
-	private static function has_active_usable_product_subscription( int $product_id, array $subscriptions ): bool {
-		$auth    = \WC_Helper_Options::get( 'auth' );
-		$site_id = isset( $auth['site_id'] ) ? absint( $auth['site_id'] ) : 0;
-
-		if ( 0 === $site_id ) {
-			return false;
-		}
-
-		foreach ( $subscriptions as $subscription ) {
-			if ( absint( $subscription['product_id'] ?? 0 ) !== $product_id ) {
-				continue;
-			}
-
-			$connections = isset( $subscription['connections'] ) && is_array( $subscription['connections'] ) ? $subscription['connections'] : array();
-			if ( ! in_array( $site_id, $connections, true ) ) {
-				continue;
-			}
-
-			if ( empty( $subscription['expired'] ) || ! empty( $subscription['lifetime'] ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -1034,18 +990,15 @@ class PluginsHelper {
 			$total_expired_subscriptions,
 			array(
 				/* translators: 1) product name 3) URL to My Subscriptions page 4) Renew product price string */
-				'single_manage'                => __( 'Your subscription for <strong>%1$s</strong> expired. <a href="%3$s">%4$s</a> to continue receiving updates and streamlined support.', 'woocommerce' ),
+				'single_manage'           => __( 'Your subscription for <strong>%1$s</strong> expired. <a href="%3$s">%4$s</a> to continue receiving updates and streamlined support.', 'woocommerce' ),
 				/* translators: 1) product name 3) URL to My Subscriptions page 4) Renew product price string */
-				'multiple_manage'              => __( 'One of your subscriptions for <strong>%1$s</strong> has expired. <a href="%3$s">%4$s</a> to continue receiving updates and streamlined support.', 'woocommerce' ),
-				/* translators: 1) product name 3) URL to My Subscriptions page */
-				'multiple_manage_site_covered' => __( 'One of your subscriptions for <strong>%1$s</strong> has expired. This store is still covered by another active subscription.', 'woocommerce' ),
+				'multiple_manage'         => __( 'One of your subscriptions for <strong>%1$s</strong> has expired. <a href="%3$s">%4$s</a> to continue receiving updates and streamlined support.', 'woocommerce' ),
 				/* translators: 1) total expired subscriptions 2) URL to My Subscriptions page */
-				'different_subscriptions'      => __( 'You have <strong>%1$s Woo extension subscriptions</strong> that expired. <a href="%2$s">Renew</a> to continue receiving updates and streamlined support.', 'woocommerce' ),
+				'different_subscriptions' => __( 'You have <strong>%1$s Woo extension subscriptions</strong> that expired. <a href="%2$s">Renew</a> to continue receiving updates and streamlined support.', 'woocommerce' ),
 			),
 			'expired',
 		);
 
-		$button_text = __( 'Renew', 'woocommerce' );
 		$button_link = add_query_arg(
 			array(
 				'add-to-cart'  => $notice_data['product_id'],
@@ -1055,18 +1008,7 @@ class PluginsHelper {
 			self::WOO_CART_PAGE_URL
 		);
 
-		if ( 'multiple_manage_site_covered' === $notice_data['type'] ) {
-			$button_text = __( 'Review subscriptions', 'woocommerce' );
-			$button_link = add_query_arg(
-				array(
-					'product_id'   => $notice_data['product_id'],
-					'type'         => 'expired',
-					'utm_source'   => 'pu',
-					'utm_campaign' => $allowed_link ? 'pu_settings_screen_review_subscriptions' : 'pu_in_apps_screen_review_subscriptions',
-				),
-				self::WOO_SUBSCRIPTION_PAGE_URL
-			);
-		} elseif ( in_array( $notice_data['type'], array( 'single_manage', 'multiple_manage' ), true ) ) {
+		if ( in_array( $notice_data['type'], array( 'single_manage', 'multiple_manage' ), true ) ) {
 			$button_link = add_query_arg(
 				array(
 					'add-to-cart' => $notice_data['product_id'],
@@ -1077,7 +1019,7 @@ class PluginsHelper {
 
 		return array(
 			'description' => $allowed_link ? $notice_data['parsed_message'] : preg_replace( '#<a.*?>(.*?)</a>#i', '\1', $notice_data['parsed_message'] ),
-			'button_text' => $button_text,
+			'button_text' => __( 'Renew', 'woocommerce' ),
 			'button_link' => $button_link,
 		);
 	}

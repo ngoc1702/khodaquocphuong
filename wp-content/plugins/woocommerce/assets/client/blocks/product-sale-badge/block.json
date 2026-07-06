@@ -47,7 +47,6 @@
 		"spacing": {
 			"margin": true
 		},
-		"email": true,
 		"__experimentalSelector": ".wc-block-components-product-sale-badge"
 	},
 	"ancestor": [

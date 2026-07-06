@@ -1,6 +1,6 @@
 {
 	"name": "woocommerce/product-filter-rating",
-	"title": "Rating Filter",
+	"title": "Rating",
 	"description": "Enable customers to filter the product collection by rating.",
 	"category": "woocommerce",
 	"keywords": [],

@@ -5,14 +5,12 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 use Automattic\WooCommerce\Blocks\Utils\BlocksSharedState;
-use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
-use Automattic\WooCommerce\Internal\ProductFilters\Params;
-use WP_Block;
 
 /**
  * ProductFilters class.
  */
 class ProductFilters extends AbstractBlock {
+	use BlocksSharedState;
 
 	/**
 	 * Block name.
@@ -27,7 +25,7 @@ class ProductFilters extends AbstractBlock {
 	 * @return string[]
 	 */
 	protected function get_block_type_uses_context() {
-		return array( 'postId', 'query', 'queryId', 'forcePageReload' );
+		return array( 'postId', 'query', 'queryId' );
 	}
 
 	/**
@@ -38,20 +36,17 @@ class ProductFilters extends AbstractBlock {
 	 *                           not in the post content on editor load.
 	 */
 	protected function enqueue_data( array $attributes = array() ) {
+		global $pagenow;
 		parent::enqueue_data( $attributes );
 
-		if ( is_admin() ) {
-			$this->asset_data_registry->add( 'globalStylesColors', wp_get_global_styles( array( 'color' ) ) );
-		}
+		$this->initialize_shared_config( 'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WooCommerce' );
 
-		BlocksSharedState::load_store_config( 'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WooCommerce' );
-
-		// Classic themes do not support client-side navigation on product
-		// archive pages, so disable it globally for the Interactivity Router.
-		$is_product_archive = is_shop() || is_product_taxonomy() || ( is_search() && 'product' === get_post_type() );
-		if ( ! wp_is_block_theme() && $is_product_archive ) {
-			wp_interactivity_config( 'core/router', array( 'clientNavigationDisabled' => true ) );
-		}
+		wp_interactivity_config(
+			$this->get_full_block_name(),
+			[
+				'isProductArchive' => is_shop() || is_product_taxonomy() || ( is_search() && 'product' === get_post_type() ),
+			]
+		);
 	}
 
 	/**
@@ -63,10 +58,6 @@ class ProductFilters extends AbstractBlock {
 	 * @return string Rendered block type output.
 	 */
 	protected function render( $attributes, $content, $block ) {
-		if ( ! $block instanceof WP_Block ) {
-			return $content;
-		}
-
 		wp_enqueue_script( 'wc-settings' );
 
 		$query_id      = $block->context['queryId'] ?? 0;
@@ -104,22 +95,27 @@ class ProductFilters extends AbstractBlock {
 			''
 		);
 		$interactivity_context = array(
-			'params'          => $filter_params,
-			'activeFilters'   => $active_filters,
-			// Null when not a descendant of a Product Collection block, so the
-			// frontend can fall back to the global interactivity config.
-			'forcePageReload' => isset( $block->context['forcePageReload'] ) ? (bool) $block->context['forcePageReload'] : null,
+			'params'        => $filter_params,
+			'activeFilters' => $active_filters,
 		);
 
+		$classes = '';
+		$styles  = '';
+		$tags    = new \WP_HTML_Tag_Processor( $content );
+
+		if ( $tags->next_tag( array( 'class_name' => 'wc-block-product-filters' ) ) ) {
+			$classes = $tags->get_attribute( 'class' );
+			$styles  = $tags->get_attribute( 'style' );
+		}
+
 		$wrapper_attributes = array(
-			'class'                            => 'wc-block-product-filters',
+			'class'                            => $classes,
 			'data-wp-interactive'              => $this->get_full_block_name(),
-			'data-wp-init--colors'             => 'callbacks.initColors',
 			'data-wp-watch--scrolling'         => 'callbacks.scrollLimit',
 			'data-wp-on--keyup'                => 'actions.closeOverlayOnEscape',
-			'data-wp-context'                  => (string) wp_json_encode( $interactivity_context, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ),
+			'data-wp-context'                  => wp_json_encode( $interactivity_context, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ),
 			'data-wp-class--is-overlay-opened' => 'context.isOverlayOpened',
-			'style'                            => $this->get_css_variables( $attributes ),
+			'style'                            => $styles,
 		);
 
 		// TODO: Remove this conditional once the fix is released in WP. https://github.com/woocommerce/gutenberg/pull/4.
@@ -198,33 +194,6 @@ class ProductFilters extends AbstractBlock {
 	}
 
 	/**
-	 * Get CSS custom properties from block attributes.
-	 *
-	 * @param array $attributes Block attributes.
-	 * @return string CSS custom properties string.
-	 */
-	private function get_css_variables( $attributes ) {
-		$styles = array();
-
-		$bg = StyleAttributesUtils::get_background_color_class_and_style( $attributes );
-		if ( ! empty( $bg['value'] ) ) {
-			$styles[] = sprintf( '--wc-product-filters-background-color: %s', $bg['value'] );
-		}
-
-		$text = StyleAttributesUtils::get_text_color_class_and_style( $attributes );
-		if ( ! empty( $text['value'] ) ) {
-			$styles[] = sprintf( '--wc-product-filters-text-color: %s', $text['value'] );
-		}
-
-		$block_gap = $attributes['style']['spacing']['blockGap'] ?? '';
-		if ( $block_gap ) {
-			$styles[] = sprintf( '--wc-product-filter-block-spacing: %s', StyleAttributesUtils::get_spacing_value( $block_gap ) );
-		}
-
-		return $styles ? implode( ';', $styles ) . ';' : '';
-	}
-
-	/**
 	 * Generate a unique navigation ID for the block.
 	 *
 	 * @param mixed $block - Block instance.
@@ -257,7 +226,17 @@ class ProductFilters extends AbstractBlock {
 
 		parse_str( $parsed_url['query'], $url_query_params );
 
-		$filter_param_keys = wc_get_container()->get( Params::class )->get_param_keys();
+		/**
+		 * Filters the active filter data provided by filter blocks.
+		 *
+		 * @since 11.7.0
+		 *
+		 * @param array $filter_param_keys The active filters data
+		 * @param array $url_param_keys    The query param parsed from the URL.
+		 *
+		 * @return array Active filters params.
+		 */
+		$filter_param_keys = array_unique( apply_filters( 'woocommerce_blocks_product_filters_param_keys', array(), array_keys( $url_query_params ) ) );
 
 		return array_filter(
 			$url_query_params,
@@ -304,12 +283,11 @@ class ProductFilters extends AbstractBlock {
 	 */
 	private function get_canonical_url_no_pagination( $filter_params ) {
 		$canonical_url_no_pagination = is_singular() ? get_permalink() : get_pagenum_link( 1 );
-		$decoded_url                 = html_entity_decode( $canonical_url_no_pagination, ENT_QUOTES, get_bloginfo( 'charset' ) );
-		$parsed_url                  = wp_parse_url( $decoded_url );
+		$parsed_url                  = wp_parse_url( html_entity_decode( $canonical_url_no_pagination, ENT_QUOTES, get_bloginfo( 'charset' ) ) );
 
 		// If there are active filters, $parsed_url['query'] is empty for page or post but not empty for archives.
 		if ( empty( $filter_params ) || empty( $parsed_url['query'] ) ) {
-			return $decoded_url;
+			return $canonical_url_no_pagination;
 		}
 
 		foreach ( array_keys( $filter_params ) as $key ) {

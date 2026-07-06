@@ -1,4 +1,4 @@
-/*global ajaxurl, woocommerce_product_ordering_params */
+/*global ajaxurl */
 
 /**
  * Based on Simple Page Ordering by 10up (https://wordpress.org/plugins/simple-page-ordering/)
@@ -46,13 +46,7 @@ jQuery( function( $ ) {
 			// Go do the sorting stuff via ajax
 			$.post(
 				ajaxurl,
-				{
-					action: 'woocommerce_product_ordering',
-					security: woocommerce_product_ordering_params.nonce,
-					id: postid,
-					previd: prevpostid,
-					nextid: nextpostid,
-				},
+				{ action: 'woocommerce_product_ordering', id: postid, previd: prevpostid, nextid: nextpostid },
 				function( response ) {
 					$.each( response, function( key, value ) {
 						$( '#inline_' + key + ' .menu_order' ).html( value );

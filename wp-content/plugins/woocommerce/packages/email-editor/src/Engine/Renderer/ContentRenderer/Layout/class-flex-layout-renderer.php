@@ -28,7 +28,7 @@ class Flex_Layout_Renderer {
 		$flex_gap_number = Styles_Helper::parse_value( $flex_gap );
 
 		$margin_top = $parsed_block['email_attrs']['margin-top'] ?? '0px';
-		$justify    = $rendering_context->resolve_text_align( $parsed_block['attrs']['layout']['justifyContent'] ?? null );
+		$justify    = $parsed_block['attrs']['layout']['justifyContent'] ?? 'left';
 		$styles     = wp_style_engine_get_styles( $parsed_block['attrs']['style'] ?? array() )['css'] ?? '';
 		$styles    .= 'margin-top: ' . $margin_top . ';';
 		$styles    .= 'text-align: ' . $justify;
@@ -49,7 +49,7 @@ class Flex_Layout_Renderer {
 				$styles['width'] = $block['email_attrs']['layout_width'];
 			}
 			if ( $key > 0 ) {
-				$styles[ 'padding-' . $rendering_context->get_start_side() ] = $flex_gap;
+				$styles['padding-left'] = $flex_gap;
 			}
 			$output_html .= '<td class="layout-flex-item" style="' . esc_attr( \WP_Style_Engine::compile_css( $styles, '' ) ) . '">' . render_block( $block ) . '</td>';
 		}

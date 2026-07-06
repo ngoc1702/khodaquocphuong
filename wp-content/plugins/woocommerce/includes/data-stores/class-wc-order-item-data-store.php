@@ -184,7 +184,6 @@ class WC_Order_Item_Data_Store implements WC_Order_Item_Data_Store_Interface {
 		}
 		if ( $order_id ) {
 			wp_cache_delete( 'order-items-' . $order_id, 'orders' );
-			wp_cache_delete( 'order-needs-processing-' . $order_id, 'orders' );
 		}
 	}
 }

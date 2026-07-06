@@ -15,7 +15,7 @@
 			"enableContrastChecker": false,
 			"button": true
 		},
-		"multiple": false,
+		"multiple": true,
 		"inserter": true,
 		"interactivity": true,
 		"typography": {
@@ -35,7 +35,7 @@
 		}
 	},
 	"textdomain": "woocommerce",
-	"usesContext": [ "postId", "query", "queryId", "forcePageReload" ],
+	"usesContext": [ "postId", "query", "queryId" ],
 	"attributes": {
 		"isPreview": {
 			"type": "boolean",

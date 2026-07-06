@@ -176,14 +176,14 @@ if ( wc_tax_enabled() ) {
 			</tr>
 		<?php if ( 0 < $order->get_total_discount() ) : ?>
 			<tr>
-				<td class="label"><?php esc_html_e( 'Discount:', 'woocommerce' ); ?></td>
+				<td class="label"><?php esc_html_e( 'Coupon(s):', 'woocommerce' ); ?></td>
 				<td width="1%"></td>
 				<td class="total">-
 					<?php echo wc_price( $order->get_total_discount(), array( 'currency' => $order->get_currency() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</td>
 			</tr>
 		<?php endif; ?>
-		<?php if ( abs( $order->get_total_fees() ) > 0 ) : ?>
+		<?php if ( 0 < $order->get_total_fees() ) : ?>
 			<tr>
 				<td class="label"><?php esc_html_e( 'Fees:', 'woocommerce' ); ?></td>
 				<td width="1%"></td>
@@ -296,7 +296,7 @@ if ( wc_tax_enabled() ) {
 				<td class="label cost-total"><?php esc_html_e( 'Cost Total', 'woocommerce' ); ?>:</td>
 				<td width="1%"></td>
 				<td class="total cost-total">
-					<?php echo wp_kses_post( $order->get_cogs_total_value_html() ); ?>
+					<?php echo wc_price( $order->get_cogs_total_value(), array( 'currency' => $order->get_currency() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</td>
 			</tr>
 		</table>
@@ -449,7 +449,7 @@ if ( wc_tax_enabled() ) {
 					</form>
 				</article>
 				<footer>
-					<div class="wc-backbone-modal-buttons">
+					<div class="inner">
 						<button id="btn-ok" class="button button-primary button-large"><?php esc_html_e( 'Add', 'woocommerce' ); ?></button>
 					</div>
 				</footer>
@@ -505,7 +505,7 @@ if ( wc_tax_enabled() ) {
 					</form>
 				</article>
 				<footer>
-					<div class="wc-backbone-modal-buttons">
+					<div class="inner">
 						<button id="btn-ok" class="button button-primary button-large"><?php esc_html_e( 'Add', 'woocommerce' ); ?></button>
 					</div>
 				</footer>

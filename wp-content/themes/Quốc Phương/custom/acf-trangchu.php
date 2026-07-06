@@ -79,6 +79,40 @@ if (!function_exists('quoc_phuong_home_defaults')) {
             'home_featured_products_button_url' => '/san-pham',
             'home_featured_products_background_image' => '',
             'home_featured_products' => array(),
+
+            // Form tư vấn
+'home_consult_form_enable' => 1,
+'home_consult_form_eyebrow' => 'ĐĂNG KÝ',
+'home_consult_form_title' => 'ĐĂNG KÝ NHẬN TIN',
+'home_consult_form_shortcode' => '',
+'home_consult_form_background_image' => '',
+
+
+// Tin tức + Video
+'home_news_video_enable' => 1,
+'home_news_video_news_eyebrow' => 'TIN TỨC',
+'home_news_video_news_highlight' => 'NỔI BẬT',
+'home_news_video_news_desc' => 'Cập nhật những xu hướng mới nhất về đá tự nhiên',
+'home_news_video_posts' => array(),
+
+'home_news_video_video_eyebrow' => 'VIDEO',
+'home_news_video_video_highlight' => 'NỔI BẬT',
+'home_news_video_video_desc' => 'Khám phá những video ấn tượng về đá tự nhiên',
+'home_news_video_main_url' => '',
+'home_news_video_thumb_1' => '',
+'home_news_video_url_1' => '',
+'home_news_video_thumb_2' => '',
+'home_news_video_url_2' => '',
+'home_news_video_thumb_3' => '',
+'home_news_video_url_3' => '',
+'home_news_video_youtube_url' => '',
+'home_news_video_bg' => '',
+
+
+// Map
+'home_map_enable' => 1,
+'home_map_iframe' => '',
+'home_map_height' => '360',
         );
     }
 }
@@ -554,6 +588,224 @@ add_action('acf/init', function () {
                 '',
                 50
             ),
+
+            // Form tư vấn
+quoc_phuong_home_acf_tab('field_qp_home_tab_consult_form', 'Form tư vấn'),
+
+quoc_phuong_home_acf_true_false(
+    'field_qp_home_consult_form_enable',
+    'Hiển thị section',
+    'home_consult_form_enable'
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_consult_form_eyebrow',
+    'Text nhỏ',
+    'home_consult_form_eyebrow',
+    $defaults['home_consult_form_eyebrow']
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_consult_form_title',
+    'Tiêu đề',
+    'home_consult_form_title',
+    $defaults['home_consult_form_title']
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_consult_form_shortcode',
+    'Shortcode form',
+    'home_consult_form_shortcode',
+    '',
+    'textarea',
+    'Dán shortcode form vào đây, ví dụ: [contact-form-7 id="123"]',
+    100
+),
+
+quoc_phuong_home_acf_image(
+    'field_qp_home_consult_form_background_image',
+    'Ảnh nền',
+    'home_consult_form_background_image',
+    'Ảnh nền ngang khoảng 1920x700.',
+    100,
+    'large'
+),
+
+
+// Tin tức + Video
+quoc_phuong_home_acf_tab('field_qp_home_tab_news_video', 'Tin tức + Video'),
+
+quoc_phuong_home_acf_true_false(
+    'field_qp_home_news_video_enable',
+    'Hiển thị section',
+    'home_news_video_enable'
+),
+
+quoc_phuong_home_acf_image(
+    'field_qp_home_news_video_bg',
+    'Ảnh nền section',
+    'home_news_video_bg',
+    'Ảnh nền vân đá tối giống mẫu.',
+    100,
+    'large'
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_news_eyebrow',
+    'Tiêu đề tin tức',
+    'home_news_video_news_eyebrow',
+    $defaults['home_news_video_news_eyebrow']
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_news_highlight',
+    'Chữ màu đỏ tin tức',
+    'home_news_video_news_highlight',
+    $defaults['home_news_video_news_highlight']
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_news_desc',
+    'Mô tả tin tức',
+    'home_news_video_news_desc',
+    $defaults['home_news_video_news_desc']
+),
+
+quoc_phuong_home_acf_relationship(
+    'field_qp_home_news_video_posts',
+    'Chọn bài viết nổi bật',
+    'home_news_video_posts',
+    'post',
+    100
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_video_eyebrow',
+    'Tiêu đề video',
+    'home_news_video_video_eyebrow',
+    $defaults['home_news_video_video_eyebrow']
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_video_highlight',
+    'Chữ màu đỏ video',
+    'home_news_video_video_highlight',
+    $defaults['home_news_video_video_highlight']
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_video_desc',
+    'Mô tả video',
+    'home_news_video_video_desc',
+    $defaults['home_news_video_video_desc']
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_main_url',
+    'Link video chính',
+    'home_news_video_main_url',
+    '',
+    'url',
+    'Dán link Youtube hoặc link video.',
+    100
+),
+
+quoc_phuong_home_acf_image(
+    'field_qp_home_news_video_thumb_1',
+    'Ảnh video nhỏ 1',
+    'home_news_video_thumb_1',
+    '',
+    33,
+    'medium'
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_url_1',
+    'Link video nhỏ 1',
+    'home_news_video_url_1',
+    '',
+    'url',
+    '',
+    33
+),
+
+quoc_phuong_home_acf_image(
+    'field_qp_home_news_video_thumb_2',
+    'Ảnh video nhỏ 2',
+    'home_news_video_thumb_2',
+    '',
+    33,
+    'medium'
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_url_2',
+    'Link video nhỏ 2',
+    'home_news_video_url_2',
+    '',
+    'url',
+    '',
+    33
+),
+
+quoc_phuong_home_acf_image(
+    'field_qp_home_news_video_thumb_3',
+    'Ảnh video nhỏ 3',
+    'home_news_video_thumb_3',
+    '',
+    33,
+    'medium'
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_url_3',
+    'Link video nhỏ 3',
+    'home_news_video_url_3',
+    '',
+    'url',
+    '',
+    33
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_news_video_youtube_url',
+    'Link kênh Youtube',
+    'home_news_video_youtube_url',
+    '',
+    'url',
+    '',
+    100
+),
+
+
+// Map
+quoc_phuong_home_acf_tab('field_qp_home_tab_map', 'Map'),
+
+quoc_phuong_home_acf_true_false(
+    'field_qp_home_map_enable',
+    'Hiển thị map',
+    'home_map_enable'
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_map_iframe',
+    'Iframe Google Map',
+    'home_map_iframe',
+    '',
+    'textarea',
+    'Dán nguyên iframe Google Map vào đây.',
+    100
+),
+
+quoc_phuong_home_acf_text(
+    'field_qp_home_map_height',
+    'Chiều cao map',
+    'home_map_height',
+    $defaults['home_map_height'],
+    'number',
+    'Ví dụ: 320, 360, 420',
+    50
+),
         ),
 
         'location' => array(

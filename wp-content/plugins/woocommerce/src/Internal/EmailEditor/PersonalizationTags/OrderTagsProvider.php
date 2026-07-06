@@ -6,7 +6,6 @@ namespace Automattic\WooCommerce\Internal\EmailEditor\PersonalizationTags;
 
 use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
 use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
-use Automattic\WooCommerce\Internal\EmailEditor\Integration;
 
 /**
  * Provider for order-related personalization tags.
@@ -32,9 +31,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_order_number() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -57,8 +53,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 				array(
 					'format' => wc_date_format(),
 				),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -77,9 +71,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return implode( ', ', $items );
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -94,9 +85,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return (string) $context['order']->get_subtotal() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -111,9 +99,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return (string) $context['order']->get_total_tax() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -128,9 +113,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return wc_price( $context['order']->get_discount_total(), array( 'currency' => $context['order']->get_currency() ) );
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -145,9 +127,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return wc_price( $context['order']->get_shipping_total(), array( 'currency' => $context['order']->get_currency() ) );
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -162,9 +141,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return (string) $context['order']->get_total() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -179,9 +155,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_payment_method_title() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -196,9 +169,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_checkout_payment_url() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -213,9 +183,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_transaction_id() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -230,9 +197,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_shipping_method() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -247,9 +211,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_formatted_shipping_address() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -264,9 +225,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_formatted_billing_address() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -281,9 +239,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_view_order_url() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -298,9 +253,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 					}
 					return $context['order']->get_edit_order_url() ?? '';
 				},
-				array(),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 
@@ -319,8 +271,6 @@ class OrderTagsProvider extends AbstractTagProvider {
 				array(
 					'key' => '',
 				),
-				null,
-				array( Integration::EMAIL_POST_TYPE ),
 			)
 		);
 	}

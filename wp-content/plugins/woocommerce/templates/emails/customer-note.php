@@ -1,8 +1,8 @@
 <?php
 /**
- * Customer note email (initial block content)
+ * Customer note email
  *
- * This template can be overridden by editing it in the WooCommerce email editor.
+ * This template can be overridden by copying it to yourtheme/woocommerce/emails/customer-note.php.
  *
  * HOWEVER, on occasion WooCommerce will need to update template files and you
  * (the theme developer) will need to copy the new files to your theme to
@@ -10,53 +10,78 @@
  * happen. When this occurs the version of the template file will be bumped and
  * the readme will list any important changes.
  *
- * @see https://woocommerce.com/document/template-structure/
- * @package WooCommerce\Templates\Emails\Block
- * @version 10.7.0
+ * @see     https://woocommerce.com/document/template-structure/
+ * @package WooCommerce\Templates\Emails
+ * @version 10.1.0
  */
 
-use Automattic\WooCommerce\Internal\EmailEditor\BlockEmailRenderer;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentBeforeOpen -- removed to prevent empty new lines.
-// phpcs:disable Squiz.PHP.EmbeddedPhp.ContentAfterEnd -- removed to prevent empty new lines.
-?>
+$email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improvements' );
 
-<!-- wp:heading -->
-<h2 class="wp-block-heading"> <?php echo esc_html__( 'A note has been added to your order', 'woocommerce' ); ?> </h2>
-<!-- /wp:heading -->
+/*
+ * @hooked WC_Emails::email_header() Output the email header
+ */
+do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<!-- wp:paragraph -->
-<p><?php
+<?php echo $email_improvements_enabled ? '<div class="email-introduction">' : ''; ?>
+<p>
+<?php
+if ( ! empty( $order->get_billing_first_name() ) ) {
 	/* translators: %s: Customer first name */
-	printf( esc_html__( 'Hi %s,', 'woocommerce' ), '<!--[woocommerce/customer-first-name]-->' );
-?></p>
-<!-- /wp:paragraph -->
+	printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $order->get_billing_first_name() ) );
+} else {
+	printf( esc_html__( 'Hi,', 'woocommerce' ) );
+}
+?>
+</p>
+<p><?php esc_html_e( 'The following note has been added to your order:', 'woocommerce' ); ?></p>
 
-<!-- wp:paragraph -->
-<p> <?php echo esc_html__( 'The following note has been added to your order:', 'woocommerce' ); ?> </p>
-<!-- /wp:paragraph -->
-
-<!-- wp:quote {"lock":{"move":false,"remove":true}} -->
-<blockquote class="wp-block-quote">
-<!-- wp:paragraph {"lock":{"move":false,"remove":true}} -->
-<p> <?php echo '<!--[woocommerce/admin-order-note]-->&nbsp;'; // The non-breaking space is used to prevent the comment from being removed by the email editor. ?>  </p>
-<!-- /wp:paragraph -->
+<blockquote>
+<?php
+$safe_note = wc_wptexturize_order_note( $customer_note );
+echo wpautop( make_clickable( $safe_note ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+?>
 </blockquote>
-<!-- /wp:quote -->
 
-<!-- wp:paragraph -->
-<p> <?php echo esc_html__( 'As a reminder, here are your order details:', 'woocommerce' ); ?> </p>
-<!-- /wp:paragraph -->
+<p><?php esc_html_e( 'As a reminder, here are your order details:', 'woocommerce' ); ?></p>
+<?php echo $email_improvements_enabled ? '</div>' : ''; ?>
 
-<!-- wp:woocommerce/email-content {"lock":{"move":false,"remove":true}} -->
-<div class="wp-block-woocommerce-email-content"> <?php echo esc_html( BlockEmailRenderer::WOO_EMAIL_CONTENT_PLACEHOLDER ); ?> </div>
-<!-- /wp:woocommerce/email-content -->
+<?php
 
-<!-- wp:paragraph {"align":"center"} -->
-<p class="has-text-align-center"><?php
-/* translators: %s: Store admin email */
-printf( esc_html__( 'Thanks again! If you need any help with your order, please contact us at %s.', 'woocommerce' ), '<!--[woocommerce/store-email]-->' );
-?></p>
-<!-- /wp:paragraph -->
+/*
+ * @hooked WC_Emails::order_details() Shows the order details table.
+ * @hooked WC_Structured_Data::generate_order_data() Generates structured data.
+ * @hooked WC_Structured_Data::output_structured_data() Outputs structured data.
+ * @since 2.5.0
+ */
+do_action( 'woocommerce_email_order_details', $order, $sent_to_admin, $plain_text, $email );
+
+/*
+ * @hooked WC_Emails::order_meta() Shows order meta data.
+ */
+do_action( 'woocommerce_email_order_meta', $order, $sent_to_admin, $plain_text, $email );
+
+/*
+ * @hooked WC_Emails::customer_details() Shows customer details
+ * @hooked WC_Emails::email_address() Shows email address
+ */
+do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
+
+/**
+ * Show user-defined additional content - this is set in each email's settings.
+ */
+if ( $additional_content ) {
+	echo $email_improvements_enabled ? '<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="email-additional-content">' : '';
+	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
+	echo $email_improvements_enabled ? '</td></tr></table>' : '';
+}
+
+/*
+ * @hooked WC_Emails::email_footer() Output the email footer
+ */
+do_action( 'woocommerce_email_footer', $email );

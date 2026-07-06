@@ -57,23 +57,4 @@ final class OrderInternalStatus {
 	 * @var string
 	 */
 	public const FAILED = 'wc-failed';
-
-	/**
-	 * Returns all internal order status values.
-	 *
-	 * @since 10.9.0
-	 *
-	 * @return string[]
-	 */
-	public static function get_all(): array {
-		return array(
-			self::PENDING,
-			self::PROCESSING,
-			self::ON_HOLD,
-			self::COMPLETED,
-			self::CANCELLED,
-			self::REFUNDED,
-			self::FAILED,
-		);
-	}
 }
