@@ -329,6 +329,8 @@ if (!function_exists('quoc_phuong_render_home_acf')) {
             'url' => quoc_phuong_home_field('home_news_video_url_3'),
         ),
     );
+
+    $main_video_url = !empty($video_thumbs[0]['url']) ? $video_thumbs[0]['url'] : $main_video_url;
     ?>
 
     <section class="home-news-video-section" <?php if ($news_video_bg_url): ?>
@@ -372,9 +374,11 @@ if (!function_exists('quoc_phuong_render_home_acf')) {
                                         </a>
                                     </h3>
 
-                                    <?php if ($post_excerpt): ?>
-                                        <p><?php echo esc_html(wp_trim_words($post_excerpt, 28)); ?></p>
-                                    <?php endif; ?>
+                                   <?php if ($post_excerpt): ?>
+    <p class="news-excerpt">
+        <?php echo esc_html($post_excerpt); ?>
+    </p>
+<?php endif; ?>
                                 </div>
                             </article>
 
@@ -393,33 +397,40 @@ if (!function_exists('quoc_phuong_render_home_acf')) {
                     <p><?php echo esc_html(quoc_phuong_home_field('home_news_video_video_desc')); ?></p>
                 </div>
 
-                <?php if ($main_video_url): ?>
-                    <a class="home-main-video" href="<?php echo esc_url($main_video_url); ?>" target="_blank" rel="noopener">
-                        <?php
-                        $main_video_thumb = quoc_phuong_home_field('home_news_video_thumb_1');
-                        $main_video_thumb_url = $main_video_thumb ? quoc_phuong_home_image_url($main_video_thumb, 'large') : '';
-                        ?>
+                <?php
+                $main_video_thumb = quoc_phuong_home_field('home_news_video_thumb_1');
+                $main_video_thumb_url = $main_video_thumb ? quoc_phuong_home_image_url($main_video_thumb, 'large') : '';
+                ?>
 
+                <?php if ($main_video_url || $main_video_thumb_url): ?>
+                    <div class="home-main-video js-home-main-video" role="button" tabindex="0"
+                        data-video-url="<?php echo esc_url($main_video_url); ?>"
+                        data-video-thumb="<?php echo esc_url($main_video_thumb_url); ?>"
+                        aria-label="Phát video nổi bật">
                         <?php if ($main_video_thumb_url): ?>
                             <img src="<?php echo esc_url($main_video_thumb_url); ?>" alt="">
                         <?php endif; ?>
 
                         <span><i class="fa-solid fa-play"></i></span>
-                    </a>
+                    </div>
                 <?php endif; ?>
 
                 <div class="home-video-thumbs">
-                    <?php foreach ($video_thumbs as $video): ?>
+                    <?php foreach ($video_thumbs as $index => $video): ?>
                         <?php
                         $thumb_url = !empty($video['image']) ? quoc_phuong_home_image_url($video['image'], 'medium') : '';
                         $url = !empty($video['url']) ? $video['url'] : '#';
                         ?>
 
                         <?php if ($thumb_url): ?>
-                            <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener">
+                            <button class="home-video-thumb js-home-video-thumb <?php echo $index === 0 ? 'is-active' : ''; ?>"
+                                type="button"
+                                data-video-url="<?php echo esc_url($url); ?>"
+                                data-video-thumb="<?php echo esc_url($thumb_url); ?>"
+                                aria-label="<?php echo esc_attr('Phát video ' . ($index + 1)); ?>">
                                 <img src="<?php echo esc_url($thumb_url); ?>" alt="">
                                 <span><i class="fa-solid fa-play"></i></span>
-                            </a>
+                            </button>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>

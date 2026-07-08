@@ -553,6 +553,129 @@ jQuery(document).ready( function($){
             }
         });
 
+        function getHomeVideoEmbed(url, autoplay) {
+            if (!url || url === '#') {
+                return null;
+            }
+
+            try {
+                var parsedUrl = new URL(url, window.location.href);
+                var host = parsedUrl.hostname.replace(/^www\./, '');
+                var videoId = '';
+                var autoplayParam = autoplay ? '1' : '0';
+
+                if (host === 'youtu.be') {
+                    videoId = parsedUrl.pathname.split('/').filter(Boolean)[0];
+                    return videoId ? { type: 'iframe', url: 'https://www.youtube.com/embed/' + videoId + '?autoplay=' + autoplayParam + '&rel=0&playsinline=1' } : null;
+                }
+
+                if (host === 'youtube.com' || host === 'm.youtube.com') {
+                    if (parsedUrl.pathname === '/watch') {
+                        videoId = parsedUrl.searchParams.get('v');
+                    } else {
+                        videoId = parsedUrl.pathname.split('/').filter(Boolean).pop();
+                    }
+
+                    return videoId ? { type: 'iframe', url: 'https://www.youtube.com/embed/' + videoId + '?autoplay=' + autoplayParam + '&rel=0&playsinline=1' } : null;
+                }
+
+                if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+                    videoId = parsedUrl.pathname.split('/').filter(Boolean).pop();
+                    return videoId ? { type: 'iframe', url: 'https://player.vimeo.com/video/' + videoId + '?autoplay=' + autoplayParam } : null;
+                }
+
+                if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(parsedUrl.href)) {
+                    return { type: 'video', url: parsedUrl.href };
+                }
+            } catch (error) {
+                return null;
+            }
+
+            return null;
+        }
+
+        function renderHomeMainVideo($mainVideo, url, thumb, autoplay) {
+            var embed = getHomeVideoEmbed(url, autoplay);
+
+            $mainVideo.attr('data-video-url', url || '');
+            $mainVideo.attr('data-video-thumb', thumb || '');
+            $mainVideo.data('video-url', url || '');
+            $mainVideo.data('video-thumb', thumb || '');
+            $mainVideo.empty();
+
+            if (embed && autoplay) {
+                $mainVideo.addClass('is-playing');
+
+                if (embed.type === 'video') {
+                    $('<video>', {
+                        src: embed.url,
+                        controls: true,
+                        autoplay: true,
+                        playsinline: true
+                    }).appendTo($mainVideo);
+                } else {
+                    $('<iframe>', {
+                        src: embed.url,
+                        title: $mainVideo.attr('aria-label') || 'Video nổi bật',
+                        allow: 'autoplay; fullscreen; picture-in-picture',
+                        allowfullscreen: 'allowfullscreen'
+                    }).appendTo($mainVideo);
+                }
+
+                return;
+            }
+
+            $mainVideo.removeClass('is-playing');
+
+            if (thumb) {
+                $('<img>', {
+                    src: thumb,
+                    alt: ''
+                }).appendTo($mainVideo);
+            }
+
+            $('<span>').append($('<i>', {
+                class: 'fa-solid fa-play'
+            })).appendTo($mainVideo);
+        }
+
+        $('.home-news-video-section').each(function () {
+            var $section = $(this);
+            var $mainVideo = $section.find('.js-home-main-video').first();
+
+            if (!$mainVideo.length) {
+                return;
+            }
+
+            $section.on('click', '.js-home-video-thumb', function (event) {
+                var $thumb = $(this);
+                var videoUrl = $thumb.data('video-url') || '';
+                var thumbUrl = $thumb.data('video-thumb') || '';
+
+                event.preventDefault();
+                $section.find('.js-home-video-thumb').removeClass('is-active');
+                $thumb.addClass('is-active');
+                renderHomeMainVideo($mainVideo, videoUrl, thumbUrl, true);
+            });
+
+            $mainVideo.on('click', function () {
+                if ($mainVideo.hasClass('is-playing')) {
+                    return;
+                }
+
+                renderHomeMainVideo($mainVideo, $mainVideo.data('video-url') || '', $mainVideo.data('video-thumb') || '', true);
+            });
+
+            $mainVideo.on('keydown', function (event) {
+                if (event.key !== 'Enter' && event.key !== ' ') {
+                    return;
+                }
+
+                event.preventDefault();
+                $mainVideo.trigger('click');
+            });
+        });
+
         $('.hotel-landing a[href^="#"]').on('click', function (event) {
             var target = $(this).attr('href');
             var $target;

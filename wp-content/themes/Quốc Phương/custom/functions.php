@@ -9,6 +9,7 @@ include('acf-trangchu.php');
 
 // Thêm ACF Giới thiệu Configuration
 include('acf-gioithieu.php');
+include('acf-lienhe.php');
 
 // Thêm caiajs
 include('js/caiajs.php');
@@ -135,7 +136,666 @@ function caia_custom_sizes($sizes)
 	));
 }
 
-// Bỏ toàn bộ thẻ H4 khỏi tiêu đề widget
+// WooCommerce product archive layout.
+add_filter('loop_shop_per_page', 'quoc_phuong_shop_products_per_page', 20);
+function quoc_phuong_shop_products_per_page($per_page)
+{
+	return 16;
+}
+
+add_filter('register_post_type_args', 'quoc_phuong_product_post_type_args', 20, 2);
+function quoc_phuong_product_post_type_args($args, $post_type)
+{
+	if ('product' !== $post_type) {
+		return $args;
+	}
+
+	$args['has_archive'] = 'san-pham';
+	$args['rewrite'] = wp_parse_args(
+		isset($args['rewrite']) && is_array($args['rewrite']) ? $args['rewrite'] : array(),
+		array(
+			'slug' => 'san-pham',
+			'with_front' => false,
+		)
+	);
+	$args['rewrite']['slug'] = 'san-pham';
+	$args['rewrite']['with_front'] = false;
+
+	return $args;
+}
+
+add_filter('post_type_link', 'quoc_phuong_product_single_permalink', 10, 2);
+function quoc_phuong_product_single_permalink($link, $post)
+{
+	if (!$post || 'product' !== $post->post_type || empty($post->post_name)) {
+		return $link;
+	}
+
+	return home_url(user_trailingslashit('san-pham/' . $post->post_name, 'single-product'));
+}
+
+function quoc_phuong_get_product_archive_current_term()
+{
+	if (is_tax('product_cat')) {
+		$term = get_queried_object();
+
+		return ($term && !is_wp_error($term) && !empty($term->term_id)) ? $term : null;
+	}
+
+	$request_path = quoc_phuong_get_current_request_path();
+
+	if (quoc_phuong_is_product_single_request_path($request_path)) {
+		return null;
+	}
+
+	if (preg_match('#^san-pham/([^/]+)(?:/page/[0-9]+)?/?$#', $request_path, $matches)) {
+		$term = get_term_by('slug', sanitize_title($matches[1]), 'product_cat');
+
+		return ($term && !is_wp_error($term) && !empty($term->term_id)) ? $term : null;
+	}
+
+	return null;
+}
+
+function quoc_phuong_get_product_category_path($term)
+{
+	$term = is_object($term) ? $term : get_term($term, 'product_cat');
+
+	if (!$term || is_wp_error($term) || empty($term->slug)) {
+		return '';
+	}
+
+	return $term->slug;
+}
+
+function quoc_phuong_get_product_category_link($term)
+{
+	$term_path = quoc_phuong_get_product_category_path($term);
+
+	if (!$term_path) {
+		return '';
+	}
+
+	return home_url(user_trailingslashit('san-pham/' . $term_path, 'product_cat'));
+}
+
+function quoc_phuong_get_current_request_path()
+{
+	$request_uri = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '';
+	$request_path = (string) wp_parse_url($request_uri, PHP_URL_PATH);
+	$home_path = trim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
+	$request_path = trim($request_path, '/');
+
+	if ($home_path && 0 === strpos($request_path, $home_path . '/')) {
+		$request_path = trim(substr($request_path, strlen($home_path)), '/');
+	}
+
+	return $request_path;
+}
+
+function quoc_phuong_get_product_slug_from_single_path($request_path)
+{
+	if (!preg_match('#^san-pham/([^/]+)/?$#', trim($request_path, '/'), $matches)) {
+		return '';
+	}
+
+	return sanitize_title($matches[1]);
+}
+
+function quoc_phuong_get_product_id_by_slug($slug)
+{
+	$slug = sanitize_title($slug);
+
+	if (!$slug) {
+		return 0;
+	}
+
+	$product = get_page_by_path($slug, OBJECT, 'product');
+
+	if (!$product || is_wp_error($product) || 'publish' !== $product->post_status) {
+		return 0;
+	}
+
+	return (int) $product->ID;
+}
+
+function quoc_phuong_is_product_single_request_path($request_path)
+{
+	$product_slug = quoc_phuong_get_product_slug_from_single_path($request_path);
+
+	return $product_slug ? (bool) quoc_phuong_get_product_id_by_slug($product_slug) : false;
+}
+
+function quoc_phuong_is_product_category_active($term, $current_term)
+{
+	if (!$term || !$current_term) {
+		return false;
+	}
+
+	if ((int) $term->term_id === (int) $current_term->term_id) {
+		return true;
+	}
+
+	$ancestors = get_ancestors($current_term->term_id, 'product_cat');
+
+	return in_array((int) $term->term_id, array_map('intval', $ancestors), true);
+}
+
+function quoc_phuong_render_product_categories_nav($current_term = null)
+{
+	if (!taxonomy_exists('product_cat')) {
+		return;
+	}
+
+	$terms = get_terms(array(
+		'taxonomy' => 'product_cat',
+		'hide_empty' => false,
+		'parent' => 0,
+		'orderby' => 'menu_order',
+		'order' => 'ASC',
+	));
+
+	if (empty($terms) || is_wp_error($terms)) {
+		$terms = get_terms(array(
+			'taxonomy' => 'product_cat',
+			'hide_empty' => false,
+			'orderby' => 'menu_order',
+			'order' => 'ASC',
+		));
+	}
+
+	if (empty($terms) || is_wp_error($terms)) {
+		return;
+	}
+
+	$terms = array_filter($terms, function ($term) {
+		return !in_array($term->slug, array('uncategorized', 'chua-phan-loai'), true);
+	});
+
+	if (empty($terms)) {
+		return;
+	}
+
+	echo '<nav class="qp-shop-categories" aria-label="Danh mục sản phẩm">';
+	echo '<div class="qp-shop-category-grid">';
+
+	foreach ($terms as $term) {
+		$term_link = quoc_phuong_get_product_category_link($term);
+
+		if (!$term_link) {
+			continue;
+		}
+
+		$thumbnail_id = (int) get_term_meta($term->term_id, 'thumbnail_id', true);
+		$image_url = $thumbnail_id ? wp_get_attachment_image_url($thumbnail_id, 'large') : '';
+
+		if (!$image_url && function_exists('wc_placeholder_img_src')) {
+			$image_url = wc_placeholder_img_src('woocommerce_thumbnail');
+		}
+
+		$is_active = quoc_phuong_is_product_category_active($term, $current_term);
+		$classes = 'qp-shop-category-card' . ($is_active ? ' is-active' : '');
+
+		echo '<a class="' . esc_attr($classes) . '" href="' . esc_url($term_link) . '">';
+		echo '<span class="qp-shop-category-image">';
+
+		if ($image_url) {
+			echo '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($term->name) . '" loading="lazy" decoding="async">';
+		}
+
+		echo '</span>';
+		echo '<span class="qp-shop-category-name">' . esc_html($term->name) . '</span>';
+		echo '</a>';
+	}
+
+	echo '</div>';
+	echo '</nav>';
+}
+
+function quoc_phuong_get_product_archive_query($paged = 1)
+{
+	$tax_query = array();
+	$current_term = quoc_phuong_get_product_archive_current_term();
+
+	if ($current_term) {
+		$tax_query[] = array(
+			'taxonomy' => 'product_cat',
+			'field' => 'term_id',
+			'terms' => array((int) $current_term->term_id),
+		);
+	}
+
+	if (function_exists('wc_get_product_visibility_term_ids')) {
+		$product_visibility_terms = wc_get_product_visibility_term_ids();
+
+		if (!empty($product_visibility_terms['exclude-from-catalog'])) {
+			$tax_query[] = array(
+				'taxonomy' => 'product_visibility',
+				'field' => 'term_taxonomy_id',
+				'terms' => array((int) $product_visibility_terms['exclude-from-catalog']),
+				'operator' => 'NOT IN',
+			);
+		}
+	}
+
+	$args = array(
+		'post_type' => 'product',
+		'post_status' => 'publish',
+		'posts_per_page' => 16,
+		'paged' => max(1, (int) $paged),
+		'orderby' => array(
+			'menu_order' => 'ASC',
+			'date' => 'DESC',
+		),
+	);
+
+	if (!empty($tax_query)) {
+		$args['tax_query'] = array_merge(array('relation' => 'AND'), $tax_query);
+	}
+
+	return new WP_Query($args);
+}
+
+function quoc_phuong_render_product_archive_card($product_id)
+{
+	$product_title = get_the_title($product_id);
+	$product_link = get_permalink($product_id);
+	$product_image = get_the_post_thumbnail_url($product_id, 'large');
+
+	if (!$product_image && function_exists('wc_placeholder_img_src')) {
+		$product_image = wc_placeholder_img_src('woocommerce_thumbnail');
+	}
+
+	echo '<article class="home-featured-product-card qp-shop-product-card">';
+	echo '<a class="home-featured-product-image" href="' . esc_url($product_link) . '">';
+
+	if ($product_image) {
+		echo '<img src="' . esc_url($product_image) . '" alt="' . esc_attr($product_title) . '" loading="lazy" decoding="async">';
+	}
+
+	echo '</a>';
+	echo '<h3><a href="' . esc_url($product_link) . '">' . esc_html($product_title) . '</a></h3>';
+	echo '<a class="home-featured-product-btn" href="' . esc_url($product_link) . '">Nhận tư vấn</a>';
+	echo '</article>';
+}
+
+function quoc_phuong_render_product_archive_pagination($query)
+{
+	if (!$query || (int) $query->max_num_pages <= 1) {
+		return;
+	}
+
+	$current_page = max(1, (int) get_query_var('paged'), (int) get_query_var('page'));
+	$total_pages = (int) $query->max_num_pages;
+
+	echo '<nav class="qp-shop-pagination" aria-label="Phân trang sản phẩm">';
+
+	if ($current_page > 1) {
+		echo '<a class="qp-shop-page-link qp-shop-page-link--edge" href="' . esc_url(get_pagenum_link(1)) . '">Trang đầu</a>';
+	} else {
+		echo '<span class="qp-shop-page-link qp-shop-page-link--edge is-disabled">Trang đầu</span>';
+	}
+
+	echo paginate_links(array(
+		'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
+		'format' => '?paged=%#%',
+		'current' => $current_page,
+		'total' => $total_pages,
+		'mid_size' => 2,
+		'end_size' => 1,
+		'prev_next' => false,
+		'type' => 'plain',
+	));
+
+	if ($current_page < $total_pages) {
+		echo '<a class="qp-shop-page-link qp-shop-page-link--edge" href="' . esc_url(get_pagenum_link($total_pages)) . '">Trang cuối</a>';
+	} else {
+		echo '<span class="qp-shop-page-link qp-shop-page-link--edge is-disabled">Trang cuối</span>';
+	}
+
+	echo '</nav>';
+}
+
+function quoc_phuong_render_product_archive_page()
+{
+	static $rendered = false;
+
+	if ($rendered) {
+		return;
+	}
+
+	$rendered = true;
+
+	$current_term = quoc_phuong_get_product_archive_current_term();
+	$paged = max(1, (int) get_query_var('paged'), (int) get_query_var('page'));
+	$products = quoc_phuong_get_product_archive_query($paged);
+	$archive_title = $current_term ? $current_term->name : 'Sản phẩm';
+
+	echo '<div class="qp-shop-page">';
+	echo '<div class="qp-shop-wrap">';
+
+	quoc_phuong_render_product_categories_nav($current_term);
+
+	echo '<header class="qp-shop-heading">';
+	echo '<h1>' . esc_html($archive_title) . '</h1>';
+	echo '</header>';
+
+	if ($products->have_posts()) {
+		echo '<div class="home-featured-products-grid qp-shop-products-grid">';
+
+		while ($products->have_posts()) {
+			$products->the_post();
+			quoc_phuong_render_product_archive_card(get_the_ID());
+		}
+
+		echo '</div>';
+		quoc_phuong_render_product_archive_pagination($products);
+	} else {
+		echo '<div class="qp-shop-empty">Chưa có sản phẩm trong danh mục này.</div>';
+	}
+
+	echo '</div>';
+	echo '</div>';
+
+	wp_reset_postdata();
+}
+
+add_action('genesis_after_header', 'quoc_phuong_maybe_render_product_archive_from_route', 5);
+function quoc_phuong_maybe_render_product_archive_from_route()
+{
+	$request_path = quoc_phuong_get_current_request_path();
+
+	if (is_singular('product') || quoc_phuong_is_product_single_request_path($request_path)) {
+		return;
+	}
+
+	$is_product_route = 'san-pham' === $request_path
+		|| is_post_type_archive('product')
+		|| (function_exists('is_shop') && is_shop())
+		|| is_tax('product_cat');
+
+	if (!$is_product_route && preg_match('#^san-pham/([^/]+)(?:/page/[0-9]+)?/?$#', $request_path, $matches)) {
+		$product_category = get_term_by('slug', sanitize_title($matches[1]), 'product_cat');
+		$is_product_route = $product_category && !is_wp_error($product_category);
+	}
+
+	if (!$is_product_route) {
+		return;
+	}
+
+	quoc_phuong_render_product_archive_page();
+}
+
+add_action('init', 'quoc_phuong_register_clean_archive_rewrites', 20);
+function quoc_phuong_register_clean_archive_rewrites()
+{
+	add_rewrite_rule('^san-pham/?$', 'index.php?post_type=product', 'top');
+	add_rewrite_rule('^san-pham/page/([0-9]{1,})/?$', 'index.php?post_type=product&paged=$matches[1]', 'top');
+	add_rewrite_rule('^san-pham/([^/]+)/?$', 'index.php?post_type=product&name=$matches[1]', 'top');
+	add_rewrite_rule('^san-pham/([^/]+)/page/([0-9]{1,})/?$', 'index.php?product_cat=$matches[1]&paged=$matches[2]', 'top');
+
+	$categories = get_categories(array(
+		'hide_empty' => false,
+	));
+
+	foreach ($categories as $category) {
+		$category_path = get_category_parents($category, false, '/', true);
+
+		if (is_wp_error($category_path) || empty($category_path)) {
+			continue;
+		}
+
+		$category_path = trim($category_path, '/');
+
+		add_rewrite_rule('^' . preg_quote($category_path, '#') . '/?$', 'index.php?category_name=' . $category_path, 'top');
+		add_rewrite_rule('^' . preg_quote($category_path, '#') . '/page/([0-9]{1,})/?$', 'index.php?category_name=' . $category_path . '&paged=$matches[1]', 'top');
+	}
+}
+
+add_action('init', 'quoc_phuong_flush_clean_archive_rewrites_once', 99);
+function quoc_phuong_flush_clean_archive_rewrites_once()
+{
+	$rewrite_version = '20260708_clean_archives_product_single_2';
+
+	if (get_option('quoc_phuong_rewrite_version') === $rewrite_version) {
+		return;
+	}
+
+	flush_rewrite_rules(false);
+	update_option('quoc_phuong_rewrite_version', $rewrite_version, false);
+}
+
+add_filter('post_type_archive_link', 'quoc_phuong_product_archive_link', 10, 2);
+function quoc_phuong_product_archive_link($link, $post_type)
+{
+	if ('product' !== $post_type) {
+		return $link;
+	}
+
+	return home_url('/san-pham/');
+}
+
+add_filter('woocommerce_get_shop_page_permalink', 'quoc_phuong_woocommerce_shop_page_permalink');
+function quoc_phuong_woocommerce_shop_page_permalink($permalink)
+{
+	return home_url('/san-pham/');
+}
+
+add_filter('page_link', 'quoc_phuong_shop_page_link', 10, 2);
+function quoc_phuong_shop_page_link($link, $post_id)
+{
+	if (!function_exists('wc_get_page_id')) {
+		return $link;
+	}
+
+	if ((int) $post_id !== (int) wc_get_page_id('shop')) {
+		return $link;
+	}
+
+	return home_url('/san-pham/');
+}
+
+add_filter('term_link', 'quoc_phuong_product_category_term_link', 10, 3);
+function quoc_phuong_product_category_term_link($link, $term, $taxonomy)
+{
+	if ('product_cat' !== $taxonomy) {
+		return $link;
+	}
+
+	$term_link = quoc_phuong_get_product_category_link($term);
+
+	return $term_link ?: $link;
+}
+
+add_filter('template_include', 'quoc_phuong_use_product_archive_template', 99);
+function quoc_phuong_use_product_archive_template($template)
+{
+	if (is_singular('product')) {
+		return $template;
+	}
+
+	$request_path = quoc_phuong_get_current_request_path();
+
+	if (quoc_phuong_is_product_single_request_path($request_path)) {
+		return $template;
+	}
+
+	$is_product_category_route = is_tax('product_cat');
+
+	if (!$is_product_category_route && preg_match('#^san-pham/([^/]+)(?:/page/[0-9]+)?/?$#', $request_path, $matches)) {
+		$product_category = get_term_by('slug', sanitize_title($matches[1]), 'product_cat');
+		$is_product_category_route = $product_category && !is_wp_error($product_category);
+	}
+
+	if ($is_product_category_route) {
+		$product_category_template = get_stylesheet_directory() . '/taxonomy-product_cat.php';
+
+		return file_exists($product_category_template) ? $product_category_template : $template;
+	}
+
+	$is_product_archive = is_post_type_archive('product')
+		|| (function_exists('is_shop') && is_shop())
+		|| is_page('san-pham')
+		|| 'san-pham' === $request_path;
+
+	if (!$is_product_archive) {
+		return $template;
+	}
+
+	$product_archive_template = get_stylesheet_directory() . '/archive-product.php';
+
+	return file_exists($product_archive_template) ? $product_archive_template : $template;
+}
+
+add_filter('category_link', 'quoc_phuong_remove_category_base_link', 10, 2);
+function quoc_phuong_remove_category_base_link($link, $term_id)
+{
+	$category = get_category($term_id);
+
+	if (!$category || is_wp_error($category)) {
+		return $link;
+	}
+
+	$category_path = get_category_parents($category, false, '/', true);
+
+	if (is_wp_error($category_path) || empty($category_path)) {
+		return $link;
+	}
+
+	return home_url(user_trailingslashit($category_path, 'category'));
+}
+
+add_filter('request', 'quoc_phuong_clean_category_request');
+function quoc_phuong_clean_category_request($query_vars)
+{
+	$request_path = quoc_phuong_get_current_request_path();
+
+	if ('san-pham' === $request_path) {
+		unset($query_vars['pagename'], $query_vars['name'], $query_vars['page_id']);
+		$query_vars['post_type'] = 'product';
+
+		return $query_vars;
+	}
+
+	if (preg_match('#^san-pham/page/([0-9]{1,})/?$#', $request_path, $matches)) {
+		unset($query_vars['pagename'], $query_vars['name'], $query_vars['page_id'], $query_vars['product']);
+		$query_vars['post_type'] = 'product';
+		$query_vars['paged'] = absint($matches[1]);
+
+		return $query_vars;
+	}
+
+	if (preg_match('#^san-pham/([^/]+)/?$#', $request_path, $matches)) {
+		$product_slug = sanitize_title($matches[1]);
+		$product_id = quoc_phuong_get_product_id_by_slug($product_slug);
+
+		if ($product_id) {
+			unset($query_vars['pagename'], $query_vars['page_id'], $query_vars['product'], $query_vars['product_cat']);
+			$query_vars['post_type'] = 'product';
+			$query_vars['name'] = $product_slug;
+
+			return $query_vars;
+		}
+	}
+
+	if (preg_match('#^san-pham/([^/]+)(?:/page/([0-9]+))?/?$#', $request_path, $matches)) {
+		$product_category = get_term_by('slug', sanitize_title($matches[1]), 'product_cat');
+
+		if ($product_category && !is_wp_error($product_category)) {
+			unset($query_vars['pagename'], $query_vars['name'], $query_vars['page_id'], $query_vars['product']);
+			$query_vars['product_cat'] = $product_category->slug;
+
+			if (!empty($matches[2])) {
+				$query_vars['paged'] = absint($matches[2]);
+			}
+
+			return $query_vars;
+		}
+	}
+
+	if (preg_match('#^product-category/([^/]+)(?:/page/([0-9]+))?/?$#', $request_path, $matches)) {
+		$product_category = get_term_by('slug', sanitize_title($matches[1]), 'product_cat');
+
+		if ($product_category && !is_wp_error($product_category)) {
+			unset($query_vars['pagename'], $query_vars['name'], $query_vars['page_id'], $query_vars['product']);
+			$query_vars['product_cat'] = $product_category->slug;
+
+			if (!empty($matches[2])) {
+				$query_vars['paged'] = absint($matches[2]);
+			}
+
+			return $query_vars;
+		}
+	}
+
+	if (!empty($query_vars['category_name'])) {
+		return $query_vars;
+	}
+
+	$category_path = '';
+
+	if (!empty($query_vars['pagename'])) {
+		$category_path = $query_vars['pagename'];
+	} elseif (!empty($query_vars['name'])) {
+		$category_path = $query_vars['name'];
+	}
+
+	if (!$category_path) {
+		return $query_vars;
+	}
+
+	$category = get_category_by_path(trim($category_path, '/'));
+
+	if (!$category || is_wp_error($category)) {
+		return $query_vars;
+	}
+
+	unset($query_vars['pagename'], $query_vars['name'], $query_vars['page_id']);
+	$query_vars['category_name'] = trim($category_path, '/');
+
+	return $query_vars;
+}
+
+add_action('template_redirect', 'quoc_phuong_redirect_old_archive_urls', 1);
+function quoc_phuong_redirect_old_archive_urls()
+{
+	if (is_admin() || wp_doing_ajax()) {
+		return;
+	}
+
+	$request_path = quoc_phuong_get_current_request_path();
+
+	if (preg_match('#^product/([^/]+)/?$#', $request_path, $matches)) {
+		$product_id = quoc_phuong_get_product_id_by_slug($matches[1]);
+
+		if ($product_id) {
+			wp_safe_redirect(get_permalink($product_id), 301);
+			exit;
+		}
+	}
+
+	if (is_category() && 0 === strpos($request_path, 'category/')) {
+		wp_safe_redirect(get_category_link(get_queried_object_id()), 301);
+		exit;
+	}
+
+	if (preg_match('#^product-category/([^/]+)#', $request_path, $matches)) {
+		$product_category = get_term_by('slug', sanitize_title($matches[1]), 'product_cat');
+		$term_link = $product_category && !is_wp_error($product_category) ? quoc_phuong_get_product_category_link($product_category) : '';
+
+		if ($term_link) {
+			wp_safe_redirect($term_link, 301);
+			exit;
+		}
+	}
+
+	if ((is_post_type_archive('product') || (function_exists('is_shop') && is_shop())) && 'shop' === $request_path) {
+		wp_safe_redirect(home_url('/san-pham/'), 301);
+		exit;
+	}
+}
+
+// Widget title markup.
 add_filter('genesis_register_widget_area_defaults', 'caia_change_all_widget_titles');
 function caia_change_all_widget_titles($defaults)
 {
@@ -274,9 +934,9 @@ add_action('genesis_before_footer', 'caia_add_content_after_footer2');
 function caia_add_content_after_footer2()
 {
 	if (is_active_sidebar('content-bfooter')) {
-		echo '<div class="before_footer section"><div class="wrap"><div class="wrap-section">';
+		echo '<div class="before_footer section"><div class="wrap">';
 		dynamic_sidebar('content-bfooter');
-		echo '</div></div></div>';
+		echo '</div></div>';
 	}
 }
 

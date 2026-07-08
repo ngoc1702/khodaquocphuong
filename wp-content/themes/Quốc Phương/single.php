@@ -39,43 +39,23 @@ if (!function_exists('thanh_hung_single_remove_caia_extras')) {
 if (!function_exists('thanh_hung_get_related_posts')) {
     function thanh_hung_get_related_posts($post_id, $limit = 5)
     {
-        $related_posts = array();
-        $exclude_ids = array($post_id);
         $category_ids = wp_get_post_categories($post_id);
 
-        if ($category_ids) {
-            $category_query = new WP_Query(array(
-                'post_type' => 'post',
-                'post_status' => 'publish',
-                'posts_per_page' => $limit,
-                'post__not_in' => $exclude_ids,
-                'category__in' => $category_ids,
-                'ignore_sticky_posts' => true,
-            ));
-
-            foreach ($category_query->posts as $related_post) {
-                $related_posts[] = $related_post;
-                $exclude_ids[] = $related_post->ID;
-            }
-
-            wp_reset_postdata();
+        if (!$category_ids) {
+            return array();
         }
 
-        if (count($related_posts) < $limit) {
-            $recent_query = new WP_Query(array(
-                'post_type' => 'post',
-                'post_status' => 'publish',
-                'posts_per_page' => $limit - count($related_posts),
-                'post__not_in' => $exclude_ids,
-                'ignore_sticky_posts' => true,
-            ));
+        $category_query = new WP_Query(array(
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'posts_per_page' => $limit,
+            'post__not_in' => array($post_id),
+            'category__in' => $category_ids,
+            'ignore_sticky_posts' => true,
+        ));
 
-            foreach ($recent_query->posts as $related_post) {
-                $related_posts[] = $related_post;
-            }
-
-            wp_reset_postdata();
-        }
+        $related_posts = $category_query->posts;
+        wp_reset_postdata();
 
         return $related_posts;
     }
@@ -93,7 +73,7 @@ if (!function_exists('thanh_hung_render_single_blog_post')) {
         while (have_posts()) : the_post();
             $post_id = get_the_ID();
             $categories = get_the_category($post_id);
-            $related_posts = thanh_hung_get_related_posts($post_id, 5);
+            $related_posts = thanh_hung_get_related_posts($post_id, 6);
             ?>
             <main class="single-blog-page">
                 <div class="single-blog-wrap">
@@ -152,9 +132,9 @@ if (!function_exists('thanh_hung_render_single_blog_post')) {
                             </script>
                         </article>
 
-                        <aside class="single-blog-sidebar" aria-label="Bai viet lien quan">
+                        <aside class="single-blog-sidebar" aria-label="Bài viết cùng chuyên mục">
                             <section class="single-related-box">
-                                <h2>B&agrave;i vi&#7871;t li&ecirc;n quan</h2>
+                                <h2>Bài viết cùng chuyên mục</h2>
 
                                 <?php if ($related_posts) : ?>
                                     <div class="single-related-list">
@@ -180,6 +160,8 @@ if (!function_exists('thanh_hung_render_single_blog_post')) {
                                             </article>
                                         <?php endforeach; ?>
                                     </div>
+                                <?php else : ?>
+                                    <p class="single-related-empty">Chưa có bài viết cùng chuyên mục.</p>
                                 <?php endif; ?>
                             </section>
                         </aside>
