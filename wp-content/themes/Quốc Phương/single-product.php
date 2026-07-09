@@ -274,7 +274,7 @@ if (!function_exists('quoc_phuong_render_single_product_page')) {
                                     <?php echo wp_kses_post($short_description); ?>
                                 </div>
 
-                                <dl class="qp-product-meta-grid">
+                                <!-- <dl class="qp-product-meta-grid">
                                     <div>
                                         <dt>Giá</dt>
                                         <dd><?php echo $price_html ? wp_kses_post($price_html) : 'Liên hệ'; ?></dd>
@@ -291,14 +291,14 @@ if (!function_exists('quoc_phuong_render_single_product_page')) {
                                         <dt>Tư vấn</dt>
                                         <dd><a href="tel:<?php echo esc_attr($phone); ?>"><?php echo esc_html($phone); ?></a></dd>
                                     </div>
-                                </dl>
+                                </dl> -->
 
                                 <div class="qp-product-actions">
                                     <a class="qp-product-btn qp-product-btn--primary" href="tel:<?php echo esc_attr($phone); ?>">
                                         <i class="fa-solid fa-phone"></i>
                                         Gọi tư vấn
                                     </a>
-                                    <a class="qp-product-btn qp-product-btn--outline btn-cta" href="#nhantuvan">
+                                    <a class="qp-product-btn qp-product-btn--outline btn-cta" href="#nhantuvan" aria-controls="nhantuvan" aria-haspopup="dialog">
                                         <i class="fa-solid fa-file-signature"></i>
                                         Báo giá
                                     </a>
@@ -319,7 +319,7 @@ if (!function_exists('quoc_phuong_render_single_product_page')) {
                         <article class="qp-product-article">
                             <header class="qp-product-section-heading">
                                 <span>Thông tin sản phẩm</span>
-                                <h2><?php the_title(); ?></h2>
+                                <!-- <h2><?php the_title(); ?></h2> -->
                             </header>
 
                             <div class="single-blog-content qp-product-content">

@@ -20,10 +20,10 @@ add_filter('body_class', function ($classes) {
 remove_action('genesis_loop', 'genesis_do_loop');
 add_action('genesis_after_header', 'qp_render_contact_page');
 
-function qp_contact_field($name, $default = '')
+function qp_contact_field($name, $default = '', $format_value = true)
 {
     if (function_exists('get_field')) {
-        $value = get_field($name);
+        $value = get_field($name, false, $format_value);
 
         if ($value !== null && $value !== '' && $value !== false) {
             return $value;
@@ -87,7 +87,7 @@ function qp_render_contact_item($icon_class, $title, $content, $url = '')
             <?php if ($url) : ?>
                 <a href="<?php echo esc_url($url); ?>"><?php echo esc_html($content); ?></a>
             <?php else : ?>
-                <p><?php echo wp_kses_post(nl2br($content)); ?></p>
+                <p><?php echo nl2br(esc_html($content)); ?></p>
             <?php endif; ?>
         </div>
     </div>
@@ -97,7 +97,7 @@ function qp_render_contact_item($icon_class, $title, $content, $url = '')
 function qp_render_contact_page()
 {
     $company_name = qp_contact_field('contact_company_name', get_the_title());
-    $address = qp_contact_field('contact_address');
+    $address = qp_contact_field('contact_address', '', false);
     $phone_fax = qp_contact_field('contact_phone_fax');
     $hotline = qp_contact_field('contact_hotline');
     $email = qp_contact_field('contact_email');

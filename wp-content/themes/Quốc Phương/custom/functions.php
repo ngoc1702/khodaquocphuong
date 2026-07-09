@@ -896,8 +896,8 @@ add_action('genesis_before_header', 'caia_add_contactus');
 function caia_add_contactus()
 {
 	if (is_active_sidebar('nhantuvan')) {
-		echo '<div class="nhantuvan section"><div class="wrap">';
-		dynamic_sidebar('Toàn bộ - Nhận tư vấn');
+		echo '<div id="nhantuvan" class="nhantuvan section" aria-hidden="true"><div class="wrap" role="dialog" aria-modal="true" aria-label="Nhan tu van bao gia"><button class="nhantuvan-close" type="button" aria-label="Dong form tu van">&times;</button>';
+		dynamic_sidebar('nhantuvan');
 		echo '</div></div>';
 	}
 }

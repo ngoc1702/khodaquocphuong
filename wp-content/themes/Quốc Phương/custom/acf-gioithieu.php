@@ -219,7 +219,7 @@ add_action('acf/init', function () {
             'label' => 'Tiêu đề',
             'name' => 'title',
             'type' => 'text',
-            'default_value' => 'ĐÁ GRANITE',
+            'default_value' => 'ĐÁ <span>GRANITE</span>',
         ],
         [
             'key' => 'field_about_granite_description',
@@ -400,7 +400,7 @@ add_action('acf/init', function () {
             'label' => 'Tiêu đề',
             'name' => 'title',
             'type' => 'text',
-            'default_value' => 'ĐÁ MARBLE',
+            'default_value' => 'ĐÁ <span>MARBLE</span>',
         ],
         [
             'key' => 'field_about_marble_description',

@@ -163,29 +163,61 @@ jQuery(document).ready(function($) {
 
 jQuery(document).ready(function($) {
 
+  var $quotePopup = $('.nhantuvan');
+
+  function openQuotePopup(event) {
+    if (event) {
+      event.preventDefault();
+    }
+
+    $quotePopup = $('.nhantuvan');
+
+    if (!$quotePopup.length) {
+      return;
+    }
+
+    $quotePopup.addClass('is-open').attr('aria-hidden', 'false');
+    $('body').addClass('nhantuvan-open');
+
+    setTimeout(function () {
+      $quotePopup.find('input, select, textarea, button, a').filter(':visible').first().trigger('focus');
+    }, 80);
+  }
+
+  function closeQuotePopup(event) {
+    if (event) {
+      event.preventDefault();
+    }
+
+    $('.nhantuvan').removeClass('is-open').attr('aria-hidden', 'true');
+    $('body').removeClass('nhantuvan-open');
+  }
+
+  if ($quotePopup.length) {
+    $quotePopup.attr('aria-hidden', 'true');
+  }
+
   // mở popup từ header
-    $('.site-header p').click(function () {
-        $('.nhantuvan').show();
-        $('.nhantuvan .widget_caldera_forms_widget').show();
-    });
+  $('.site-header p').on('click', openQuotePopup);
 
-    // mở popup từ CTA
-    $(document).on('click', '.btn-cta', function () {
-        $('.nhantuvan').show();
-        $('.nhantuvan .widget_caldera_forms_widget').show();
-    });
+  // mở popup từ CTA
+  $(document).on('click', '.btn-cta', openQuotePopup);
 
-    // mở popup từ course button
-    $(document).on('click', '.course-btn', function () {
-        $('.nhantuvan').show();
-        $('.nhantuvan .widget_caldera_forms_widget').show();
-    });
+  // mở popup từ course button
+  $(document).on('click', '.course-btn', openQuotePopup);
 
-    // đóng popup
-    $('.nhantuvan .widget_caldera_forms_widget .widgettitle').click(function () {
-        $('.nhantuvan').hide();
-        $('.nhantuvan .widget_caldera_forms_widget').hide();
-    });
+  // đóng popup
+  $(document).on('click', '.nhantuvan-close', closeQuotePopup);
+  $(document).on('click', '.nhantuvan', function (event) {
+    if ($(event.target).is('.nhantuvan')) {
+      closeQuotePopup(event);
+    }
+  });
+  $(document).on('keydown', function (event) {
+    if (event.key === 'Escape' && $('.nhantuvan').hasClass('is-open')) {
+      closeQuotePopup(event);
+    }
+  });
 
 
 

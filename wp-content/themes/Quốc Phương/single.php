@@ -84,17 +84,10 @@ if (!function_exists('thanh_hung_render_single_blog_post')) {
                             <meta itemprop="dateModified" content="<?php echo esc_attr(get_the_modified_date('c')); ?>">
 
                             <header class="single-blog-header">
-                                <?php if ($categories) : ?>
-                                    <div class="single-blog-categories">
-                                        <?php foreach ($categories as $category) : ?>
-                                            <a href="<?php echo esc_url(get_category_link($category)); ?>"><?php echo esc_html($category->name); ?></a>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-
+                             
                                 <h1 itemprop="headline"><?php the_title(); ?></h1>
 
-                                <div class="single-blog-meta">
+                                <!-- <div class="single-blog-meta">
                                     <span>
                                         <i class="fa-solid fa-calendar-days"></i>
                                         <time datetime="<?php echo esc_attr(get_the_date('c')); ?>"><?php echo esc_html(get_the_date('d/m/Y')); ?></time>
@@ -103,7 +96,7 @@ if (!function_exists('thanh_hung_render_single_blog_post')) {
                                         <i class="fa-solid fa-user"></i>
                                         <span itemprop="name"><?php echo esc_html(get_the_author()); ?></span>
                                     </span>
-                                </div>
+                                </div> -->
                             </header>
 
                             <?php if (has_post_thumbnail()) : ?>
@@ -153,9 +146,9 @@ if (!function_exists('thanh_hung_render_single_blog_post')) {
                                                             <?php echo esc_html(get_the_title($related_post)); ?>
                                                         </a>
                                                     </h3>
-                                                    <time datetime="<?php echo esc_attr(get_the_date('c', $related_post)); ?>">
+                                                    <!-- <time datetime="<?php echo esc_attr(get_the_date('c', $related_post)); ?>">
                                                         <?php echo esc_html(get_the_date('d/m/Y', $related_post)); ?>
-                                                    </time>
+                                                    </time> -->
                                                 </div>
                                             </article>
                                         <?php endforeach; ?>

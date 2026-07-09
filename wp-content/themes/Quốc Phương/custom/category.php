@@ -31,7 +31,6 @@ function quoc_phuong_render_category_posts()
         <section class="category-posts-hero">
             <div class="category-posts-wrap">
                 <header class="category-posts-heading">
-                    <p>Tin tức</p>
                     <h1><?php echo esc_html($term_name); ?></h1>
 
                     <?php if ($term_description) : ?>
@@ -63,20 +62,20 @@ function quoc_phuong_render_category_posts()
                                 </a>
 
                                 <div class="category-post-body">
-                                    <span class="category-post-label"><?php echo esc_html($category_name); ?></span>
+                                    <!-- <span class="category-post-label"><?php echo esc_html($category_name); ?></span> -->
                                     <h2 itemprop="headline">
                                         <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
                                     </h2>
-                                    <div class="category-post-meta">
+                                    <!-- <div class="category-post-meta">
                                         <time datetime="<?php echo esc_attr(get_the_date('c')); ?>" itemprop="datePublished">
                                             <?php echo esc_html(get_the_date('d/m/Y')); ?>
                                         </time>
-                                    </div>
+                                    </div> -->
                                     <p itemprop="description"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 24, '...')); ?></p>
-                                    <a class="category-post-link" href="<?php the_permalink(); ?>">
+                                    <!-- <a class="category-post-link" href="<?php the_permalink(); ?>">
                                         <span>Đọc thêm</span>
                                         <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                                    </a>
+                                    </a> -->
                                 </div>
                             </article>
                         <?php endwhile; ?>

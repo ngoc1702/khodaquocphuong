@@ -11,6 +11,11 @@ add_filter('genesis_site_layout', function () {
     return 'full-width-content';
 });
 
+add_filter('body_class', function ($classes) {
+    $classes[] = 'qp-about-template';
+    return $classes;
+});
+
 remove_action('genesis_loop', 'genesis_do_loop');
 add_action('genesis_after_header', 'qp_render_about_page');
 
@@ -170,7 +175,7 @@ $picture = $picture_enable ? get_field('about_stone_picture') : [];
                     <?php endif; ?>
 
                     <?php if (!empty($granite['title'])) : ?>
-                        <h2><?php echo esc_html($granite['title']); ?></h2>
+                        <h2><?php echo wp_kses_post($granite['title']); ?></h2>
                     <?php endif; ?>
 
                     <?php if (!empty($granite['description'])) : ?>
@@ -205,7 +210,7 @@ $picture = $picture_enable ? get_field('about_stone_picture') : [];
                 <?php if ($granite_img) : ?>
                     <div class="qp-granite-image">
                         <span></span>
-                        <img src="<?php echo esc_url($granite_img); ?>" alt="<?php echo esc_attr($granite['title'] ?? ''); ?>">
+                        <img src="<?php echo esc_url($granite_img); ?>" alt="<?php echo esc_attr(wp_strip_all_tags($granite['title'] ?? '')); ?>">
                     </div>
                 <?php endif; ?>
             </div>
@@ -246,38 +251,41 @@ $picture = $picture_enable ? get_field('about_stone_picture') : [];
 
             <?php if (!empty($specs)) : ?>
                 <div class="qp-granite-specs">
-                    <div class="qp-granite-specs-main">
+                    <div class="qp-granite-commit">
                         <?php if ($commit_icon) : ?>
-        <div class="qp-granite-badge">
-            <img src="<?php echo esc_url($commit_icon); ?>" alt="">
-        </div>
-    <?php endif; ?>
+                            <div class="qp-granite-badge">
+                                <img src="<?php echo esc_url($commit_icon); ?>" alt="">
+                            </div>
+                        <?php endif; ?>
 
-    <div>
-        <?php if ($commit_title) : ?>
-            <strong><?php echo esc_html($commit_title); ?></strong>
-        <?php endif; ?>
-
-        <?php if ($commit_desc) : ?>
-            <span><?php echo esc_html($commit_desc); ?></span>
-        <?php endif; ?>
-                    </div>
-
-                    <?php foreach ($specs as $spec) : ?>
-                        <div class="qp-granite-spec">
-                            <?php if (!empty($spec['label'])) : ?>
-                                <span><?php echo esc_html($spec['label']); ?></span>
+                        <div class="qp-granite-commit-body">
+                            <?php if ($commit_title) : ?>
+                                <strong><?php echo esc_html($commit_title); ?></strong>
                             <?php endif; ?>
 
-                            <?php if (!empty($spec['value'])) : ?>
-                                <strong><?php echo esc_html($spec['value']); ?></strong>
-                            <?php endif; ?>
-
-                            <?php if (!empty($spec['note'])) : ?>
-                                <em><?php echo esc_html($spec['note']); ?></em>
+                            <?php if ($commit_desc) : ?>
+                                <span><?php echo esc_html($commit_desc); ?></span>
                             <?php endif; ?>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+
+                    <div class="qp-granite-spec-list">
+                        <?php foreach ($specs as $spec) : ?>
+                            <div class="qp-granite-spec">
+                                <?php if (!empty($spec['label'])) : ?>
+                                    <span><?php echo esc_html($spec['label']); ?></span>
+                                <?php endif; ?>
+
+                                <?php if (!empty($spec['value'])) : ?>
+                                    <strong><?php echo esc_html($spec['value']); ?></strong>
+                                <?php endif; ?>
+
+                                <?php if (!empty($spec['note'])) : ?>
+                                    <em><?php echo esc_html($spec['note']); ?></em>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             <?php endif; ?>
 
