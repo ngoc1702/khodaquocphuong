@@ -33,11 +33,9 @@ if (! class_exists('ResponsiveMenu')) {
 
 			add_action('caia_settings_metaboxes', array($this, 'add_theme_settings_boxes_menumobile'));
 
-			if (wp_is_mobile()) {
-				add_action('genesis_after_footer', array($this, 'caia_add_function_menu_mobile_menu'));
-				add_action('wp_head', array($this, 'caia_add_style_mobile'));
-				add_action('wp_footer', array($this, 'caia_add_js_mobile'));
-			}
+			add_action('genesis_after_footer', array($this, 'caia_add_function_menu_mobile_menu'));
+			add_action('wp_head', array($this, 'caia_add_style_mobile'));
+			add_action('wp_footer', array($this, 'caia_add_js_mobile'));
 		}
 
 		function add_theme_settings_boxes_menumobile($pagehook)
@@ -111,24 +109,37 @@ if (! class_exists('ResponsiveMenu')) {
 
 		function caia_add_function_menu_mobile_menu()
 		{
+			$theme_location = '';
+
 			if (has_nav_menu('mobile-menu')) {
-				echo '<div id="responsive-menu">';
-				echo '<div class="logomobile"></div>';
-				do_action('caia_before_mobile-menu');
-				wp_nav_menu(array(
-					'theme_location' => 'mobile-menu',
-					'container' => 'div',
-					'container_class' => 'mobile-menu'
-				));
-				do_action('caia_after_mobile-menu');
-				echo '</div>';
-				echo '<div id="click-menu" class="click-menu">
-				
-					<div class="line line1"></div>
-					<div class="line line2"></div>
-					<div class="line line3"></div>
-				</div>';
+				$theme_location = 'mobile-menu';
+			} elseif (has_nav_menu('primary')) {
+				$theme_location = 'primary';
 			}
+
+			$menu_args = array(
+				'container' => 'div',
+				'container_class' => 'mobile-menu',
+				'menu_class' => 'menu',
+				'fallback_cb' => 'wp_page_menu',
+			);
+
+			if ($theme_location) {
+				$menu_args['theme_location'] = $theme_location;
+			}
+
+			echo '<div id="responsive-menu">';
+			echo '<div class="logomobile"></div>';
+			do_action('caia_before_mobile-menu');
+			wp_nav_menu($menu_args);
+			do_action('caia_after_mobile-menu');
+			echo '</div>';
+			echo '<div id="click-menu" class="click-menu" role="button" tabindex="0" aria-label="Mở menu" style="position:fixed;top:17px;right:22px;z-index:1000000;width:44px;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0;border:1px solid rgba(219,64,53,.22);border-radius:8px;background:#DB4035;box-shadow:0 8px 18px rgba(219,64,53,.26);cursor:pointer;">
+
+				<div class="line line1" style="width:22px;height:2px;margin:0;border-radius:2px;background:#fff;"></div>
+				<div class="line line2" style="width:22px;height:2px;margin:0;border-radius:2px;background:#fff;"></div>
+				<div class="line line3" style="width:22px;height:2px;margin:0;border-radius:2px;background:#fff;"></div>
+			</div>';
 		}
 
 		function caia_add_style_mobile()
@@ -327,11 +338,6 @@ if (! class_exists('ResponsiveMenu')) {
 						} else {
 							$submenu.stop(true, true).slideDown(220);
 						}
-					});
-
-					$(document).on("click", ".mobile-menu li.menu-item-has-children > a", function(e) {
-						e.preventDefault();
-						$(this).closest("li").children(".active-menu.toggle").trigger("click");
 					});
 				});
 			</script>

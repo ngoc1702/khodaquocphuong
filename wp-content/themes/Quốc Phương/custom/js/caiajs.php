@@ -198,7 +198,7 @@ jQuery(document).ready(function($) {
   }
 
   // mở popup từ header
-  $('.site-header p').on('click', openQuotePopup);
+  $('.site-header .widget_text p').on('click', openQuotePopup);
 
   // mở popup từ CTA
   $(document).on('click', '.btn-cta', openQuotePopup);
@@ -383,7 +383,7 @@ $("").slick({
 	});
 
 	
-	$('a[href*=\\#]:not([href=\\#])').click(function() {
+	$('a[href*=\\#]:not([href=\\#]):not(.btn-cta)').click(function() {
 		if (location.pathname.replace('/^\//','') == this.pathname.replace('/^\//','') && location.hostname == this.hostname) {
 		  var target = $(this.hash);
 		  target = target.length ? target : $('[name=' + this.hash.slice(1) +']');

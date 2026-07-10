@@ -41,6 +41,12 @@ if (!function_exists('quoc_phuong_single_product_remove_caia_extras')) {
                 remove_filter('the_content', array($caia_social, 'add_native_share_button_at_bottom'), $social_priority);
             }
         }
+
+        if (class_exists('WC_Template_Loader')) {
+            remove_filter('the_content', array('WC_Template_Loader', 'unsupported_theme_product_content_filter'), 10);
+        }
+
+        remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20);
     }
 }
 
@@ -226,9 +232,11 @@ if (!function_exists('quoc_phuong_render_single_product_page')) {
             }
 
             $images = quoc_phuong_get_single_product_gallery($product_id, $product);
+            $product_image_url = !empty($images[0]['full']) ? $images[0]['full'] : get_the_post_thumbnail_url($product_id, 'full');
             $terms = quoc_phuong_get_single_product_terms($product_id);
             $short_description = $product->get_short_description();
             $short_description = $short_description ? apply_filters('woocommerce_short_description', $short_description) : wpautop(get_the_excerpt());
+            $product_content = get_post_field('post_content', $product_id);
             $price_html = $product->get_price_html();
             $sku = $product->get_sku();
             $related_ids = quoc_phuong_get_related_product_ids($product_id, 4);
@@ -316,18 +324,31 @@ if (!function_exists('quoc_phuong_render_single_product_page')) {
 
                 <section class="qp-product-content-section">
                     <div class="qp-product-wrap">
-                        <article class="qp-product-article">
+                        <article class="qp-product-article" itemscope itemtype="https://schema.org/Article">
+                            <meta itemprop="mainEntityOfPage" content="<?php echo esc_url(get_permalink()); ?>">
+                            <meta itemprop="headline" content="<?php echo esc_attr(get_the_title()); ?>">
+                            <meta itemprop="datePublished" content="<?php echo esc_attr(get_the_date('c')); ?>">
+                            <meta itemprop="dateModified" content="<?php echo esc_attr(get_the_modified_date('c')); ?>">
+                            <?php if ($product_image_url) : ?>
+                                <meta itemprop="image" content="<?php echo esc_url($product_image_url); ?>">
+                            <?php endif; ?>
+                            <span itemprop="author" itemscope itemtype="https://schema.org/Organization">
+                                <meta itemprop="name" content="<?php echo esc_attr(get_bloginfo('name')); ?>">
+                            </span>
+                            <span itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
+                                <meta itemprop="name" content="<?php echo esc_attr(get_bloginfo('name')); ?>">
+                            </span>
+
                             <header class="qp-product-section-heading">
-                                <span>Thông tin sản phẩm</span>
-                                <!-- <h2><?php the_title(); ?></h2> -->
+                                <h2>Th&ocirc;ng tin s&#7843;n ph&#7849;m <?php echo esc_html(get_the_title()); ?></h2>
                             </header>
 
-                            <div class="single-blog-content qp-product-content">
+                            <div class="single-blog-content qp-product-content" itemprop="articleBody">
                                 <?php
-                                if (trim(get_the_content())) {
-                                    the_content();
+                                if (trim($product_content)) {
+                                    echo apply_filters('the_content', $product_content);
                                 } else {
-                                    echo '<p>Thông tin chi tiết sản phẩm đang được cập nhật.</p>';
+                                    echo '<p>Th&ocirc;ng tin chi ti&#7871;t s&#7843;n ph&#7849;m &#273;ang &#273;&#432;&#7907;c c&#7853;p nh&#7853;t.</p>';
                                 }
                                 ?>
                             </div>
@@ -365,6 +386,27 @@ if (!function_exists('quoc_phuong_single_product_gallery_script')) {
         }
         ?>
         <script>
+            (function() {
+                function wrapProductContentTables() {
+                    document.querySelectorAll('.qp-product-content table').forEach(function(table) {
+                        if (table.closest('.wp-block-table, .single-table-scroll')) {
+                            return;
+                        }
+
+                        var wrapper = document.createElement('div');
+                        wrapper.className = 'single-table-scroll';
+                        table.parentNode.insertBefore(wrapper, table);
+                        wrapper.appendChild(table);
+                    });
+                }
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', wrapProductContentTables);
+                } else {
+                    wrapProductContentTables();
+                }
+            })();
+
             jQuery(function($) {
                 var $main = $('.qp-product-gallery-main');
                 var $nav = $('.qp-product-gallery-nav');
